@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 
 import java.util.Arrays;
 
+import static org.jacksonatic.ConstructorMapping.mapConstructor;
+import static org.jacksonatic.ConstructorMapping.mapStaticFactory;
+
 public class SerializerBuilder<T> {
 
     private ClassMapping classMapping;
@@ -58,7 +61,17 @@ public class SerializerBuilder<T> {
     }
 
     public SerializerBuilder onConstructor(TypedParameter<?>... typedParameters) {
-        classMapping.onConstructor(new ConstructorMapping(Arrays.asList(typedParameters)));
+        classMapping.onConstructor(mapConstructor(Arrays.asList(typedParameters)));
+        return this;
+    }
+
+    public SerializerBuilder onStaticFactory(String methodName, TypedParameter<?>... typedParameters) {
+        classMapping.onConstructor(mapStaticFactory(methodName, Arrays.asList(typedParameters)));
+        return this;
+    }
+
+    public SerializerBuilder onStaticFactory(TypedParameter<?>... typedParameters) {
+        classMapping.onConstructor(mapStaticFactory(Arrays.asList(typedParameters)));
         return this;
     }
 }

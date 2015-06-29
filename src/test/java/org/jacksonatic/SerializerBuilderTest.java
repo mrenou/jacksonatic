@@ -1,10 +1,12 @@
 package org.jacksonatic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jacksonatic.SerializerBuilder;
 import org.jacksonatic.TypedParameter;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 
@@ -64,7 +66,6 @@ public class SerializerBuilderTest {
     @Test
     public void deserialize_on_constructor() throws IOException {
         SerializerBuilder.on(Pojo.class)
-                .all()
                 .onConstructor(new TypedParameter<>(String.class, "field1"), new TypedParameter<>(Integer.class, "field2"))
                 .registerIn(objectMapper);
 
@@ -72,4 +73,36 @@ public class SerializerBuilderTest {
 
         assertThat(pojo).isEqualTo(POJO);
     }
+
+    @Test
+    public void deserialize_on_named_static_factory() throws IOException {
+        SerializerBuilder.on(Pojo.class)
+                .onStaticFactory("newPojo", new TypedParameter<>(String.class, "field1"), new TypedParameter<>(Integer.class, "field2"))
+                .registerIn(objectMapper);
+
+        Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
+
+        assertThat(pojo).isEqualTo(POJO);
+    }
+
+    @Test(expected = JsonMappingException.class)
+    public void not_deserialize_on_named_static_factory() throws IOException {
+        SerializerBuilder.on(Pojo.class)
+                .onStaticFactory("other", new TypedParameter<>(String.class, "field1"), new TypedParameter<>(Integer.class, "field2"))
+                .registerIn(objectMapper);
+
+        objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
+    }
+
+    @Test
+    public void deserialize_on_unnamed_static_factory() throws IOException {
+        SerializerBuilder.on(Pojo.class)
+                .onStaticFactory(new TypedParameter<>(String.class, "field1"), new TypedParameter<>(Integer.class, "field2"))
+                .registerIn(objectMapper);
+
+        Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
+
+        assertThat(pojo).isEqualTo(POJO);
+    }
+
 }

@@ -11,6 +11,10 @@ public class Pojo {
         this.field2 = field2;
     }
 
+    public static Pojo newPojo(String field1, Integer field2) {
+        return new Pojo(field1, field2);
+    }
+
     public String getField1() {
         return field1;
     }

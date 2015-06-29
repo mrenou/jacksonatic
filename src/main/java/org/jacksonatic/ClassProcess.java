@@ -1,9 +1,6 @@
 package org.jacksonatic;
 
-import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
-import com.fasterxml.jackson.databind.introspect.AnnotatedClassUpdater;
-import com.fasterxml.jackson.databind.introspect.AnnotatedConstructor;
-import com.fasterxml.jackson.databind.introspect.AnnotationMap;
+import com.fasterxml.jackson.databind.introspect.*;
 import org.jacksonatic.annotation.JacksonaticJsonCreator;
 import org.jacksonatic.annotation.JacksonaticJsonProperty;
 
@@ -31,33 +28,54 @@ public class ClassProcess {
                 .map(annotatedField -> PropertyProcess.process(annotatedField, classMapping))
                 .collect(Collectors.toList()));
 
-        (( Optional<ConstructorMapping>)classMapping.getConstructorMapping()).ifPresent(constructorMapping -> {
-            List<AnnotatedConstructor> constructors = annotatedClass.getConstructors().stream()
-                    .map(annotatedConstructor -> {
-                        boolean match = matchConstructor(constructorMapping, annotatedConstructor);
-                        if (match) {
-                            AnnotationMap annotationMap = new AnnotationMap();
-                            annotationMap.add(new JacksonaticJsonCreator());
-                            IntStream.range(0, constructorMapping.getParameters().size()).forEach(index -> {
-                                JacksonaticJsonProperty jsonProperty = new JacksonaticJsonProperty(constructorMapping.getParameters().get(index).getName(), true, index, "");
-                                annotatedConstructor.addOrOverrideParam(index, jsonProperty);
-                            });
-                            return annotatedConstructor.withAnnotations(annotationMap);
-                        }
-                        return annotatedConstructor;
-                    })
-                    .collect(Collectors.toList());
-            AnnotatedClassUpdater.setConstructors(annotatedClass, constructors);
+        ((Optional<ConstructorMapping>) classMapping.getConstructorMapping()).ifPresent(constructorMapping -> {
+            if (constructorMapping.isStaticFactory()) {
+                List<AnnotatedMethod> methods = annotatedClass.getStaticMethods().stream()
+                        .map(annotatedMethod -> {
+                            boolean match = matchConstructor(constructorMapping, annotatedMethod);
+                            if (match) {
+                                AnnotationMap annotationMap = new AnnotationMap();
+                                annotationMap.add(new JacksonaticJsonCreator());
+                                IntStream.range(0, constructorMapping.getParameters().size()).forEach(index -> {
+                                    JacksonaticJsonProperty jsonProperty = new JacksonaticJsonProperty(constructorMapping.getParameters().get(index).getName(), true, index, "");
+                                    annotatedMethod.addOrOverrideParam(index, jsonProperty);
+                                });
+                                return annotatedMethod.withAnnotations(annotationMap);
+                            }
+                            return annotatedMethod;
+                        })
+                        .collect(Collectors.toList());
+                AnnotatedClassUpdater.setCreatorMethods(annotatedClass, methods);
+            } else {
+                List<AnnotatedConstructor> constructors = annotatedClass.getConstructors().stream()
+                        .map(annotatedConstructor -> {
+                            boolean match = matchConstructor(constructorMapping, annotatedConstructor);
+                            if (match) {
+                                AnnotationMap annotationMap = new AnnotationMap();
+                                annotationMap.add(new JacksonaticJsonCreator());
+                                IntStream.range(0, constructorMapping.getParameters().size()).forEach(index -> {
+                                    JacksonaticJsonProperty jsonProperty = new JacksonaticJsonProperty(constructorMapping.getParameters().get(index).getName(), true, index, "");
+                                    annotatedConstructor.addOrOverrideParam(index, jsonProperty);
+                                });
+                                return annotatedConstructor.withAnnotations(annotationMap);
+                            }
+                            return annotatedConstructor;
+                        })
+                        .collect(Collectors.toList());
+                AnnotatedClassUpdater.setConstructors(annotatedClass, constructors);
+            }
         });
 
         return annotatedClass;
     }
 
-    private static boolean matchConstructor(ConstructorMapping constructorMapping, AnnotatedConstructor annotatedConstructor) {
-        boolean match = true;
-        if (annotatedConstructor.getParameterCount() == constructorMapping.getParameters().size()) {
-            for (int i = 0; i < annotatedConstructor.getParameterCount(); i++) {
-                if (annotatedConstructor.getParameter(i).getDeclaringClass().equals(constructorMapping.getParameters().get(i).getType())) {
+    private static boolean matchConstructor(ConstructorMapping constructorMapping, AnnotatedWithParams annotatedWithParams) {
+        boolean match = false;
+        if ((constructorMapping.getMethodName() == null || constructorMapping.getMethodName().equals(annotatedWithParams.getName()))
+                && annotatedWithParams.getParameterCount() == constructorMapping.getParameters().size()) {
+            match = true;
+            for (int i = 0; i < annotatedWithParams.getParameterCount(); i++) {
+                if (annotatedWithParams.getParameter(i).getDeclaringClass().equals(constructorMapping.getParameters().get(i).getType())) {
                     match = false;
                 }
             }
