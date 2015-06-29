@@ -1,13 +1,12 @@
-package test;
+package org.jacksonatic;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public class ClassMapping<T> {
 
-    private Optional<List<TypedParameter<?>>> constructorToUse = Optional.empty();
+    private Optional<ConstructorMapping> constructorMapping = Optional.empty();
 
     private Class<T> clazz;
 
@@ -31,8 +30,8 @@ public class ClassMapping<T> {
         getPropertyMapping(propertyName).map();
     }
 
-    public void onConstructor(List<TypedParameter<?>> typedParameters) {
-        constructorToUse = Optional.of(typedParameters);
+    public void onConstructor(ConstructorMapping constructorMapping) {
+        this.constructorMapping = Optional.of(constructorMapping);
     }
 
     public PropertyMapping getPropertyMapping(String propertyName) {
@@ -53,7 +52,8 @@ public class ClassMapping<T> {
         return clazz;
     }
 
-    public Optional<List<TypedParameter<?>>> getConstructorToUse() {
-        return constructorToUse;
+    public Optional<ConstructorMapping> getConstructorMapping() {
+        return constructorMapping;
     }
+
 }

@@ -1,4 +1,4 @@
-package test;
+package org.jacksonatic;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;

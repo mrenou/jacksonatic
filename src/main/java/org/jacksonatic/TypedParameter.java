@@ -1,4 +1,4 @@
-package test;
+package org.jacksonatic;
 
 
 public class TypedParameter<T> {

@@ -1,9 +1,8 @@
-package test;
+package org.jacksonatic;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 
-import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
 public class SerializerBuilder<T> {
@@ -59,7 +58,7 @@ public class SerializerBuilder<T> {
     }
 
     public SerializerBuilder onConstructor(TypedParameter<?>... typedParameters) {
-        classMapping.onConstructor(Arrays.asList(typedParameters));
+        classMapping.onConstructor(new ConstructorMapping(Arrays.asList(typedParameters)));
         return this;
     }
 }

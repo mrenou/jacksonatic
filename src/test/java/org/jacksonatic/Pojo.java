@@ -1,10 +1,5 @@
-package test;
+package org.jacksonatic;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-
-/**
- * Created by morgan on 22/06/15.
- */
 public class Pojo {
 
     private String field1;
