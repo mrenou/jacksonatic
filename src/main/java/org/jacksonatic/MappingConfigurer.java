@@ -8,29 +8,29 @@ import java.util.Arrays;
 import static org.jacksonatic.ConstructorMapping.mapConstructor;
 import static org.jacksonatic.ConstructorMapping.mapStaticFactory;
 
-public class SerializerBuilder<T> {
+public class MappingConfigurer<T> {
 
     private ClassMapping classMapping;
 
-    public static <T> SerializerBuilder on(Class<T> clazz) {
-        return new SerializerBuilder(clazz);
+    public static <T> MappingConfigurer on(Class<T> clazz) {
+        return new MappingConfigurer(clazz);
     }
 
-    public SerializerBuilder(Class<T> clazz) {
+    public MappingConfigurer(Class<T> clazz) {
         this.classMapping = new ClassMapping(clazz);
     }
 
-    public SerializerBuilder all() {
+    public MappingConfigurer all() {
         classMapping.mapAllProperties();
         return this;
     }
 
-    public SerializerBuilder map(String propertyName) {
+    public MappingConfigurer map(String propertyName) {
         classMapping.map(propertyName);
         return this;
     }
 
-    public SerializerBuilder ignore(String propertyName) {
+    public MappingConfigurer ignore(String propertyName) {
         classMapping.ignore(propertyName);
         return this;
     }
@@ -60,18 +60,18 @@ public class SerializerBuilder<T> {
         basicClassIntrospector.register(classMapping);
     }
 
-    public SerializerBuilder onConstructor(TypedParameter<?>... typedParameters) {
-        classMapping.onConstructor(mapConstructor(Arrays.asList(typedParameters)));
+    public MappingConfigurer onConstructor(ParameterMatcher... parameterMatchers) {
+        classMapping.onConstructor(mapConstructor(classMapping.getClazz(), Arrays.asList(parameterMatchers)));
         return this;
     }
 
-    public SerializerBuilder onStaticFactory(String methodName, TypedParameter<?>... typedParameters) {
-        classMapping.onConstructor(mapStaticFactory(methodName, Arrays.asList(typedParameters)));
+    public MappingConfigurer onStaticFactory(String methodName, ParameterMatcher... parameterMatchers) {
+        classMapping.onConstructor(mapStaticFactory(classMapping.getClazz(), methodName, Arrays.asList(parameterMatchers)));
         return this;
     }
 
-    public SerializerBuilder onStaticFactory(TypedParameter<?>... typedParameters) {
-        classMapping.onConstructor(mapStaticFactory(Arrays.asList(typedParameters)));
+    public MappingConfigurer onStaticFactory(ParameterMatcher... parameterMatchers) {
+        classMapping.onConstructor(mapStaticFactory(classMapping.getClazz(), Arrays.asList(parameterMatchers)));
         return this;
     }
 }

@@ -1,34 +1,50 @@
 package org.jacksonatic;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ConstructorMapping {
 
     private String methodName;
 
-    private List<TypedParameter<?>> parameters;
+    private List<ParameterMapping> parameters;
 
     private boolean staticFactory = false;
 
-    public static ConstructorMapping mapConstructor(List<TypedParameter<?>> parameters) {
-        return new ConstructorMapping(null, parameters, false);
+    public static ConstructorMapping mapConstructor(Class<?> ownerClass, List<ParameterMatcher> parameters) {
+        return new ConstructorMapping(ownerClass, null, parameters, false);
     }
 
-    public static ConstructorMapping mapStaticFactory(List<TypedParameter<?>> parameters) {
-        return new ConstructorMapping(null, parameters, true);
+    public static ConstructorMapping mapStaticFactory(Class<?> ownerClass, List<ParameterMatcher> parameters) {
+        return new ConstructorMapping(ownerClass, null, parameters, true);
     }
 
-    public static ConstructorMapping mapStaticFactory(String methodName, List<TypedParameter<?>> parameters) {
-        return new ConstructorMapping(methodName, parameters, true);
+    public static ConstructorMapping mapStaticFactory(Class<?> ownerClass, String methodName, List<ParameterMatcher> parameters) {
+        return new ConstructorMapping(ownerClass, methodName, parameters, true);
     }
 
-    public ConstructorMapping(String methodName, List<TypedParameter<?>> parameters,  boolean staticFactory) {
+    public ConstructorMapping(Class<?> ownerClass, String methodName, List<ParameterMatcher> parameterMatchers, boolean staticFactory) {
         this.methodName = methodName;
-        this.parameters = parameters;
+        this.parameters = loadParmatersMapping(ownerClass, parameterMatchers);
         this.staticFactory = staticFactory;
     }
 
-    public List<TypedParameter<?>> getParameters() {
+    private List<ParameterMapping> loadParmatersMapping(Class<?> ownerClass, List<ParameterMatcher> parameterMatchers) {
+        Map<Class<?>, PriorityQueue<String>> propertiesByClass = new HashMap<>();
+        Map<String, Class<?>> classByProperty = new HashMap<>();
+        Arrays.asList(ownerClass.getDeclaredFields()).stream().forEach(field -> {
+            PriorityQueue<String> properties = propertiesByClass.get(field.getClass());
+            if (properties == null) {
+                properties = new PriorityQueue<>();
+                propertiesByClass.put(field.getType(), properties);
+            }
+            properties.add(field.getName());
+            classByProperty.put(field.getName(), field.getType());
+        });
+        return parameterMatchers.stream().map(parameterMatcher -> new ParameterMapping(parameterMatcher, propertiesByClass, classByProperty)).collect(Collectors.toList());
+    }
+
+    public List<ParameterMapping> getParameters() {
         return parameters;
     }
 

@@ -1,8 +1,6 @@
 package org.jacksonatic;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ClassMapping<T> {
 
@@ -42,7 +40,6 @@ public class ClassMapping<T> {
                     return value;
                 });
     }
-
 
     public boolean allPropertiesAreMapped() {
         return this.allProperties;
