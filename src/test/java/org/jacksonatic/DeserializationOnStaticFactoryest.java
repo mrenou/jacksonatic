@@ -1,15 +1,15 @@
 package org.jacksonatic;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jacksonatic.MappingConfigurer;
+import org.jacksonatic.mapping.ParameterMatcher;
 import org.junit.Test;
 
 import java.io.IOException;
 
-import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jacksonatic.ParameterMatcher.matchField;
+import static org.jacksonatic.mapping.ParameterMatcher.matchField;
 
 public class DeserializationOnStaticFactoryest {
 

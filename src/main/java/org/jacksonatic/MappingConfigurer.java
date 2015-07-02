@@ -2,11 +2,14 @@ package org.jacksonatic;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
+import org.jacksonatic.JacksonaticClassIntrospector;
+import org.jacksonatic.mapping.ClassMapping;
+import org.jacksonatic.mapping.ParameterMatcher;
 
 import java.util.Arrays;
 
-import static org.jacksonatic.ConstructorMapping.mapConstructor;
-import static org.jacksonatic.ConstructorMapping.mapStaticFactory;
+import static org.jacksonatic.mapping.ConstructorMapping.mapConstructor;
+import static org.jacksonatic.mapping.ConstructorMapping.mapStaticFactory;
 
 public class MappingConfigurer<T> {
 
@@ -43,20 +46,20 @@ public class MappingConfigurer<T> {
     public void registerForSerializationIn(ObjectMapper objectMapper) {
         SerializationConfig serializationConfig = objectMapper.getSerializationConfig();
         ClassIntrospector classIntrospector = serializationConfig.getClassIntrospector();
-        if (!(classIntrospector instanceof MyBasicClassIntrospector)) {
-            objectMapper.setConfig(serializationConfig.with(new MyBasicClassIntrospector()));
+        if (!(classIntrospector instanceof JacksonaticClassIntrospector)) {
+            objectMapper.setConfig(serializationConfig.with(new JacksonaticClassIntrospector()));
         }
-        MyBasicClassIntrospector basicClassIntrospector = (MyBasicClassIntrospector) objectMapper.getSerializationConfig().getClassIntrospector();
+        JacksonaticClassIntrospector basicClassIntrospector = (JacksonaticClassIntrospector) objectMapper.getSerializationConfig().getClassIntrospector();
         basicClassIntrospector.register(classMapping);
     }
 
     public void registerForDeserializationIn(ObjectMapper objectMapper) {
         DeserializationConfig deserializationConfig = objectMapper.getDeserializationConfig();
         ClassIntrospector classIntrospector = deserializationConfig.getClassIntrospector();
-        if (!(classIntrospector instanceof MyBasicClassIntrospector)) {
-            objectMapper.setConfig(deserializationConfig.with(new MyBasicClassIntrospector()));
+        if (!(classIntrospector instanceof JacksonaticClassIntrospector)) {
+            objectMapper.setConfig(deserializationConfig.with(new JacksonaticClassIntrospector()));
         }
-        MyBasicClassIntrospector basicClassIntrospector = (MyBasicClassIntrospector) objectMapper.getDeserializationConfig().getClassIntrospector();
+        JacksonaticClassIntrospector basicClassIntrospector = (JacksonaticClassIntrospector) objectMapper.getDeserializationConfig().getClassIntrospector();
         basicClassIntrospector.register(classMapping);
     }
 

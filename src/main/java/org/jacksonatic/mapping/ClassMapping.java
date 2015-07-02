@@ -1,4 +1,7 @@
-package org.jacksonatic;
+package org.jacksonatic.mapping;
+
+import org.jacksonatic.mapping.ConstructorMapping;
+import org.jacksonatic.mapping.PropertyMapping;
 
 import java.util.*;
 

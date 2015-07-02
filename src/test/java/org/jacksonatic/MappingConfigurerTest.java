@@ -2,6 +2,7 @@ package org.jacksonatic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jacksonatic.MappingConfigurer;
 import org.junit.Test;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;

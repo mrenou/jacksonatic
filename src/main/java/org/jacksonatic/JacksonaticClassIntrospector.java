@@ -5,12 +5,16 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.BasicClassIntrospector;
 import com.fasterxml.jackson.databind.introspect.POJOPropertiesCollector;
+import org.jacksonatic.annotation.ClassAnnotationDecorator;
+import org.jacksonatic.mapping.ClassMapping;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class MyBasicClassIntrospector extends BasicClassIntrospector {
+import static org.jacksonatic.annotation.ClassAnnotationDecorator.decorate;
+
+class JacksonaticClassIntrospector extends BasicClassIntrospector {
 
     private Map<Class<?>, ClassMapping<?>> classesMapping = new HashMap<>();
 
@@ -25,7 +29,7 @@ public class MyBasicClassIntrospector extends BasicClassIntrospector {
         boolean useAnnotations = config.isAnnotationProcessingEnabled();
         AnnotatedClass ac = AnnotatedClass.construct(type.getRawClass(),
                 (useAnnotations ? config.getAnnotationIntrospector() : null), r);
-        AnnotatedClass acProcessed = Optional.ofNullable(classesMapping.get(ac.getAnnotated())).map(classMapping -> ClassProcess.process(ac, classMapping)).orElse(ac);
+        AnnotatedClass acProcessed = Optional.ofNullable(classesMapping.get(ac.getAnnotated())).map(classMapping -> decorate(ac, classMapping)).orElse(ac);
         return constructPropertyCollector(config, acProcessed, type, forSerialization, mutatorPrefix).collect();
     }
 

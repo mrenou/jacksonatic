@@ -1,4 +1,4 @@
-package org.jacksonatic;
+package org.jacksonatic.mapping;
 
 public class PropertyMapping {
 

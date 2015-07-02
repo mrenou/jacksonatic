@@ -1,4 +1,4 @@
-package org.jacksonatic;
+package org.jacksonatic.mapping;
 
 import java.util.*;
 import java.util.stream.Collectors;
