@@ -23,7 +23,7 @@ public class ConstructorMapping {
         return new ConstructorMapping(ownerClass, methodName, parameters, true);
     }
 
-    public ConstructorMapping(Class<?> ownerClass, String methodName, List<ParameterMatcher> parameterMatchers, boolean staticFactory) {
+    private ConstructorMapping(Class<?> ownerClass, String methodName, List<ParameterMatcher> parameterMatchers, boolean staticFactory) {
         this.methodName = methodName;
         this.parameters = loadParmatersMapping(ownerClass, parameterMatchers);
         this.staticFactory = staticFactory;
