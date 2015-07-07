@@ -2,7 +2,6 @@ package org.jacksonatic;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jacksonatic.MappingConfigurer;
 import org.jacksonatic.mapping.ParameterMatcher;
 import org.junit.Test;
 

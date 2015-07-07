@@ -1,13 +1,15 @@
 package org.jacksonatic.annotation;
 
 import com.fasterxml.jackson.databind.introspect.*;
-import org.jacksonatic.mapping.ClassMapping;
-import org.jacksonatic.mapping.PropertyMapping;
 import org.jacksonatic.annotation.builder.*;
+import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.mapping.ConstructorMapping;
+import org.jacksonatic.mapping.PropertyMapping;
 
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
@@ -32,7 +34,7 @@ public class ClassAnnotationDecorator {
                     FIELD_ANNOTATION_BUILDERS.stream()
                             .filter(fieldAnnotationBuilder -> fieldAnnotationBuilder.hasToBuild(annotatedField, classMapping, propertyMapping))
                             .map(fieldAnnotationBuilder -> fieldAnnotationBuilder.build(annotatedField, classMapping, propertyMapping))
-                            .forEach(annotation -> annotationMap.addIfNotPresent(annotation));
+                            .forEach(annotationMap::addIfNotPresent);
                     return annotatedField.withAnnotations(annotationMap);
                 })
                 .collect(Collectors.toList()));

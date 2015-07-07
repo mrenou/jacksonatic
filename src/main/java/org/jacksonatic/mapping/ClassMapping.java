@@ -1,9 +1,8 @@
 package org.jacksonatic.mapping;
 
-import org.jacksonatic.mapping.ConstructorMapping;
-import org.jacksonatic.mapping.PropertyMapping;
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class ClassMapping<T> {
 
@@ -24,11 +23,15 @@ public class ClassMapping<T> {
     }
 
     public void ignore(String propertyName) {
-        getPropertyMapping(propertyName).isIgnored();
+        getPropertyMapping(propertyName).ignore();
     }
 
     public void map(String propertyName) {
         getPropertyMapping(propertyName).map();
+    }
+
+    public void map(String propertyName, String mappedName) {
+        getPropertyMapping(propertyName).map(mappedName);
     }
 
     public void onConstructor(ConstructorMapping constructorMapping) {

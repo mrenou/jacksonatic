@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.BasicClassIntrospector;
 import com.fasterxml.jackson.databind.introspect.POJOPropertiesCollector;
-import org.jacksonatic.annotation.ClassAnnotationDecorator;
 import org.jacksonatic.mapping.ClassMapping;
 
 import java.util.HashMap;

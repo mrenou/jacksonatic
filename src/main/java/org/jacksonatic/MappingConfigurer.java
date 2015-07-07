@@ -1,8 +1,9 @@
 package org.jacksonatic;
 
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
-import org.jacksonatic.JacksonaticClassIntrospector;
 import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.mapping.ParameterMatcher;
 

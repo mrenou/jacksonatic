@@ -1,10 +1,10 @@
 package org.jacksonatic.annotation.builder;
 
 import com.fasterxml.jackson.databind.introspect.AnnotatedWithParams;
-import org.jacksonatic.mapping.ConstructorMapping;
-import org.jacksonatic.mapping.ParameterMapping;
 import org.jacksonatic.annotation.JacksonaticJsonCreator;
 import org.jacksonatic.annotation.JacksonaticJsonProperty;
+import org.jacksonatic.mapping.ConstructorMapping;
+import org.jacksonatic.mapping.ParameterMapping;
 
 import java.lang.annotation.Annotation;
 

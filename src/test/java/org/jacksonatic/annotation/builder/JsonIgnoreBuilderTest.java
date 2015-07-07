@@ -1,11 +1,14 @@
 package org.jacksonatic.annotation.builder;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.AnnotatedField;
+import org.assertj.core.api.StrictAssertions;
 import org.jacksonatic.mapping.ClassMapping;
 import org.junit.Test;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -61,5 +64,14 @@ public class JsonIgnoreBuilderTest {
         assertThat(hasToBuild).isFalse();
     }
 
+    @Test
+    public void should_build() {
+        ClassMapping<Pojo> classMapping = new ClassMapping<>(Pojo.class);
+
+        final Annotation annotation = new JsonIgnoreBuilder().build(annotedFields.get("field1"), classMapping, classMapping.getPropertyMapping("field1"));
+
+        assertThat(annotation).isInstanceOf(JsonIgnore.class);
+        StrictAssertions.assertThat(((JsonIgnore) annotation).value()).isTrue();
+    }
 
 }

@@ -20,10 +20,12 @@ public class PropertyMapping {
 
     public void map() {
         this.mapped = true;
+        this.mappedName = name;
     }
 
-    public String getName() {
-        return name;
+    public void map(String mappedName) {
+        this.mapped = true;
+        this.mappedName = mappedName;
     }
 
     public String getMappedName() {
@@ -39,6 +41,6 @@ public class PropertyMapping {
     }
 
     public boolean hasMappedName() {
-        return !mappedName.isEmpty();
+        return !mappedName.equals(name);
     }
 }
