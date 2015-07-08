@@ -1,7 +1,8 @@
-package org.jacksonatic;
+package org.jacksonatic.integration.test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jacksonatic.MappingConfigurer;
 import org.junit.Test;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
@@ -55,6 +56,18 @@ public class MappingConfigurerTest {
         String json = objectMapper.writeValueAsString(POJO);
 
         assertThat(json).isEqualTo("{\"field1\":\"field1\",\"field2\":42}");
+    }
+
+    @Test
+    public void map_one_basic_with_another_name() throws JsonProcessingException {
+        MappingConfigurer.on(Pojo.class)
+                .map("field1", "toto")
+                .registerIn(objectMapper);
+
+        String json = objectMapper.writeValueAsString(POJO);
+
+        assertThat(json).isEqualTo("{\"toto\":\"field1\"}");
+
     }
 
 }

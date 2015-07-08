@@ -1,4 +1,4 @@
-package org.jacksonatic;
+package org.jacksonatic.integration.test;
 
 public class Pojo {
 

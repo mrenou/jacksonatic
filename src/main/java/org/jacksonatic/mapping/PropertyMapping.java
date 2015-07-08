@@ -4,7 +4,7 @@ public class PropertyMapping {
 
     private String name;
 
-    private String mappedName = "";
+    private String mappedName;
 
     private boolean ignored = false;
 
@@ -12,6 +12,7 @@ public class PropertyMapping {
 
     public PropertyMapping(String name) {
         this.name = name;
+        this.mappedName = name;
     }
 
     public void ignore() {

@@ -34,6 +34,11 @@ public class MappingConfigurer<T> {
         return this;
     }
 
+    public MappingConfigurer map(String propertyName, String mappedName) {
+        classMapping.map(propertyName, mappedName);
+        return this;
+    }
+
     public MappingConfigurer ignore(String propertyName) {
         classMapping.ignore(propertyName);
         return this;
