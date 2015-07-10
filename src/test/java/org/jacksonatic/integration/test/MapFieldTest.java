@@ -8,7 +8,7 @@ import org.junit.Test;
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MappingConfigurerTest {
+public class MapFieldTest {
 
     public static final Pojo POJO = new Pojo("field1", 42);
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -59,15 +59,15 @@ public class MappingConfigurerTest {
     }
 
     @Test
-    public void map_one_basic_with_another_name() throws JsonProcessingException {
+    public void map_with_another_name() throws JsonProcessingException {
         MappingConfigurer.on(Pojo.class)
                 .map("field1", "toto")
+                .map("field2")
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
 
-        assertThat(json).isEqualTo("{\"toto\":\"field1\"}");
-
+        assertThat(json).isEqualTo("{\"field2\":42,\"toto\":\"field1\"}");
     }
 
 }

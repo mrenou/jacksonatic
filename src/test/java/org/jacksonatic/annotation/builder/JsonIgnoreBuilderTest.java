@@ -61,7 +61,7 @@ public class JsonIgnoreBuilderTest {
 
         final boolean hasToBuild = new JsonIgnoreBuilder().hasToBuild(annotedFields.get("field1"), classMapping, classMapping.getPropertyMapping("field1"));
 
-        assertThat(hasToBuild).isFalse();
+        assertThat(hasToBuild).isTrue();
     }
 
     @Test
