@@ -24,81 +24,14 @@ public class MappingConfigurer {
 
     private ClassesMapping deserializationOnlyClassesMapping = new ClassesMapping();
 
-    private ClassMapping<Object> currentClassMapping;
-
-    private boolean onSerializationOnly = false;
-
-    private boolean onDeserializationOnly = false;
-
-    private ClassMapping getClassMapping(Class<Object> clazz) {
-        Map<Class<Object>, ClassMapping<Object>> classesMapping = getClassesMapping();
-        return Optional.ofNullable(classesMapping.get(clazz))
-                .orElseGet(() -> {
-                    ClassMapping<Object> value = new ClassMapping(clazz);
-                    classesMapping.put(clazz, value);
-                    return value;
-                });
-    }
-
-    private Map<Class<Object>, ClassMapping<Object>> getClassesMapping() {
-        if (onSerializationOnly) {
-            return serializationOnlyClassesMapping;
-        }
-        if (onDeserializationOnly) {
-            return deserializationOnlyClassesMapping;
-        }
-        return classesMapping;
-    }
-
     public static MappingConfigurer configureMapping() {
         return new MappingConfigurer();
     }
 
-    public MappingConfigurer on(Class<?> clazz) {
-        currentClassMapping = getClassMapping((Class<Object>) clazz);
-        return this;
-    }
-
-    public MappingConfigurer onSerializationOf(Class<?> clazz) {
-        return on(clazz).onSerialization();
-    }
-
-    public MappingConfigurer onSerialization() {
-        onSerializationOnly = true;
-        onDeserializationOnly = false;
-        currentClassMapping = getClassMapping(currentClassMapping.getClazz());
-        return this;
-    }
-
-    public MappingConfigurer onDeserialisationOf(Class<?> clazz) {
-        return on(clazz).onDeserialization();
-    }
-
-    public MappingConfigurer onDeserialization() {
-        onDeserializationOnly = true;
-        onSerializationOnly = false;
-        currentClassMapping = getClassMapping(currentClassMapping.getClazz());
-        return this;
-    }
-
-    public MappingConfigurer all() {
-        getCurrentClassMapping().mapAllProperties();
-        return this;
-    }
-
-
-    public MappingConfigurer map(String propertyName) {
-        getCurrentClassMapping().map(propertyName);
-        return this;
-    }
-
-    public MappingConfigurer map(String propertyName, String mappedName) {
-        getCurrentClassMapping().map(propertyName, mappedName);
-        return this;
-    }
-
-    public MappingConfigurer ignore(String propertyName) {
-        getCurrentClassMapping().ignore(propertyName);
+    public MappingConfigurer config(ClassMappingConfigurer classMappingConfigurer) {
+        classesMapping.put(classMappingConfigurer.getClassMapping().getClazz(), classMappingConfigurer.getClassMapping());
+        serializationOnlyClassesMapping.put(classMappingConfigurer.getSerializationOnlyClassMapping().getClazz(), classMappingConfigurer.getSerializationOnlyClassMapping());
+        deserializationOnlyClassesMapping.put(classMappingConfigurer.getDeserializationOnlyClassMapping().getClazz(), classMappingConfigurer.getDeserializationOnlyClassMapping());
         return this;
     }
 
@@ -125,26 +58,6 @@ public class MappingConfigurer {
         }
         JacksonaticClassIntrospector basicClassIntrospector = (JacksonaticClassIntrospector) objectMapper.getDeserializationConfig().getClassIntrospector();
         basicClassIntrospector.register(classesMapping, deserializationOnlyClassesMapping);
-    }
-
-    public MappingConfigurer withConstructor(ParameterMatcher... parameterMatchers) {
-        getCurrentClassMapping().onConstructor(mapConstructor(getCurrentClassMapping().getClazz(), Arrays.asList(parameterMatchers)));
-        return this;
-    }
-
-    public MappingConfigurer onStaticFactory(String methodName, ParameterMatcher... parameterMatchers) {
-        getCurrentClassMapping().onConstructor(mapStaticFactory(getCurrentClassMapping().getClazz(), methodName, Arrays.asList(parameterMatchers)));
-        return this;
-    }
-
-    public MappingConfigurer onStaticFactory(ParameterMatcher... parameterMatchers) {
-        getCurrentClassMapping().onConstructor(mapStaticFactory(getCurrentClassMapping().getClazz(), Arrays.asList(parameterMatchers)));
-        return this;
-    }
-
-    ClassMapping<?> getCurrentClassMapping() {
-        Preconditions.checkNotNull(currentClassMapping, "No class selected");
-        return currentClassMapping;
     }
 
 }

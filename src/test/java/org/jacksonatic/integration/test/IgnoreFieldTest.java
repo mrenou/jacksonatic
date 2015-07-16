@@ -2,11 +2,11 @@ package org.jacksonatic.integration.test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jacksonatic.MappingConfigurer;
 import org.junit.Test;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jacksonatic.ClassMappingConfigurer.on;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
 
 public class IgnoreFieldTest {
@@ -17,9 +17,10 @@ public class IgnoreFieldTest {
 
     @Test
     public void ignore_one_field() throws JsonProcessingException {
-        configureMapping().on(Pojo.class)
-                .all()
-                .ignore("field1")
+        configureMapping()
+                .config(on(Pojo.class)
+                        .all()
+                        .ignore("field1"))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
@@ -30,10 +31,11 @@ public class IgnoreFieldTest {
     @Test
     public void ignore_all_fields() throws JsonProcessingException {
         objectMapper.disable(FAIL_ON_EMPTY_BEANS);
-        configureMapping().on(Pojo.class)
-                .all()
-                .ignore("field1")
-                .ignore("field2")
+        configureMapping()
+                .config(on(Pojo.class)
+                        .all()
+                        .ignore("field1")
+                        .ignore("field2"))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
@@ -44,9 +46,10 @@ public class IgnoreFieldTest {
     @Test
     public void ignore_and_map_field() throws JsonProcessingException {
         objectMapper.disable(FAIL_ON_EMPTY_BEANS);
-        configureMapping().on(Pojo.class)
-                .map("field1")
-                .ignore("field1")
+        configureMapping()
+                .config(on(Pojo.class)
+                        .map("field1")
+                        .ignore("field1"))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);

@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jacksonatic.ClassMappingConfigurer.on;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
 
 public class MapFieldTest {
@@ -16,7 +17,9 @@ public class MapFieldTest {
     @Test
     public void map_without_fields() throws JsonProcessingException {
         objectMapper.disable(FAIL_ON_EMPTY_BEANS);
-        configureMapping().on(Pojo.class).registerIn(objectMapper);
+        configureMapping()
+                .config(on(Pojo.class))
+                .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
 
@@ -25,8 +28,9 @@ public class MapFieldTest {
 
     @Test
     public void map_one_basic_field() throws JsonProcessingException {
-        configureMapping().on(Pojo.class)
-                .map("field1")
+        configureMapping()
+                .config(on(Pojo.class)
+                        .map("field1"))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
@@ -37,9 +41,10 @@ public class MapFieldTest {
 
     @Test
     public void map_two_basic_fields() throws JsonProcessingException {
-        configureMapping().on(Pojo.class)
-                .map("field1")
-                .map("field2")
+        configureMapping()
+                .config(on(Pojo.class)
+                        .map("field1")
+                        .map("field2"))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
@@ -49,8 +54,9 @@ public class MapFieldTest {
 
     @Test
     public void map_all_basic_fields() throws JsonProcessingException {
-        configureMapping().on(Pojo.class)
-                .all()
+        configureMapping()
+                .config(on(Pojo.class)
+                        .all())
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
@@ -60,9 +66,10 @@ public class MapFieldTest {
 
     @Test
     public void map_with_another_name() throws JsonProcessingException {
-        configureMapping().on(Pojo.class)
-                .map("field1", "toto")
-                .map("field2")
+        configureMapping()
+                .config(on(Pojo.class)
+                        .map("field1", "toto")
+                        .map("field2"))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);

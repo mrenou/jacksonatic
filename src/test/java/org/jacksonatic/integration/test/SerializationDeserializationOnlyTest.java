@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.jacksonatic.ClassMappingConfigurer.on;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
 import static org.jacksonatic.mapping.ParameterMatcher.matchType;
 
@@ -42,12 +43,12 @@ public class SerializationDeserializationOnlyTest {
         Pojo pojo = new Pojo("1", "2", "3");
 
         configureMapping()
-                .on(Pojo.class)
-                .map("field1")
-                .onSerialization()
-                .map("field2")
-                .onDeserialization()
-                .map("field3")
+                .config(on(Pojo.class)
+                        .map("field1")
+                        .onSerialization()
+                        .map("field2")
+                        .onDeserialization()
+                        .map("field3"))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(pojo);
@@ -64,11 +65,11 @@ public class SerializationDeserializationOnlyTest {
         Pojo pojo = new Pojo("1", "2", "3");
 
         configureMapping()
-                .on(Pojo.class)
-                .map("field1")
-                .map("field2")
-                .onSerialization()
-                .ignore("field2")
+                .config(on(Pojo.class)
+                        .map("field1")
+                        .map("field2")
+                        .onSerialization()
+                        .ignore("field2"))
                 .registerIn(objectMapper);
 
 
@@ -81,13 +82,13 @@ public class SerializationDeserializationOnlyTest {
         Pojo pojo = new Pojo("1", "2", "3");
 
         configureMapping()
-                .on(Pojo.class)
-                .all()
-                .map("field1")
-                .ignore("field2")
-                .ignore("field3")
-                .onSerialization()
-                .map("field2")
+                .config(on(Pojo.class)
+                        .all()
+                        .map("field1")
+                        .ignore("field2")
+                        .ignore("field3")
+                        .onSerialization()
+                        .map("field2"))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(pojo);
@@ -99,10 +100,10 @@ public class SerializationDeserializationOnlyTest {
         Pojo pojo = new Pojo("1", "2", "3");
 
         configureMapping()
-                .on(Pojo.class)
-                .map("field1", "toto")
-                .onSerialization()
-                .map("field1", "tata")
+                .config(on(Pojo.class)
+                        .map("field1", "toto")
+                        .onSerialization()
+                        .map("field1", "tata"))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(pojo);
@@ -112,10 +113,10 @@ public class SerializationDeserializationOnlyTest {
     @Test
     public void serialization_constructor_overrides_parent_mapping() throws IOException {
         configureMapping()
-                .on(Pojo.class)
-                .withConstructor(matchType(String.class), matchType(String.class), matchType(String.class))
-                .onDeserialization()
-                .withConstructor(matchType(String.class), matchType(String.class))
+                .config(on(Pojo.class)
+                        .withConstructor(matchType(String.class), matchType(String.class), matchType(String.class))
+                        .onDeserialization()
+                        .withConstructor(matchType(String.class), matchType(String.class)))
                 .registerIn(objectMapper);
 
         Pojo pojoFromJson = objectMapper.readValue("{\"field1\":\"1\",\"field2\":\"2\",\"field3\":\"3\"}", Pojo.class);
