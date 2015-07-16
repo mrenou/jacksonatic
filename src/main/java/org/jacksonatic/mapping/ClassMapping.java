@@ -3,6 +3,7 @@ package org.jacksonatic.mapping;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ClassMapping<T> {
 
@@ -13,6 +14,13 @@ public class ClassMapping<T> {
     private boolean allProperties;
 
     private Map<String, PropertyMapping> propertiesMapping = new HashMap<>();
+
+    ClassMapping(Optional<ConstructorMapping> constructorMapping, Class<T> clazz, boolean allProperties, Map<String, PropertyMapping> propertiesMapping) {
+        this.constructorMapping = constructorMapping;
+        this.clazz = clazz;
+        this.allProperties = allProperties;
+        this.propertiesMapping = propertiesMapping;
+    }
 
     public ClassMapping(Class<T> clazz) {
         this.clazz = clazz;
@@ -59,4 +67,25 @@ public class ClassMapping<T> {
         return constructorMapping;
     }
 
+    ClassMapping<Object> copy() {
+        return new ClassMapping(Optional.ofNullable(constructorMapping.map(cm -> cm.copy()).orElse(null)),
+                clazz,
+                allProperties,
+                propertiesMapping.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().copy())));
+    }
+
+    ClassMapping<Object> copyWithParentMapping(ClassMapping<Object> parentMapping) {
+        Optional<ConstructorMapping> newConstructorMapping = Optional.ofNullable(constructorMapping.map(cm -> cm.copy()).orElse(parentMapping.constructorMapping.map(cm -> cm.copy()).orElse(null)));
+        boolean newAllProperties = allProperties == false ? parentMapping.allProperties : allProperties;
+        Map<String, PropertyMapping> newPropertiesMapping = propertiesMapping.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().copy()));
+        parentMapping.propertiesMapping.values().stream()
+                .map(propertyParentMapping -> Optional.ofNullable(newPropertiesMapping.get(propertyParentMapping.getName()))
+                        .map(propertyMapping -> propertyMapping.copyWithParentMapping(propertyParentMapping))
+                        .orElseGet(() -> propertyParentMapping.copy()))
+                .forEach(propertyMapping -> newPropertiesMapping.put(propertyMapping.getName(), propertyMapping));
+        return new ClassMapping(newConstructorMapping,
+                clazz,
+                newAllProperties,
+                newPropertiesMapping);
+    }
 }

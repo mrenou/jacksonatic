@@ -23,6 +23,12 @@ public class ConstructorMapping {
         return new ConstructorMapping(ownerClass, methodName, parameters, true);
     }
 
+    ConstructorMapping(String methodName, List<ParameterMapping> parameters, boolean staticFactory) {
+        this.methodName = methodName;
+        this.parameters = parameters;
+        this.staticFactory = staticFactory;
+    }
+
     private ConstructorMapping(Class<?> ownerClass, String methodName, List<ParameterMatcher> parameterMatchers, boolean staticFactory) {
         this.methodName = methodName;
         this.parameters = loadParmatersMapping(ownerClass, parameterMatchers);
@@ -33,7 +39,7 @@ public class ConstructorMapping {
         Map<Class<?>, PriorityQueue<String>> propertiesByClass = new HashMap<>();
         Map<String, Class<?>> classByProperty = new HashMap<>();
         Arrays.asList(ownerClass.getDeclaredFields()).stream().forEach(field -> {
-            PriorityQueue<String> properties = propertiesByClass.get(field.getClass());
+            PriorityQueue<String> properties = propertiesByClass.get(field.getType());
             if (properties == null) {
                 properties = new PriorityQueue<>();
                 propertiesByClass.put(field.getType(), properties);
@@ -55,4 +61,9 @@ public class ConstructorMapping {
     public boolean isStaticFactory() {
         return staticFactory;
     }
+
+    ConstructorMapping copy() {
+        return new ConstructorMapping(methodName, parameters.stream().map(p -> p.copy()).collect(Collectors.toList()), staticFactory);
+    }
+
 }

@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jacksonatic.MappingConfigurer.configureMapping;
 
 public class IgnoreFieldTest {
 
@@ -16,7 +17,7 @@ public class IgnoreFieldTest {
 
     @Test
     public void ignore_one_field() throws JsonProcessingException {
-        MappingConfigurer.on(Pojo.class)
+        configureMapping().on(Pojo.class)
                 .all()
                 .ignore("field1")
                 .registerIn(objectMapper);
@@ -29,7 +30,7 @@ public class IgnoreFieldTest {
     @Test
     public void ignore_all_fields() throws JsonProcessingException {
         objectMapper.disable(FAIL_ON_EMPTY_BEANS);
-        MappingConfigurer.on(Pojo.class)
+        configureMapping().on(Pojo.class)
                 .all()
                 .ignore("field1")
                 .ignore("field2")
@@ -43,7 +44,7 @@ public class IgnoreFieldTest {
     @Test
     public void ignore_and_map_field() throws JsonProcessingException {
         objectMapper.disable(FAIL_ON_EMPTY_BEANS);
-        MappingConfigurer.on(Pojo.class)
+        configureMapping().on(Pojo.class)
                 .map("field1")
                 .ignore("field1")
                 .registerIn(objectMapper);

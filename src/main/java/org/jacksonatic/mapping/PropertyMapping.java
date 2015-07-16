@@ -10,6 +10,13 @@ public class PropertyMapping {
 
     private boolean mapped = false;
 
+    PropertyMapping(String name, String mappedName, boolean ignored, boolean mapped) {
+        this.name = name;
+        this.mappedName = mappedName;
+        this.ignored = ignored;
+        this.mapped = mapped;
+    }
+
     public PropertyMapping(String name) {
         this.name = name;
         this.mappedName = name;
@@ -29,6 +36,10 @@ public class PropertyMapping {
         this.mappedName = mappedName;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String getMappedName() {
         return mappedName;
     }
@@ -44,4 +55,16 @@ public class PropertyMapping {
     public boolean hasMappedName() {
         return !mappedName.equals(name);
     }
+
+    PropertyMapping copy() {
+        return new PropertyMapping(name, mappedName, ignored, mapped);
+    }
+
+    PropertyMapping copyWithParentMapping(PropertyMapping parentMapping) {
+        return new PropertyMapping(name,
+                hasMappedName() ? mappedName : parentMapping.mappedName,
+                (ignored == false && mapped == false) ? parentMapping.ignored : ignored,
+                (ignored == false && mapped == false) ? parentMapping.mapped : mapped);
+    }
+
 }

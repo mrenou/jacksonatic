@@ -9,11 +9,15 @@ public class ParameterMapping {
 
     private String jsonProperty;
 
+    ParameterMapping(Class<?> parameterClass, String jsonProperty) {
+        this.parameterClass = parameterClass;
+        this.jsonProperty = jsonProperty;
+    }
+
     ParameterMapping(ParameterMatcher parameterMatcher, Map<Class<?>, PriorityQueue<String>> propertiesByClass, Map<String, Class<?>> classByProperty) {
         this.parameterClass = loadParameterClass(parameterMatcher, classByProperty);
         this.jsonProperty = loadJsonProperty(parameterMatcher, propertiesByClass);
     }
-
 
     private Class<?> loadParameterClass(ParameterMatcher parameterMatcher, Map<String, Class<?>> classByProperty) {
         Class<?> parameterClass = parameterMatcher.getParameterClass();
@@ -46,5 +50,9 @@ public class ParameterMapping {
 
     public String getJsonProperty() {
         return jsonProperty;
+    }
+
+    ParameterMapping copy() {
+        return new ParameterMapping(parameterClass, jsonProperty);
     }
 }

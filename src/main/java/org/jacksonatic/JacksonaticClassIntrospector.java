@@ -5,20 +5,18 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.BasicClassIntrospector;
 import com.fasterxml.jackson.databind.introspect.POJOPropertiesCollector;
-import org.jacksonatic.mapping.ClassMapping;
+import org.jacksonatic.mapping.ClassesMapping;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.jacksonatic.annotation.ClassAnnotationDecorator.decorate;
 
 class JacksonaticClassIntrospector extends BasicClassIntrospector {
 
-    private Map<Class<?>, ClassMapping<?>> classesMapping = new HashMap<>();
+    private ClassesMapping classesMapping;
 
-    public void register(ClassMapping<?> classesMapping) {
-        this.classesMapping.put(classesMapping.getClazz(), classesMapping);
+    public void register(ClassesMapping parentClassesMapping, ClassesMapping childClassesMapping) {
+        this.classesMapping = childClassesMapping.copyWithParentMapping(parentClassesMapping);
     }
 
     @Override
