@@ -28,10 +28,20 @@ public class MappingConfigurer {
         return new MappingConfigurer();
     }
 
-    public MappingConfigurer config(ClassMappingConfigurer classMappingConfigurer) {
+    public MappingConfigurer on(ClassMappingConfigurer classMappingConfigurer) {
+        addType(classMappingConfigurer);
+        return this;
+    }
+
+    private void addType(ClassMappingConfigurer classMappingConfigurer) {
         classesMapping.put(classMappingConfigurer.getClassMapping().getClazz(), classMappingConfigurer.getClassMapping());
         serializationOnlyClassesMapping.put(classMappingConfigurer.getSerializationOnlyClassMapping().getClazz(), classMappingConfigurer.getSerializationOnlyClassMapping());
         deserializationOnlyClassesMapping.put(classMappingConfigurer.getDeserializationOnlyClassMapping().getClazz(), classMappingConfigurer.getDeserializationOnlyClassMapping());
+    }
+
+    public MappingConfigurer mapAllOn(ClassMappingConfigurer classMappingConfigurer) {
+        addType(classMappingConfigurer);
+        classMappingConfigurer.getClassMapping().mapAllProperties();
         return this;
     }
 

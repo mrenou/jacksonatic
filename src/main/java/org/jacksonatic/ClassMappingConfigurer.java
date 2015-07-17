@@ -18,16 +18,16 @@ public class ClassMappingConfigurer<T> {
 
     private ClassMapping<T> deserializationOnlyClassMapping;
 
-    public static ClassMappingConfigurer on(Class<?> clazz) {
+    public static ClassMappingConfigurer type(Class<?> clazz) {
         return new ClassMappingConfigurer(clazz);
     }
 
     public static ClassMappingConfigurer onSerializationOf(Class<?> clazz) {
-        return on(clazz).onSerialization();
+        return type(clazz).onSerialization();
     }
 
     public static ClassMappingConfigurer onDeserialisationOf(Class<?> clazz) {
-        return on(clazz).onDeserialization();
+        return type(clazz).onDeserialization();
     }
 
     private ClassMappingConfigurer(Class<T> clazz) {
@@ -51,7 +51,6 @@ public class ClassMappingConfigurer<T> {
         currentClassMapping.mapAllProperties();
         return this;
     }
-
 
     public ClassMappingConfigurer map(String propertyName) {
         currentClassMapping.map(propertyName);

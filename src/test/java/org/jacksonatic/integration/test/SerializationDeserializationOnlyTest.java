@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.assertj.core.api.StrictAssertions.assertThat;
-import static org.jacksonatic.ClassMappingConfigurer.on;
+import static org.jacksonatic.ClassMappingConfigurer.type;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
 import static org.jacksonatic.mapping.ParameterMatcher.matchType;
 
@@ -43,7 +43,7 @@ public class SerializationDeserializationOnlyTest {
         Pojo pojo = new Pojo("1", "2", "3");
 
         configureMapping()
-                .config(on(Pojo.class)
+                .on(type(Pojo.class)
                         .map("field1")
                         .onSerialization()
                         .map("field2")
@@ -65,7 +65,7 @@ public class SerializationDeserializationOnlyTest {
         Pojo pojo = new Pojo("1", "2", "3");
 
         configureMapping()
-                .config(on(Pojo.class)
+                .on(type(Pojo.class)
                         .map("field1")
                         .map("field2")
                         .onSerialization()
@@ -82,7 +82,7 @@ public class SerializationDeserializationOnlyTest {
         Pojo pojo = new Pojo("1", "2", "3");
 
         configureMapping()
-                .config(on(Pojo.class)
+                .on(type(Pojo.class)
                         .all()
                         .map("field1")
                         .ignore("field2")
@@ -100,7 +100,7 @@ public class SerializationDeserializationOnlyTest {
         Pojo pojo = new Pojo("1", "2", "3");
 
         configureMapping()
-                .config(on(Pojo.class)
+                .on(type(Pojo.class)
                         .map("field1", "toto")
                         .onSerialization()
                         .map("field1", "tata"))
@@ -113,7 +113,7 @@ public class SerializationDeserializationOnlyTest {
     @Test
     public void serialization_constructor_overrides_parent_mapping() throws IOException {
         configureMapping()
-                .config(on(Pojo.class)
+                .on(type(Pojo.class)
                         .withConstructor(matchType(String.class), matchType(String.class), matchType(String.class))
                         .onDeserialization()
                         .withConstructor(matchType(String.class), matchType(String.class)))

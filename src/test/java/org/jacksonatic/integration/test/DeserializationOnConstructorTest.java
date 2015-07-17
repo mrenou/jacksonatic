@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jacksonatic.ClassMappingConfigurer.on;
+import static org.jacksonatic.ClassMappingConfigurer.type;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
 import static org.jacksonatic.mapping.ParameterMatcher.matchField;
 import static org.jacksonatic.mapping.ParameterMatcher.matchType;
@@ -19,7 +19,7 @@ public class DeserializationOnConstructorTest {
     @Test
     public void deserialize_on_constructor_with_classes_and_json_properties() throws IOException {
         configureMapping()
-                .config(on(Pojo.class)
+                .on(type(Pojo.class)
                         .withConstructor(matchType(String.class).mappedBy("field1"), matchType(Integer.class).mappedBy("field2")))
                 .registerIn(objectMapper);
 
@@ -31,7 +31,7 @@ public class DeserializationOnConstructorTest {
     @Test
     public void deserialize_on_constructor_with_classes() throws IOException {
         configureMapping()
-                .config(on(Pojo.class).withConstructor(matchType(String.class), matchType(Integer.class)))
+                .on(type(Pojo.class).withConstructor(matchType(String.class), matchType(Integer.class)))
                 .registerIn(objectMapper);
 
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
@@ -42,7 +42,7 @@ public class DeserializationOnConstructorTest {
     @Test
     public void deserialize_on_constructor_with_fields_and_json_properties() throws IOException {
         configureMapping()
-                .config(on(Pojo.class)
+                .on(type(Pojo.class)
                         .withConstructor(matchField("field1").mappedBy("toto"), matchField("field2").mappedBy("tata")))
                 .registerIn(objectMapper);
 

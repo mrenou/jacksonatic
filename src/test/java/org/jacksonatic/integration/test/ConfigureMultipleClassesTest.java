@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jacksonatic.ClassMappingConfigurer.on;
+import static org.jacksonatic.ClassMappingConfigurer.type;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
 
 public class ConfigureMultipleClassesTest {
@@ -63,12 +63,11 @@ public class ConfigureMultipleClassesTest {
     @Test
     public void map_ignore_on_several_classes() throws JsonProcessingException {
         configureMapping()
-                .config(on(Pojo1.class)
-                        .all()
+                .mapAllOn(type(Pojo1.class)
                         .ignore("field2"))
-                .config(on(Pojo2.class)
+                .on(type(Pojo2.class)
                         .map("field4"))
-                .config(on(Pojo3.class)
+                .on(type(Pojo3.class)
                         .map("field5")
                         .map("field6"))
                 .registerIn(objectMapper);
