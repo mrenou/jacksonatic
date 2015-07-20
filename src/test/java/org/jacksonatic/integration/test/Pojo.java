@@ -1,5 +1,7 @@
 package org.jacksonatic.integration.test;
 
+import java.util.Objects;
+
 public class Pojo {
 
     private String field1;
@@ -27,19 +29,13 @@ public class Pojo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Pojo pojo = (Pojo) o;
-
-        if (!field1.equals(pojo.field1)) return false;
-        if (!field2.equals(pojo.field2)) return false;
-
-        return true;
+        return Objects.equals(field1, pojo.field1)
+                && Objects.equals(field2, pojo.field2);
     }
 
     @Override
     public int hashCode() {
-        int result = field1.hashCode();
-        result = 31 * result + field2.hashCode();
-        return result;
+        return Objects.hash(field1, field2);
     }
 }

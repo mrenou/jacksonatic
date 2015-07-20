@@ -9,6 +9,8 @@ public class ClassMapping<T> {
 
     private Optional<ConstructorMapping> constructorMapping = Optional.empty();
 
+    private boolean findAConstructor;
+
     private Class<T> clazz;
 
     private boolean allProperties;

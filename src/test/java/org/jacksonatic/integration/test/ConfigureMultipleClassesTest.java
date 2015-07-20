@@ -81,5 +81,4 @@ public class ConfigureMultipleClassesTest {
         assertThat(jsonPojo3).isEqualTo("{\"field5\":true,\"field6\":\"6\"}");
     }
 
-
 }

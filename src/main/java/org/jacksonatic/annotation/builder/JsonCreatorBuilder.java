@@ -15,7 +15,8 @@ public class JsonCreatorBuilder implements ConstructorAnnotationBuilder {
     public boolean hasToBuild(AnnotatedWithParams annotatedWithParams, ConstructorMapping constructorMapping) {
         boolean match = false;
         if ((constructorMapping.getMethodName() == null || constructorMapping.getMethodName().equals(annotatedWithParams.getName()))
-                && annotatedWithParams.getParameterCount() == constructorMapping.getParameters().size()) {
+                && annotatedWithParams.getParameterCount() == constructorMapping.getParameters().size()
+                && annotatedWithParams.isPublic()) {
             match = true;
             for (int i = 0; i < annotatedWithParams.getParameterCount(); i++) {
                 if (!annotatedWithParams.getParameter(i).getParameterType().equals(constructorMapping.getParameters().get(i).getParameterClass())) {

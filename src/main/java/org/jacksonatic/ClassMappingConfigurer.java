@@ -3,10 +3,8 @@ package org.jacksonatic;
 import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.mapping.ParameterMatcher;
 
-import java.util.Arrays;
-
-import static org.jacksonatic.mapping.ConstructorMapping.mapConstructor;
-import static org.jacksonatic.mapping.ConstructorMapping.mapStaticFactory;
+import static java.util.Arrays.asList;
+import static org.jacksonatic.mapping.ConstructorMapping.*;
 
 public class ClassMappingConfigurer<T> {
 
@@ -67,18 +65,23 @@ public class ClassMappingConfigurer<T> {
         return this;
     }
 
+    public ClassMappingConfigurer withAConstructorOrStaticFactory() {
+        currentClassMapping.onConstructor(mapAConstructorOrStaticFactory(currentClassMapping.getClazz()));
+        return this;
+    }
+
     public ClassMappingConfigurer withConstructor(ParameterMatcher... parameterMatchers) {
-        currentClassMapping.onConstructor(mapConstructor(currentClassMapping.getClazz(), Arrays.asList(parameterMatchers)));
+        currentClassMapping.onConstructor(mapConstructor(currentClassMapping.getClazz(), asList(parameterMatchers)));
         return this;
     }
 
     public ClassMappingConfigurer onStaticFactory(String methodName, ParameterMatcher... parameterMatchers) {
-        currentClassMapping.onConstructor(mapStaticFactory(currentClassMapping.getClazz(), methodName, Arrays.asList(parameterMatchers)));
+        currentClassMapping.onConstructor(mapStaticFactory(currentClassMapping.getClazz(), methodName, asList(parameterMatchers)));
         return this;
     }
 
     public ClassMappingConfigurer onStaticFactory(ParameterMatcher... parameterMatchers) {
-        currentClassMapping.onConstructor(mapStaticFactory(currentClassMapping.getClazz(), Arrays.asList(parameterMatchers)));
+        currentClassMapping.onConstructor(mapStaticFactory(currentClassMapping.getClazz(), asList(parameterMatchers)));
         return this;
     }
 
