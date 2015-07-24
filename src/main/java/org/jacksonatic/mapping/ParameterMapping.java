@@ -1,58 +1,45 @@
 package org.jacksonatic.mapping;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jacksonatic.annotation.JacksonaticJsonProperty;
+
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 public class ParameterMapping {
 
     private Class<?> parameterClass;
 
-    private String jsonProperty;
+    private Map<Class<? extends Annotation>, Annotation> annotations;
 
-    ParameterMapping(Class<?> parameterClass, String jsonProperty) {
+    public ParameterMapping(Class<?> parameterClass, String jsonProperty) {
+        this(parameterClass, new HashMap<>());
+        map(jsonProperty);
+    }
+
+    ParameterMapping(Class<?> parameterClass,  Map<Class<? extends Annotation>, Annotation> annotations) {
         this.parameterClass = parameterClass;
-        this.jsonProperty = jsonProperty;
+        this.annotations = annotations;
     }
 
-    ParameterMapping(ParameterMatcher parameterMatcher, Map<Class<?>, PriorityQueue<String>> propertiesByClass, Map<String, Class<?>> classByProperty) {
-        this.parameterClass = loadParameterClass(parameterMatcher, classByProperty);
-        this.jsonProperty = loadJsonProperty(parameterMatcher, propertiesByClass);
-    }
-
-    private Class<?> loadParameterClass(ParameterMatcher parameterMatcher, Map<String, Class<?>> classByProperty) {
-        Class<?> parameterClass = parameterMatcher.getParameterClass();
-        if (parameterClass == null) {
-            parameterClass = classByProperty.get(parameterMatcher.getFieldProperty());
-        }
-        if (parameterClass == null) {
-            throw new RuntimeException("Cannot find class for parameter matcher " + parameterMatcher);
-        }
-        return parameterClass;
-    }
-
-    private String loadJsonProperty(ParameterMatcher parameterMatcher, Map<Class<?>, PriorityQueue<String>> propertiesByClass) {
-        String jsonProperty = parameterMatcher.getJsonProperty();
-        if (jsonProperty == null) {
-            final PriorityQueue<String> properties = propertiesByClass.get(parameterMatcher.getParameterClass());
-            if (properties != null) {
-                jsonProperty = properties.poll();
-            }
-        }
-        if (jsonProperty == null) {
-            throw new RuntimeException("Cannot find class for parameter matcher " + parameterMatcher);
-        }
-        return jsonProperty;
+    public void map(String mappedName) {
+        annotations.put(JsonProperty.class, new JacksonaticJsonProperty(mappedName, false, JsonProperty.INDEX_UNKNOWN, ""));
     }
 
     public Class<?> getParameterClass() {
         return parameterClass;
     }
 
-    public String getJsonProperty() {
-        return jsonProperty;
+    public Map<Class<? extends Annotation>, Annotation> getAnnotations() {
+        return annotations;
     }
 
     ParameterMapping copy() {
-        return new ParameterMapping(parameterClass, jsonProperty);
+        return new ParameterMapping(parameterClass, annotations.entrySet().stream().collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 }

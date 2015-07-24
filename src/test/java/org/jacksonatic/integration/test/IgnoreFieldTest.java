@@ -54,7 +54,7 @@ public class IgnoreFieldTest {
 
         String json = objectMapper.writeValueAsString(POJO);
 
-        assertThat(json).isEqualTo("{}");
+        assertThat(json).isEqualTo("{\"field1\":\"field1\"}");
     }
 
 

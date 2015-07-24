@@ -6,7 +6,7 @@ import java.lang.annotation.Annotation;
 
 public class JacksonaticJsonIgnore implements JsonIgnore {
 
-    private boolean value;
+    private final boolean value;
 
     public JacksonaticJsonIgnore(boolean value) {
         this.value = value;

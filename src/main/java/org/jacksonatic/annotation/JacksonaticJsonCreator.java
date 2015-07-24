@@ -6,7 +6,7 @@ import java.lang.annotation.Annotation;
 
 public class JacksonaticJsonCreator implements JsonCreator {
 
-    private Mode mode;
+    private final Mode mode;
 
     public JacksonaticJsonCreator() {
         this(Mode.DEFAULT);

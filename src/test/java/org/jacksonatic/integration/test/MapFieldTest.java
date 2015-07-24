@@ -74,7 +74,7 @@ public class MapFieldTest {
 
         String json = objectMapper.writeValueAsString(POJO);
 
-        assertThat(json).isEqualTo("{\"field2\":42,\"toto\":\"field1\"}");
+        assertThat(json).isEqualTo("{\"toto\":\"field1\",\"field2\":42}");
     }
 
 }

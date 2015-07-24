@@ -4,17 +4,9 @@ import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
-import org.assertj.core.util.Preconditions;
-import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.mapping.ClassesMapping;
-import org.jacksonatic.mapping.ParameterMatcher;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.jacksonatic.mapping.ConstructorMapping.mapConstructor;
-import static org.jacksonatic.mapping.ConstructorMapping.mapStaticFactory;
+import static org.jacksonatic.mapping.ClassBuilderCriteria.mapStaticFactory;
 
 public class MappingConfigurer {
 
@@ -34,9 +26,9 @@ public class MappingConfigurer {
     }
 
     private void addType(ClassMappingConfigurer classMappingConfigurer) {
-        classesMapping.put(classMappingConfigurer.getClassMapping().getClazz(), classMappingConfigurer.getClassMapping());
-        serializationOnlyClassesMapping.put(classMappingConfigurer.getSerializationOnlyClassMapping().getClazz(), classMappingConfigurer.getSerializationOnlyClassMapping());
-        deserializationOnlyClassesMapping.put(classMappingConfigurer.getDeserializationOnlyClassMapping().getClazz(), classMappingConfigurer.getDeserializationOnlyClassMapping());
+        classesMapping.put(classMappingConfigurer.getClassMapping().getType(), classMappingConfigurer.getClassMapping());
+        serializationOnlyClassesMapping.put(classMappingConfigurer.getSerializationOnlyClassMapping().getType(), classMappingConfigurer.getSerializationOnlyClassMapping());
+        deserializationOnlyClassesMapping.put(classMappingConfigurer.getDeserializationOnlyClassMapping().getType(), classMappingConfigurer.getDeserializationOnlyClassMapping());
     }
 
     public MappingConfigurer mapAllOn(ClassMappingConfigurer classMappingConfigurer) {

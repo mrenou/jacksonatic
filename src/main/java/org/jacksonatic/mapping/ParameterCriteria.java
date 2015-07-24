@@ -1,6 +1,6 @@
 package org.jacksonatic.mapping;
 
-public class ParameterMatcher {
+public class ParameterCriteria {
 
     private Class<?> parameterClass;
 
@@ -8,28 +8,28 @@ public class ParameterMatcher {
 
     private String fieldProperty;
 
-    public static ParameterMatcher match(Class<?> parameterClass, String jsonProperty) {
-        return new ParameterMatcher(parameterClass, jsonProperty, null);
+    public static ParameterCriteria match(Class<?> parameterClass, String jsonProperty) {
+        return new ParameterCriteria(parameterClass, jsonProperty, null);
     }
 
-    public static ParameterMatcher match(String fieldProperty, String jsonProperty) {
-        return new ParameterMatcher(null, jsonProperty, fieldProperty);
+    public static ParameterCriteria match(String fieldProperty, String jsonProperty) {
+        return new ParameterCriteria(null, jsonProperty, fieldProperty);
     }
 
-    public static ParameterMatcher matchType(Class<?> parameterClass) {
-        return new ParameterMatcher(parameterClass, null, null);
+    public static ParameterCriteria matchType(Class<?> parameterClass) {
+        return new ParameterCriteria(parameterClass, null, null);
     }
 
-    public static ParameterMatcher matchField(String fieldProperty) {
-        return new ParameterMatcher(null, null, fieldProperty);
+    public static ParameterCriteria matchField(String fieldProperty) {
+        return new ParameterCriteria(null, null, fieldProperty);
     }
 
-    public ParameterMatcher mappedBy(String jsonProperty) {
+    public ParameterCriteria mappedBy(String jsonProperty) {
         this.jsonProperty = jsonProperty;
         return this;
     }
 
-    public ParameterMatcher(Class<?> parameterClass, String jsonProperty, String fieldProperty) {
+    public ParameterCriteria(Class<?> parameterClass, String jsonProperty, String fieldProperty) {
         this.parameterClass = parameterClass;
         this.jsonProperty = jsonProperty;
         this.fieldProperty = fieldProperty;
@@ -49,7 +49,7 @@ public class ParameterMatcher {
 
     @Override
     public String toString() {
-        return "ParameterMatcher{" +
+        return "ParameterCriteria{" +
                 "parameterClass=" + parameterClass +
                 ", jsonProperty='" + jsonProperty + '\'' +
                 ", fieldProperty='" + fieldProperty + '\'' +

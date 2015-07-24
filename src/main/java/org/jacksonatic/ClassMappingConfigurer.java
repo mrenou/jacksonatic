@@ -1,10 +1,10 @@
 package org.jacksonatic;
 
 import org.jacksonatic.mapping.ClassMapping;
-import org.jacksonatic.mapping.ParameterMatcher;
+import org.jacksonatic.mapping.ParameterCriteria;
 
 import static java.util.Arrays.asList;
-import static org.jacksonatic.mapping.ConstructorMapping.*;
+import static org.jacksonatic.mapping.ClassBuilderCriteria.*;
 
 public class ClassMappingConfigurer<T> {
 
@@ -66,22 +66,22 @@ public class ClassMappingConfigurer<T> {
     }
 
     public ClassMappingConfigurer withAConstructorOrStaticFactory() {
-        currentClassMapping.onConstructor(mapAConstructorOrStaticFactory(currentClassMapping.getClazz()));
+        currentClassMapping.onConstructor(mapAConstructorOrStaticFactory());
         return this;
     }
 
-    public ClassMappingConfigurer withConstructor(ParameterMatcher... parameterMatchers) {
-        currentClassMapping.onConstructor(mapConstructor(currentClassMapping.getClazz(), asList(parameterMatchers)));
+    public ClassMappingConfigurer withConstructor(ParameterCriteria... parameterCriterias) {
+        currentClassMapping.onConstructor(mapConstructor(currentClassMapping.getType(), asList(parameterCriterias)));
         return this;
     }
 
-    public ClassMappingConfigurer onStaticFactory(String methodName, ParameterMatcher... parameterMatchers) {
-        currentClassMapping.onConstructor(mapStaticFactory(currentClassMapping.getClazz(), methodName, asList(parameterMatchers)));
+    public ClassMappingConfigurer onStaticFactory(String methodName, ParameterCriteria... parameterCriterias) {
+        currentClassMapping.onConstructor(mapStaticFactory(currentClassMapping.getType(), methodName, asList(parameterCriterias)));
         return this;
     }
 
-    public ClassMappingConfigurer onStaticFactory(ParameterMatcher... parameterMatchers) {
-        currentClassMapping.onConstructor(mapStaticFactory(currentClassMapping.getClazz(), asList(parameterMatchers)));
+    public ClassMappingConfigurer onStaticFactory(ParameterCriteria... parameterCriterias) {
+        currentClassMapping.onConstructor(mapStaticFactory(currentClassMapping.getType(), asList(parameterCriterias)));
         return this;
     }
 

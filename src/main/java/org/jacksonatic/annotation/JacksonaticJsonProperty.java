@@ -6,13 +6,13 @@ import java.lang.annotation.Annotation;
 
 public class JacksonaticJsonProperty implements JsonProperty {
 
-    private String value;
+    private final String value;
 
-    private boolean required;
+    private final boolean required;
 
-    private int index;
+    private final int index;
 
-    private String defaultValue;
+    private final String defaultValue;
 
     public JacksonaticJsonProperty(String value, boolean required, int index, String defaultValue) {
         this.value = value;

@@ -2,7 +2,7 @@ package org.jacksonatic.integration.test;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jacksonatic.mapping.ParameterMatcher;
+import org.jacksonatic.mapping.ParameterCriteria;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -10,8 +10,8 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jacksonatic.ClassMappingConfigurer.type;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
-import static org.jacksonatic.mapping.ParameterMatcher.matchField;
-import static org.jacksonatic.mapping.ParameterMatcher.matchType;
+import static org.jacksonatic.mapping.ParameterCriteria.matchField;
+import static org.jacksonatic.mapping.ParameterCriteria.matchType;
 
 public class DeserializationOnStaticFactoryest {
 
@@ -59,7 +59,7 @@ public class DeserializationOnStaticFactoryest {
     public void not_deserialize_on_named_static_factory() throws IOException {
         configureMapping()
                 .on(type(Pojo.class)
-                        .onStaticFactory("other", ParameterMatcher.match(String.class, "field1"), ParameterMatcher.match(Integer.class, "field2")))
+                        .onStaticFactory("other", ParameterCriteria.match(String.class, "field1"), ParameterCriteria.match(Integer.class, "field2")))
                 .registerIn(objectMapper);
 
         objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
@@ -69,7 +69,7 @@ public class DeserializationOnStaticFactoryest {
     public void deserialize_on_unnamed_static_factory() throws IOException {
         configureMapping()
                 .on(type(Pojo.class)
-                        .onStaticFactory(ParameterMatcher.match(String.class, "field1"), ParameterMatcher.match(Integer.class, "field2")))
+                        .onStaticFactory(ParameterCriteria.match(String.class, "field1"), ParameterCriteria.match(Integer.class, "field2")))
                 .registerIn(objectMapper);
 
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
