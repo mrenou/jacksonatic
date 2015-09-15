@@ -37,11 +37,19 @@ class JacksonaticClassIntrospector extends BasicClassIntrospector {
         boolean useAnnotations = config.isAnnotationProcessingEnabled();
         AnnotatedClass ac = AnnotatedClass.construct(type.getRawClass(),
                 (useAnnotations ? config.getAnnotationIntrospector() : null), r);
+        if (!ac.getAnnotated().getName().startsWith("java.")) {
+            ac = processAnnotecClass(forSerialization, ac);
+        }
+
+        return constructPropertyCollector(config, ac, type, forSerialization, mutatorPrefix).collect();
+    }
+
+    private AnnotatedClass processAnnotecClass(boolean forSerialization, AnnotatedClass ac) {
         Optional<ClassMapping<Object>> baseClassMappingOpt = getBaseClassMappingOpt(baseClassMappingProducer.apply((Class<Object>) ac.getAnnotated()), forSerialization);
         Optional<ClassMapping<Object>> classMappingOpt = Optional.ofNullable(classesMapping.get(ac.getAnnotated()));
         Optional<ClassMapping<Object>> extraClassMappingOpt = getExtraClassMappingOpt(forSerialization, ac);
 
-        AnnotatedClass acProcessed = extraClassMappingOpt
+        return extraClassMappingOpt
                 .map(childClassMapping -> Optional.of(classMappingOpt
                         .map(classMapping -> childClassMapping.mergeWithParentMapping(classMapping))
                         .orElse(childClassMapping)))
@@ -52,8 +60,6 @@ class JacksonaticClassIntrospector extends BasicClassIntrospector {
                 .orElse(baseClassMappingOpt)
                 .map(finalClassMapping -> decorate(ac, finalClassMapping))
                 .orElse(ac);
-
-        return constructPropertyCollector(config, acProcessed, type, forSerialization, mutatorPrefix).collect();
     }
 
     private Optional<ClassMapping<Object>> getExtraClassMappingOpt(boolean forSerialization, AnnotatedClass ac) {

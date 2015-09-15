@@ -32,7 +32,6 @@ public class ClassMapping<T> {
     }
 
     private static Map<String, PropertyMapping> getCollect(Class<Object> type) {
-        System.out.println("class " + type.getName());
         return getPropertiesWithInheritance(type).collect(toMap(field -> field.getName(), field -> new PropertyMapping(field), (field1, field2) -> field1));
     }
 
