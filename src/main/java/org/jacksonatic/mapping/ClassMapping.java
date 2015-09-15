@@ -73,18 +73,13 @@ public class ClassMapping<T> {
                 propertiesMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy())));
     }
 
-    ClassMapping<Object> copyWithParentMapping(ClassMapping<Object> parentMapping) {
-        Optional<ClassBuilderMapping> newConstructorMapping = Optional.ofNullable(classBuilderMappingOptional.map(classBuilderMapping -> classBuilderMapping.copy()).orElse(parentMapping.classBuilderMappingOptional.map(cm -> cm.copy()).orElse(null)));
-        boolean newAllProperties = allProperties == false ? parentMapping.allProperties : allProperties;
-        Map<String, PropertyMapping> newPropertiesMapping = propertiesMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy()));
+    public ClassMapping<Object> mergeWithParentMapping(ClassMapping<Object> parentMapping) {
+        classBuilderMappingOptional = Optional.ofNullable(classBuilderMappingOptional.orElse(parentMapping.classBuilderMappingOptional.orElse(null)));
+        allProperties = allProperties == false ? parentMapping.allProperties : allProperties;
         parentMapping.propertiesMapping.values().stream()
-                .map(propertyParentMapping -> Optional.ofNullable(newPropertiesMapping.get(propertyParentMapping.getName()))
-                        .map(propertyMapping -> propertyMapping.copyWithParentMapping(propertyParentMapping))
-                        .orElseGet(() -> propertyParentMapping.copy()))
-                .forEach(propertyMapping -> newPropertiesMapping.put(propertyMapping.getName(), propertyMapping));
-        return new ClassMapping(type,
-                newAllProperties,
-                newConstructorMapping,
-                newPropertiesMapping);
+                .filter(propertyParentMapping -> propertiesMapping.get(propertyParentMapping.getName()).getAnnotations().isEmpty())
+                .forEach(propertyParentMapping -> propertiesMapping.put(propertyParentMapping.getName(), propertyParentMapping));
+        return (ClassMapping<Object>)this;
     }
+
 }

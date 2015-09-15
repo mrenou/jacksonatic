@@ -104,4 +104,5 @@ public class ClassBuilderMapping {
                 annotations.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())),
                 parametersMapping.stream().map(parameterMapping -> parameterMapping.copy()).collect(toList()));
     }
+
 }

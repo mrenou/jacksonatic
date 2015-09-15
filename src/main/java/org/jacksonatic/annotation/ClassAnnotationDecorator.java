@@ -28,7 +28,10 @@ public class ClassAnnotationDecorator {
         StreamSupport.stream(annotatedClass.fields().spliterator(), false)
                 .forEach(annotatedField -> {
                     final PropertyMapping propertyMapping = classMapping.getPropertyMapping(annotatedField.getName());
-                    if (!classMapping.allPropertiesAreMapped() && !propertyMapping.isMapped()) {
+                    if (classMapping.allPropertiesAreMapped() && !propertyMapping.isMapped() && !propertyMapping.isIgnored()) {
+                        propertyMapping.map();
+                    }
+                    if ((!classMapping.allPropertiesAreMapped() && !propertyMapping.isMapped()) || propertyMapping.isIgnored()) {
                         propertyMapping.ignore();
                     }
                     propertyMapping.getAnnotations().values().stream()

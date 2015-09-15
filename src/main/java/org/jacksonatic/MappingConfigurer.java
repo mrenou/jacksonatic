@@ -4,20 +4,33 @@ import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
+import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.mapping.ClassesMapping;
+
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.jacksonatic.mapping.ClassBuilderCriteria.mapStaticFactory;
 
 public class MappingConfigurer {
 
-    private ClassesMapping classesMapping = new ClassesMapping();
+    private Function<Class<Object>, ClassMappingConfigurer<Object>> defaultClassMappingProducer = (clazz) ->  null;
 
-    private ClassesMapping serializationOnlyClassesMapping = new ClassesMapping();
+    ClassesMapping classesMapping = new ClassesMapping();
 
-    private ClassesMapping deserializationOnlyClassesMapping = new ClassesMapping();
+    ClassesMapping serializationOnlyClassesMapping = new ClassesMapping();
+
+    ClassesMapping deserializationOnlyClassesMapping = new ClassesMapping();
 
     public static MappingConfigurer configureMapping() {
         return new MappingConfigurer();
+    }
+
+    public MappingConfigurer forEach(Function<Class<Object>, ClassMappingConfigurer<Object>> defaultClassMappingProducer) {
+        this.defaultClassMappingProducer= defaultClassMappingProducer;
+        return this;
     }
 
     public MappingConfigurer on(ClassMappingConfigurer classMappingConfigurer) {
@@ -49,7 +62,7 @@ public class MappingConfigurer {
             objectMapper.setConfig(serializationConfig.with(new JacksonaticClassIntrospector()));
         }
         JacksonaticClassIntrospector basicClassIntrospector = (JacksonaticClassIntrospector) objectMapper.getSerializationConfig().getClassIntrospector();
-        basicClassIntrospector.register(classesMapping, serializationOnlyClassesMapping);
+        basicClassIntrospector.register(defaultClassMappingProducer, this);
     }
 
     private void registerForDeserializationIn(ObjectMapper objectMapper) {
@@ -59,7 +72,7 @@ public class MappingConfigurer {
             objectMapper.setConfig(deserializationConfig.with(new JacksonaticClassIntrospector()));
         }
         JacksonaticClassIntrospector basicClassIntrospector = (JacksonaticClassIntrospector) objectMapper.getDeserializationConfig().getClassIntrospector();
-        basicClassIntrospector.register(classesMapping, deserializationOnlyClassesMapping);
+        basicClassIntrospector.register(defaultClassMappingProducer, this);
     }
 
 }

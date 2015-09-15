@@ -15,6 +15,8 @@ import static org.jacksonatic.mapping.ParameterCriteria.matchType;
 
 public class DeserializationOnConstructorTest {
 
+    public static boolean captureConstructor = false;
+
     public static String firstConstructorCalled = "";
 
     static class Pojo {
@@ -48,6 +50,7 @@ public class DeserializationOnConstructorTest {
     @Before
     public void before() {
         firstConstructorCalled = "";
+        captureConstructor = false;
     }
 
     @Test
@@ -57,6 +60,7 @@ public class DeserializationOnConstructorTest {
                         .withConstructor(matchType(String.class).mappedBy("field1"), matchType(Integer.class).mappedBy("field2")))
                 .registerIn(objectMapper);
 
+        captureConstructor();
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
 
         assertThat(pojo).isEqualToComparingFieldByField(POJO);
@@ -69,6 +73,7 @@ public class DeserializationOnConstructorTest {
                 .on(type(Pojo.class).withConstructor(matchType(String.class), matchType(Integer.class)))
                 .registerIn(objectMapper);
 
+        captureConstructor();
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
 
         assertThat(pojo).isEqualToComparingFieldByField(POJO);
@@ -82,6 +87,7 @@ public class DeserializationOnConstructorTest {
                         .withConstructor(matchField("field1").mappedBy("toto"), matchField("field2").mappedBy("tata")))
                 .registerIn(objectMapper);
 
+        captureConstructor();
         Pojo pojo = objectMapper.readValue("{\"toto\":\"field1\",\"tata\":42}", Pojo.class);
 
         assertThat(pojo).isEqualToComparingFieldByField(POJO);
@@ -95,6 +101,7 @@ public class DeserializationOnConstructorTest {
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 
+        captureConstructor();
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
 
         assertThat(pojo).isEqualToComparingFieldByField(POJO);
@@ -108,6 +115,7 @@ public class DeserializationOnConstructorTest {
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 
+        captureConstructor();
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
 
         assertThat(pojo).isEqualToComparingFieldByField(POJO);
@@ -150,6 +158,7 @@ public class DeserializationOnConstructorTest {
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 
+        captureConstructor();
         Pojo2 pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo2.class);
 
         assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
@@ -158,6 +167,8 @@ public class DeserializationOnConstructorTest {
 
 
     static class Pojo3 {
+
+        public static Integer staticToIgnore = 42;
 
         private String field1;
 
@@ -169,7 +180,7 @@ public class DeserializationOnConstructorTest {
 
         }
 
-        public Pojo3(String field1, Integer field2) {
+        private Pojo3(String field1, Integer field2) {
             setConstructorCallIfEmpty("public Pojo3");
             this.field1 = field1;
             this.field2 = field2;
@@ -183,7 +194,7 @@ public class DeserializationOnConstructorTest {
     }
 
     @Test
-    public void find_a_constructor_which_starts_same_fields_to_deserialize() throws IOException {
+    public void find_a_constructor_which_starts_same_fields_to_deserialize_avoiding_static() throws IOException {
         Pojo3 expectedPojo = new Pojo3("field1", 42);
         configureMapping()
                 .on(type(Pojo3.class)
@@ -192,12 +203,13 @@ public class DeserializationOnConstructorTest {
 
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+        captureConstructor();
         Pojo3 pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42,\"field3\":\"field3\"}", Pojo3.class);
 
         assertThat(pojo).isEqualToComparingFieldByField(expectedPojo);
-        assertThat(firstConstructorCalled).isEqualTo("public Pojo3");
+        assertThat(firstConstructorCalled).isEqualTo("public static Pojo3 newPojo");
     }
-    
+
     static class Pojo4 {
 
         private String field1;
@@ -234,6 +246,7 @@ public class DeserializationOnConstructorTest {
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 
+        captureConstructor();
         Pojo4 pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo4.class);
 
         assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
@@ -257,13 +270,18 @@ public class DeserializationOnConstructorTest {
 
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+        captureConstructor();
         Pojo5 pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42,\"field3\":\"field3\"}", Pojo5.class);
 
         assertThat(pojo).isEqualToComparingFieldByField(expectedPojo);
     }
 
+    private void captureConstructor() {
+        captureConstructor = true;
+    }
+
     private static void setConstructorCallIfEmpty(String constructor) {
-        if (firstConstructorCalled.equals("")) {
+        if (firstConstructorCalled.equals("") && captureConstructor) {
             firstConstructorCalled = constructor;
         }
     }

@@ -37,20 +37,7 @@ public class ClassBuilderFinder {
 
     }
 
-    static class ClassBuilderMappingScored {
-
-        public final ClassBuilderMapping classBuilderMapping;
-
-        public final int score;
-
-        ClassBuilderMappingScored(ClassBuilderMapping classBuilderMapping, int score) {
-            this.classBuilderMapping = classBuilderMapping;
-            this.score = score;
-
-        }
-    }
-
-    public static boolean hasToBuild(ClassBuilderMapping classBuilderMapping, ClassBuilderCriteria classBuilderCriteria) {
+    private static boolean hasToBuild(ClassBuilderMapping classBuilderMapping, ClassBuilderCriteria classBuilderCriteria) {
         boolean match = false;
         if ((classBuilderCriteria.getMethodName() == null || classBuilderCriteria.getMethodName().equals(classBuilderMapping.getName()))
                 && classBuilderMapping.getParameterCount() == classBuilderCriteria.getParameterCriteria().size()
@@ -66,49 +53,65 @@ public class ClassBuilderFinder {
     }
 
     private static Optional<ClassBuilderMapping> findClassBuilderFrom(Class<?> classToBuild) {
-        SortedSet<ClassBuilderMappingScored> classBuilderMappingScored = new TreeSet(Comparator.<ClassBuilderMappingScored>comparingInt(pms -> pms.score).reversed());
-        for (Constructor<?> constructor : classToBuild.getConstructors()) {
-            int i = 0;
-            List<ParameterMapping> parametersMapping = new ArrayList<>();
-            for (Field field : classToBuild.getDeclaredFields()) {
-                if (constructor.getParameterTypes().length > i && constructor.getParameterTypes()[i].equals(field.getType())) {
-                    parametersMapping.add(new ParameterMapping(field.getType(), field.getName()));
-                } else {
-                    break;
-                }
-                i++;
-            }
-            classBuilderMappingScored.add(new ClassBuilderMappingScored(new ClassBuilderMapping(constructor, parametersMapping), i));
-            if (i == classToBuild.getDeclaredFields().length) {
-                break;
-            }
-        }
+        SortedSet<ClassBuilderMapping> classBuilderMappingScored = new TreeSet(
+                Comparator.<ClassBuilderMapping>comparingInt(o -> o.getParametersMapping().size())
+                        .reversed()
+                        .thenComparing(o -> o.getConstructor() != null ? "constructor=" + o.getConstructor() : "staticFactory=" + o.getStaticFactory())
+        );
+        addConstructorScored(classToBuild, classBuilderMappingScored);
 
-        if (classBuilderMappingScored.isEmpty() || (!classBuilderMappingScored.isEmpty() && classBuilderMappingScored.first().score < classToBuild.getDeclaredFields().length)) {
-            for (Method method : classToBuild.getDeclaredMethods()) {
-                if (Modifier.isStatic(method.getModifiers()) && Modifier.isPublic(method.getModifiers())) {
-                    int i = 0;
-                    List<ParameterMapping> parametersMapping = new ArrayList<>();
-                    for (Field field : classToBuild.getDeclaredFields()) {
-                        if (method.getParameterTypes().length > i && method.getParameterTypes()[i].equals(field.getType())) {
-                            parametersMapping.add(new ParameterMapping(field.getType(), field.getName()));
-                        } else {
-                            break;
-                        }
-                        i++;
-                    }
-                    classBuilderMappingScored.add(new ClassBuilderMappingScored(new ClassBuilderMapping(method, parametersMapping), i));
-                    if (i == classToBuild.getDeclaredFields().length) {
-                        break;
-                    }
-                }
-            }
+        if (classBuilderMappingScored.isEmpty() || (!classBuilderMappingScored.isEmpty() && classBuilderMappingScored.first().getParametersMapping().size() < classToBuild.getDeclaredFields().length)) {
+            addStaticFactoryScored(classToBuild, classBuilderMappingScored);
         }
 
         if (!classBuilderMappingScored.isEmpty()) {
-            return Optional.of(classBuilderMappingScored.first().classBuilderMapping);
+            return Optional.of(classBuilderMappingScored.first());
         }
         return Optional.empty();
+    }
+
+    private static void addConstructorScored(Class<?> classToBuild, SortedSet<ClassBuilderMapping> classBuilderMappingScored) {
+        for (Constructor<?> constructor : classToBuild.getConstructors()) {
+            List<ParameterMapping> parametersMapping = getParametersMapping(classToBuild, constructor.getParameterTypes());
+            classBuilderMappingScored.add(new ClassBuilderMapping(constructor, parametersMapping));
+            if (parametersMapping.size() == classToBuild.getDeclaredFields().length) {
+                break;
+            }
+        }
+    }
+
+    private static void addStaticFactoryScored(Class<?> classToBuild, SortedSet<ClassBuilderMapping> classBuilderMappingScored) {
+        for (Method method : classToBuild.getDeclaredMethods()) {
+            List<ParameterMapping> parametersMapping = getParametersMapping(classToBuild, method.getParameterTypes());
+            classBuilderMappingScored.add(new ClassBuilderMapping(method, parametersMapping));
+            if (parametersMapping.size() == classToBuild.getDeclaredFields().length) {
+                break;
+            }
+        }
+    }
+
+    private static List<ParameterMapping> getParametersMapping(Class<?> classToBuild, Class<?>[] parameterTypes) {
+        int iParameterType = 0;
+        int iFields = 0;
+        List<ParameterMapping> parametersMapping = new ArrayList<>();
+
+        while (iFields < classToBuild.getDeclaredFields().length && iParameterType < parameterTypes.length) {
+            Field field = classToBuild.getDeclaredFields()[iFields];
+            Class<?> parameterType = parameterTypes[iParameterType];
+
+            if (!Modifier.isStatic(field.getModifiers())) {
+                if (parameterType.equals(field.getType())) {
+                    parametersMapping.add(new ParameterMapping(field.getType(), field.getName()));
+                    iFields++;
+                    iParameterType++;
+                } else {
+                    break;
+                }
+            } else {
+                iFields++;
+            }
+        }
+        return parametersMapping;
     }
 
 }

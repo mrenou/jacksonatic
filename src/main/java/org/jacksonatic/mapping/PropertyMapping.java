@@ -43,12 +43,6 @@ public class PropertyMapping {
         return new PropertyMapping(field, this.annotations.entrySet().stream().collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
-    PropertyMapping copyWithParentMapping(PropertyMapping parentMapping) {
-        return new PropertyMapping(field, this.annotations.size() == 0 ?
-                parentMapping.annotations.entrySet().stream().collect(toMap(Map.Entry::getKey, Map.Entry::getValue)) :
-                annotations.entrySet().stream().collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
-    }
-
     public String getName() {
         return field.getName();
     }
@@ -59,5 +53,9 @@ public class PropertyMapping {
 
     public boolean isMapped() {
         return annotations.containsKey(JsonProperty.class);
+    }
+
+    public boolean isIgnored() {
+        return annotations.containsKey(JsonIgnore.class);
     }
 }
