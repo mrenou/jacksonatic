@@ -7,13 +7,15 @@ import java.util.PriorityQueue;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
+import static org.jacksonatic.util.ReflectionUtil.getDeclaredFieldsWithInheritance;
+import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
 
 public class ParametersMappingBuilder {
 
     public static List<ParameterMapping> buildParametersMapping(Class<?> classToBuild, List<ParameterCriteria> parameterCriterias) {
         Map<Class<?>, PriorityQueue<String>> propertiesByClass = new HashMap<>();
         Map<String, Class<?>> classByProperty = new HashMap<>();
-        asList(classToBuild.getDeclaredFields()).stream().forEach(field -> {
+        getPropertiesWithInheritance(classToBuild).forEach(field -> {
             PriorityQueue<String> properties = propertiesByClass.get(field.getType());
             if (properties == null) {
                 properties = new PriorityQueue<>();

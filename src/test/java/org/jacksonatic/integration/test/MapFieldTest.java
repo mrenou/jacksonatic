@@ -77,4 +77,37 @@ public class MapFieldTest {
         assertThat(json).isEqualTo("{\"toto\":\"field1\",\"field2\":42}");
     }
 
+    static class PojoParent {
+
+        private String field1;
+
+        PojoParent(String field1) {
+            this.field1 = field1;
+        }
+    }
+
+    static class PojoChild extends PojoParent {
+
+        private String field2;
+
+        public PojoChild(String field1, String field2) {
+            super(field1);
+            this.field2 = field2;
+        }
+    }
+
+    @Test
+    public void map_one_inherited_field() throws JsonProcessingException {
+        configureMapping()
+                .on(type(PojoChild.class)
+                        .map("field1"))
+                .registerIn(objectMapper);
+
+        String json = objectMapper.writeValueAsString(new PojoChild("field1", "field2"));
+
+        assertThat(json).isEqualTo("{\"field1\":\"field1\"}");
+
+    }
+
+
 }

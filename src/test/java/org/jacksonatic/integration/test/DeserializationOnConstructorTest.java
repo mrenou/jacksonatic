@@ -1,5 +1,6 @@
 package org.jacksonatic.integration.test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -275,6 +276,40 @@ public class DeserializationOnConstructorTest {
 
         assertThat(pojo).isEqualToComparingFieldByField(expectedPojo);
     }
+
+    static class PojoParent {
+
+        private String field1;
+
+         PojoParent(String field1) {
+            this.field1 = field1;
+        }
+    }
+
+    static class PojoChild extends PojoParent {
+
+        private String field2;
+
+        public PojoChild(String field1, String field2) {
+            super(field1);
+            this.field2 = field2;
+        }
+    }
+
+    @Test
+    public void find_with_inheritance() throws IOException {
+        PojoChild expectedPojo = new PojoChild("field1", "field2");
+        configureMapping()
+                .on(type(PojoChild.class)
+                        .withAConstructorOrStaticFactory())
+                .registerIn(objectMapper);
+
+        captureConstructor();
+        PojoChild pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":\"field2\"}", PojoChild.class);
+
+        assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
+    }
+
 
     private void captureConstructor() {
         captureConstructor = true;

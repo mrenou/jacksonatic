@@ -7,6 +7,8 @@ import java.util.Optional;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toMap;
 import static org.jacksonatic.mapping.ClassBuilderFinder.findClassBuilderMapping;
+import static org.jacksonatic.util.ReflectionUtil.getDeclaredFieldsWithInheritance;
+import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
 
 public class ClassMapping<T> {
 
@@ -26,7 +28,12 @@ public class ClassMapping<T> {
     }
 
     public ClassMapping(Class<T> type) {
-        this(type, false, Optional.empty(), asList(type.getDeclaredFields()).stream().collect(toMap(field -> field.getName(), field -> new PropertyMapping(field))));
+        this(type, false, Optional.empty(), getCollect((Class<Object>) type));
+    }
+
+    private static Map<String, PropertyMapping> getCollect(Class<Object> type) {
+        System.out.println("class " + type.getName());
+        return getPropertiesWithInheritance(type).collect(toMap(field -> field.getName(), field -> new PropertyMapping(field), (field1, field2) -> field1));
     }
 
     public void mapAllProperties() {

@@ -38,7 +38,6 @@ class JacksonaticClassIntrospector extends BasicClassIntrospector {
         AnnotatedClass ac = AnnotatedClass.construct(type.getRawClass(),
                 (useAnnotations ? config.getAnnotationIntrospector() : null), r);
         Optional<ClassMapping<Object>> baseClassMappingOpt = getBaseClassMappingOpt(baseClassMappingProducer.apply((Class<Object>) ac.getAnnotated()), forSerialization);
-        ;
         Optional<ClassMapping<Object>> classMappingOpt = Optional.ofNullable(classesMapping.get(ac.getAnnotated()));
         Optional<ClassMapping<Object>> extraClassMappingOpt = getExtraClassMappingOpt(forSerialization, ac);
 
