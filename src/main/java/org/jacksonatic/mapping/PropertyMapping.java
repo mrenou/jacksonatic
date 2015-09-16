@@ -9,6 +9,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -47,12 +48,16 @@ public class PropertyMapping {
         return field.getName();
     }
 
+    public String getMappedName() {
+        return Optional.ofNullable(annotations.get(JsonProperty.class)).map(annotation -> ((JsonProperty)annotation).value()).orElse(field.getName());
+    }
+
     public Map<Class<? extends Annotation>, Annotation> getAnnotations() {
         return annotations;
     }
 
     public boolean isMapped() {
-        return annotations.containsKey(JsonProperty.class);
+        return annotations.containsKey(JsonProperty.class) && !annotations.containsKey(JsonIgnore.class);
     }
 
     public boolean isIgnored() {

@@ -58,6 +58,7 @@ public class DeserializationOnConstructorTest {
     public void deserialize_on_constructor_with_classes_and_json_properties() throws IOException {
         configureMapping()
                 .on(type(Pojo.class)
+                        .all()
                         .withConstructor(matchType(String.class).mappedBy("field1"), matchType(Integer.class).mappedBy("field2")))
                 .registerIn(objectMapper);
 
@@ -71,7 +72,7 @@ public class DeserializationOnConstructorTest {
     @Test
     public void deserialize_on_constructor_with_classes() throws IOException {
         configureMapping()
-                .on(type(Pojo.class).withConstructor(matchType(String.class), matchType(Integer.class)))
+                .on(type(Pojo.class).all().withConstructor(matchType(String.class), matchType(Integer.class)))
                 .registerIn(objectMapper);
 
         captureConstructor();
@@ -85,6 +86,7 @@ public class DeserializationOnConstructorTest {
     public void deserialize_on_constructor_with_fields_and_json_properties() throws IOException {
         configureMapping()
                 .on(type(Pojo.class)
+                        .all()
                         .withConstructor(matchField("field1").mappedBy("toto"), matchField("field2").mappedBy("tata")))
                 .registerIn(objectMapper);
 
@@ -99,6 +101,7 @@ public class DeserializationOnConstructorTest {
     public void find_a_constructor_with_exact_fields_to_deserialize() throws IOException {
         configureMapping()
                 .on(type(Pojo.class)
+                        .all()
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 
@@ -113,6 +116,7 @@ public class DeserializationOnConstructorTest {
     public void find_a_constructor_which_starts_exact_fields_to_deserialize() throws IOException {
         configureMapping()
                 .on(type(Pojo.class)
+                        .all()
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 
@@ -156,6 +160,7 @@ public class DeserializationOnConstructorTest {
         Pojo2 expectedPojo = Pojo2.newPojo("field1", 42);
         configureMapping()
                 .on(type(Pojo2.class)
+                        .all()
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 
@@ -199,6 +204,8 @@ public class DeserializationOnConstructorTest {
         Pojo3 expectedPojo = new Pojo3("field1", 42);
         configureMapping()
                 .on(type(Pojo3.class)
+                        .map("field1")
+                        .map("field2")
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 
@@ -244,6 +251,7 @@ public class DeserializationOnConstructorTest {
         Pojo4 expectedPojo = Pojo4.newPojo("field1", 42);
         configureMapping()
                 .on(type(Pojo4.class)
+                        .all()
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 
@@ -266,6 +274,7 @@ public class DeserializationOnConstructorTest {
         expectedPojo.field1 = "field1";
         configureMapping()
                 .mapAllOn(type(Pojo5.class)
+                        .all()
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 
@@ -301,6 +310,7 @@ public class DeserializationOnConstructorTest {
         PojoChild expectedPojo = new PojoChild("field1", "field2");
         configureMapping()
                 .on(type(PojoChild.class)
+                        .all()
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 

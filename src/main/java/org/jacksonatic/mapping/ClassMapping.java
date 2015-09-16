@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toMap;
 import static org.jacksonatic.mapping.ClassBuilderFinder.findClassBuilderMapping;
-import static org.jacksonatic.util.ReflectionUtil.getDeclaredFieldsWithInheritance;
 import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
 
 public class ClassMapping<T> {
@@ -28,10 +26,10 @@ public class ClassMapping<T> {
     }
 
     public ClassMapping(Class<T> type) {
-        this(type, false, Optional.empty(), getCollect((Class<Object>) type));
+        this(type, false, Optional.empty(), collectProperties((Class<Object>) type));
     }
 
-    private static Map<String, PropertyMapping> getCollect(Class<Object> type) {
+    private static Map<String, PropertyMapping> collectProperties(Class<Object> type) {
         return getPropertiesWithInheritance(type).collect(toMap(field -> field.getName(), field -> new PropertyMapping(field), (field1, field2) -> field1));
     }
 
@@ -52,7 +50,7 @@ public class ClassMapping<T> {
     }
 
     public void onConstructor(ClassBuilderCriteria classBuilderCriteria) {
-        classBuilderMappingOptional = findClassBuilderMapping(type, classBuilderCriteria);
+        classBuilderMappingOptional = findClassBuilderMapping((ClassMapping<Object>) this, classBuilderCriteria);
     }
 
     public PropertyMapping getPropertyMapping(String name) {

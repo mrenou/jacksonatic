@@ -23,14 +23,14 @@ public class ClassBuilderMapping {
 
     private Map<Class<? extends Annotation>, Annotation> annotations;
 
+    private List<ParameterMapping> parametersMapping;
+
     ClassBuilderMapping(Constructor<?> constructor, Method staticFactory, Map<Class<? extends Annotation>, Annotation> annotations, List<ParameterMapping> parametersMapping) {
         this.constructor = constructor;
         this.staticFactory = staticFactory;
         this.annotations = annotations;
         this.parametersMapping = parametersMapping;
     }
-
-    private List<ParameterMapping> parametersMapping;
 
     public ClassBuilderMapping(Constructor<?> constructor, List<ParameterMapping> parametersMapping) {
         this.constructor = constructor;

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class ClassAnnotationDecorator {
@@ -31,7 +32,7 @@ public class ClassAnnotationDecorator {
                     if (classMapping.allPropertiesAreMapped() && !propertyMapping.isMapped() && !propertyMapping.isIgnored()) {
                         propertyMapping.map();
                     }
-                    if ((!classMapping.allPropertiesAreMapped() && !propertyMapping.isMapped()) || propertyMapping.isIgnored()) {
+                    if (!classMapping.allPropertiesAreMapped() && !propertyMapping.isMapped() && !propertyMapping.isIgnored()) {
                         propertyMapping.ignore();
                     }
                     propertyMapping.getAnnotations().values().stream()
@@ -48,7 +49,10 @@ public class ClassAnnotationDecorator {
                         .get();
                 setAnnotationsOnMemberWithParams(classBuilderMapping.getAnnotations(), classBuilderMapping.getParametersMapping(), staticFactoryMember);
             } else {
-                AnnotatedConstructor constructorMember = annotatedClass.getConstructors().stream()
+                AnnotatedConstructor constructorMember = Stream.concat(
+                        annotatedClass.getConstructors().stream(),
+                        Optional.ofNullable(annotatedClass.getDefaultConstructor()).map(constructor -> Stream.of(constructor)).orElse(Stream.empty())
+                )
                         .filter(constructor -> constructor.getMember().equals(classBuilderMapping.getConstructor()))
                         .findFirst()
                         .get();

@@ -52,7 +52,7 @@ public class DefaultMappingTest {
     @Test
     public void find_constructor_by_default() throws IOException {
         configureMapping()
-                .forEach((clazz -> type(clazz).withAConstructorOrStaticFactory()))
+                .forEach((clazz -> type(clazz).all().withAConstructorOrStaticFactory()))
                 .registerIn(objectMapper);
 
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
