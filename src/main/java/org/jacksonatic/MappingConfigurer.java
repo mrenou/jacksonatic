@@ -4,13 +4,10 @@ import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
-import org.jacksonatic.mapping.ClassMapping;
+import org.jacksonatic.introspection.JacksonaticClassIntrospector;
 import org.jacksonatic.mapping.ClassesMapping;
 
-import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static org.jacksonatic.mapping.ClassBuilderCriteria.mapStaticFactory;
 
@@ -18,11 +15,11 @@ public class MappingConfigurer {
 
     private Function<Class<Object>, ClassMappingConfigurer<Object>> defaultClassMappingProducer = (clazz) ->  null;
 
-    ClassesMapping classesMapping = new ClassesMapping();
+    private ClassesMapping classesMapping = new ClassesMapping();
 
-    ClassesMapping serializationOnlyClassesMapping = new ClassesMapping();
+    private ClassesMapping serializationOnlyClassesMapping = new ClassesMapping();
 
-    ClassesMapping deserializationOnlyClassesMapping = new ClassesMapping();
+    private ClassesMapping deserializationOnlyClassesMapping = new ClassesMapping();
 
     public static MappingConfigurer configureMapping() {
         return new MappingConfigurer();
@@ -75,4 +72,15 @@ public class MappingConfigurer {
         basicClassIntrospector.register(defaultClassMappingProducer, this);
     }
 
+    public ClassesMapping getClassesMapping() {
+        return classesMapping;
+    }
+
+    public ClassesMapping getSerializationOnlyClassesMapping() {
+        return serializationOnlyClassesMapping;
+    }
+
+    public ClassesMapping getDeserializationOnlyClassesMapping() {
+        return deserializationOnlyClassesMapping;
+    }
 }

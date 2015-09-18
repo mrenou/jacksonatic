@@ -1,5 +1,6 @@
 package org.jacksonatic;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.mapping.ParameterCriteria;
 
@@ -85,16 +86,30 @@ public class ClassMappingConfigurer<T> {
         return this;
     }
 
+    public ClassMappingConfigurer propertyForTypeName(String property) {
+        currentClassMapping.propertyForTypeName(property);
+        return this;
+    }
 
-    ClassMapping<T> getClassMapping() {
+    public ClassMappingConfigurer typeName(String name) {
+        currentClassMapping.typeName(name);
+        return this;
+    }
+
+    public ClassMappingConfigurer addNamedSubType(Class<? extends T> subType, String name) {
+        currentClassMapping.addNamedSubType(subType, name);
+        return this;
+    }
+
+    public ClassMapping<T> getClassMapping() {
         return classMapping;
     }
 
-    ClassMapping<T> getSerializationOnlyClassMapping() {
+    public ClassMapping<T> getSerializationOnlyClassMapping() {
         return serializationOnlyClassMapping;
     }
 
-    ClassMapping<T> getDeserializationOnlyClassMapping() {
+    public ClassMapping<T> getDeserializationOnlyClassMapping() {
         return deserializationOnlyClassMapping;
     }
 }

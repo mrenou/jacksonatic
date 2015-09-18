@@ -1,8 +1,15 @@
 package org.jacksonatic.mapping;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import org.jacksonatic.annotation.JacksonaticJsonSubTypes;
+import org.jacksonatic.annotation.JacksonaticJsonSubTypesType;
+import org.jacksonatic.annotation.JacksonaticJsonTypeInfo;
+import org.jacksonatic.annotation.JacksonaticJsonTypeName;
+
+import java.lang.annotation.Annotation;
+import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
 import static org.jacksonatic.mapping.ClassBuilderFinder.findClassBuilderMapping;
@@ -18,15 +25,18 @@ public class ClassMapping<T> {
 
     private Map<String, PropertyMapping> propertiesMapping = new HashMap<>();
 
-    ClassMapping(Class<T> type, boolean allProperties, Optional<ClassBuilderMapping> classBuilderMappingOptional, Map<String, PropertyMapping> propertiesMapping) {
+    private Map<Class<? extends Annotation>, Annotation> annotations;
+
+    ClassMapping(Class<T> type, boolean allProperties, Optional<ClassBuilderMapping> classBuilderMappingOptional, Map<String, PropertyMapping> propertiesMapping, Map<Class<? extends Annotation>, Annotation> annotations) {
         this.type = type;
         this.allProperties = allProperties;
         this.classBuilderMappingOptional = classBuilderMappingOptional;
         this.propertiesMapping = propertiesMapping;
+        this.annotations = annotations;
     }
 
     public ClassMapping(Class<T> type) {
-        this(type, false, Optional.empty(), collectProperties((Class<Object>) type));
+        this(type, false, Optional.empty(), collectProperties((Class<Object>) type), new HashMap<>());
     }
 
     private static Map<String, PropertyMapping> collectProperties(Class<Object> type) {
@@ -53,13 +63,33 @@ public class ClassMapping<T> {
         classBuilderMappingOptional = findClassBuilderMapping((ClassMapping<Object>) this, classBuilderCriteria);
     }
 
+    public boolean allPropertiesAreMapped() {
+        return this.allProperties;
+    }
+
+    public void propertyForTypeName(String property) {
+        annotations.put(JsonTypeInfo.class, new JacksonaticJsonTypeInfo(JsonTypeInfo.Id.NAME, null, property, null, false));
+    }
+
+    public void typeName(String name) {
+        annotations.put(JsonTypeName.class, new JacksonaticJsonTypeName(name));
+    }
+
+    public void addNamedSubType(Class<? extends T> subType, String name) {
+        List<JsonSubTypes.Type> types = Optional.ofNullable(annotations.get(JsonSubTypes.class))
+                .map(annotation -> new ArrayList<>(Arrays.asList(((JsonSubTypes) annotation).value())))
+                .orElse(new ArrayList<>());
+        types.add(new JacksonaticJsonSubTypesType(name, subType));
+        annotations.put(JsonSubTypes.class, new JacksonaticJsonSubTypes(types.toArray(new JsonSubTypes.Type[types.size()])));
+    }
+
     public PropertyMapping getPropertyMapping(String name) {
-        return Optional.ofNullable(propertiesMapping.get(name))
+        return findPropertyMapping(name)
                 .orElseThrow(() -> new IllegalStateException("Field with name " + name + " doesn't exist in class mapping " + type.getName()));
     }
 
-    public boolean allPropertiesAreMapped() {
-        return this.allProperties;
+    public Optional<PropertyMapping> findPropertyMapping(String name) {
+        return Optional.ofNullable(propertiesMapping.get(name));
     }
 
     public Class<T> getType() {
@@ -74,7 +104,9 @@ public class ClassMapping<T> {
         return new ClassMapping(type,
                 allProperties,
                 Optional.ofNullable(classBuilderMappingOptional.map(classBuilderMapping -> classBuilderMapping.copy()).orElse(null)),
-                propertiesMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy())));
+                propertiesMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy())),
+                annotations.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue()))
+        );
     }
 
     public ClassMapping<Object> mergeWithParentMapping(ClassMapping<Object> parentMapping) {
@@ -86,4 +118,25 @@ public class ClassMapping<T> {
         return (ClassMapping<Object>)this;
     }
 
+    public ClassMapping<Object> copyWithParentMapping(ClassMapping<Object> parentMapping) {
+        Optional<ClassBuilderMapping> newConstructorMapping = Optional.ofNullable(classBuilderMappingOptional.map(classBuilderMapping -> classBuilderMapping.copy()).orElse(parentMapping.classBuilderMappingOptional.map(cm -> cm.copy()).orElse(null)));
+        boolean newAllProperties = allProperties == false ? parentMapping.allProperties : allProperties;
+        Map<String, PropertyMapping> newPropertiesMapping = propertiesMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy()));
+        parentMapping.propertiesMapping.values().stream()
+                .map(propertyParentMapping -> Optional.ofNullable(newPropertiesMapping.get(propertyParentMapping.getName()))
+                        .map(propertyMapping -> propertyMapping.copyWithParentMapping(propertyParentMapping))
+                        .orElseGet(() -> propertyParentMapping.copy()))
+                .forEach(propertyMapping -> newPropertiesMapping.put(propertyMapping.getName(), propertyMapping));
+        Map<Class<? extends Annotation>, Annotation> newAnnotations =  parentMapping.annotations.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue()));
+        annotations.values().stream().forEach(annotation -> newAnnotations.put(annotation.getClass(), annotation));
+        return new ClassMapping(type,
+                newAllProperties,
+                newConstructorMapping,
+                newPropertiesMapping,
+                newAnnotations);
+    }
+
+    public Collection<Annotation> getAnnotations() {
+        return annotations.values();
+    }
 }

@@ -217,10 +217,36 @@ public class MapFieldTest {
     }
 
     @Test
+    public void map_one_parent_field_to_serialize2() throws JsonProcessingException {
+        configureMapping()
+                .on(type(PojoParent.class)
+                        .map("field1"))
+                .registerIn(objectMapper);
+
+        String json = objectMapper.writeValueAsString(new PojoChild("field1", "field2"));
+
+        assertThat(json).isEqualTo("{\"field1\":\"field1\"}");
+
+    }
+
+    @Test
     public void map_one_inherited_field_to_deserialize() throws IOException {
         PojoChild expectedPojo = new PojoChild("field1", null);
         configureMapping()
                 .on(type(PojoChild.class)
+                        .map("field1"))
+                .registerIn(objectMapper);
+
+        PojoChild pojo = objectMapper.readValue("{\"field1\":\"field1\"}", PojoChild.class);
+
+        assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
+    }
+
+    @Test
+    public void map_one_parent_field_to_deserialize() throws IOException {
+        PojoChild expectedPojo = new PojoChild("field1", null);
+        configureMapping()
+                .on(type(PojoParent.class)
                         .map("field1"))
                 .registerIn(objectMapper);
 
