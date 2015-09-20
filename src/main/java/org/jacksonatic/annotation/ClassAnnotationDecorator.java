@@ -25,6 +25,7 @@ public class ClassAnnotationDecorator {
 
     private static AnnotatedClass addClassAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {
         AnnotationMap annotationMap = new AnnotationMap();
+        StreamSupport.stream(annotatedClass.annotations().spliterator(), false).forEach(annotation -> annotationMap.add(annotation));
         ((Collection<Annotation>) classMapping.getAnnotations()).stream().forEach(annotation -> annotationMap.add(annotation));
         return annotatedClass.withAnnotations(annotationMap);
     }
