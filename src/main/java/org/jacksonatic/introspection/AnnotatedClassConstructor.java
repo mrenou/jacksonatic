@@ -62,6 +62,7 @@ public class AnnotatedClassConstructor {
         }
 
         List<Class<?>> superTypes = ClassUtil.findSuperTypes(ac.getAnnotated(), Object.class);
+        superTypes.add(Object.class);
         Optional<ClassMapping<Object>> parentClassMappingOpt = getBaseClassMappingOpt(processType, baseClassMappingProducer.apply((Class<Object>) ac.getAnnotated()));
 
         for (int i = superTypes.size() - 1; i >= 0; i--) {

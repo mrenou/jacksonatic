@@ -102,17 +102,17 @@ public class PolymorphismTest {
     private void configureMappingPolymorphism() {
         configureMapping()
                 .on(type(PojoParent.class)
+                                .all()
                         .propertyForTypeName("type")
                         .addNamedSubType(PojoChild1.class, "CHILD1")
-                        .addNamedSubType(PojoChild2.class, "CHILD2"))
+                        .addNamedSubType(PojoChild2.class, "CHILD2")
+                                .withAConstructorOrStaticFactory()
+                )
                 .on(type(PojoChild1.class)
-                        .all()
-                        .typeName("CHILD1")
-                        .withAConstructorOrStaticFactory())
+                        .typeName("CHILD1"))
                 .on(type(PojoChild2.class)
                         .all()
-                        .typeName("CHILD2")
-                        .withAConstructorOrStaticFactory())
+                        .typeName("CHILD2"))
                 .registerIn(objectMapper);
     }
 

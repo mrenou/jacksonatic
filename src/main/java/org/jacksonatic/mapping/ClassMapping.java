@@ -2,8 +2,8 @@ package org.jacksonatic.mapping;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import org.jacksonatic.annotation.*;
+import org.jacksonatic.annotation.Annotations;
+import org.jacksonatic.annotation.JacksonaticJsonSubTypesType;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -11,10 +11,8 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
 import static org.jacksonatic.annotation.JacksonaticJsonSubTypes.jsonSubTypes;
-import static org.jacksonatic.annotation.JacksonaticJsonSubTypesType.type;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeInfo.jsonTypeInfo;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeName.jsonTypeName;
-import static org.jacksonatic.mapping.ClassBuilderFinder.findClassBuilderMapping;
 import static org.jacksonatic.mapping.PropertyMapping.property;
 import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
 
@@ -24,7 +22,7 @@ public class ClassMapping<T> {
 
     private boolean allProperties;
 
-    private Optional<ClassBuilderMapping> classBuilderMappingOptional;
+    private Optional<ClassBuilderCriteria> classBuilderCriteriaOpt;
 
     private Map<String, PropertyMapping> propertiesMapping;
 
@@ -32,10 +30,10 @@ public class ClassMapping<T> {
 
     private Map<String, Field> fields;
 
-    ClassMapping(Class<T> type, boolean allProperties, Optional<ClassBuilderMapping> classBuilderMappingOptional, Map<String, PropertyMapping> propertiesMapping, Annotations annotations) {
+    ClassMapping(Class<T> type, boolean allProperties, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, Map<String, PropertyMapping> propertiesMapping, Annotations annotations) {
         this.type = type;
         this.allProperties = allProperties;
-        this.classBuilderMappingOptional = classBuilderMappingOptional;
+        this.classBuilderCriteriaOpt = classBuilderCriteriaOpt;
         this.propertiesMapping = propertiesMapping;
         this.annotations = annotations;
         this.fields = getPropertiesWithInheritance(type).collect(toMap(Field::getName, f -> f));
@@ -62,7 +60,7 @@ public class ClassMapping<T> {
     }
 
     public void onConstructor(ClassBuilderCriteria classBuilderCriteria) {
-        classBuilderMappingOptional = findClassBuilderMapping((ClassMapping<Object>) this, classBuilderCriteria);
+        classBuilderCriteriaOpt = Optional.of(classBuilderCriteria);
     }
 
     public void on(PropertyMapping propertyMapping) {
@@ -102,7 +100,7 @@ public class ClassMapping<T> {
 
     private void checkFieldExists(String name) {
         if (!fields.containsKey(name)) {
-           throw new IllegalStateException("Field with name " + name + " doesn't exist in class mapping " + type.getName());
+            //throw new IllegalStateException("Field with name " + name + " doesn't exist in class mapping " + type.getName());
         }
     }
 
@@ -110,8 +108,8 @@ public class ClassMapping<T> {
         return type;
     }
 
-    public Optional<ClassBuilderMapping> getClassBuilderMappingOpt() {
-        return classBuilderMappingOptional;
+    public Optional<ClassBuilderCriteria> getClassBuilderCriteriaOpt() {
+        return classBuilderCriteriaOpt;
     }
 
     public Collection<Annotation> getAnnotations() {
@@ -121,7 +119,7 @@ public class ClassMapping<T> {
     ClassMapping<Object> copy() {
         return new ClassMapping(type,
                 allProperties,
-                Optional.ofNullable(classBuilderMappingOptional.map(classBuilderMapping -> classBuilderMapping.copy()).orElse(null)),
+                Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(null)),
                 propertiesMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy())),
                 annotations.copy()
         );
@@ -130,14 +128,14 @@ public class ClassMapping<T> {
     public ClassMapping<Object> createChildMapping(Class<Object> childClass) {
         return new ClassMapping(childClass,
                 allProperties,
-                Optional.ofNullable(classBuilderMappingOptional.map(classBuilderMapping -> classBuilderMapping.copy()).orElse(null)),
+                Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(null)),
                 propertiesMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy())),
                 annotations.copy()
         );
     }
 
     public ClassMapping<Object> copyWithParentMapping(ClassMapping<Object> parentMapping) {
-        Optional<ClassBuilderMapping> newConstructorMapping = Optional.ofNullable(classBuilderMappingOptional.map(classBuilderMapping -> classBuilderMapping.copy()).orElse(parentMapping.classBuilderMappingOptional.map(cm -> cm.copy()).orElse(null)));
+        Optional<ClassBuilderCriteria> newClassBuilderCriteria = Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(parentMapping.classBuilderCriteriaOpt.map(cm -> cm.copy()).orElse(null)));
         boolean newAllProperties = allProperties == false ? parentMapping.allProperties : allProperties;
         Map<String, PropertyMapping> newPropertiesMapping = propertiesMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy()));
         parentMapping.propertiesMapping.values().stream()
@@ -149,7 +147,7 @@ public class ClassMapping<T> {
         annotations.values().stream().forEach(annotation -> newAnnotations.put(annotation.getClass(), annotation));
         return new ClassMapping(type,
                 newAllProperties,
-                newConstructorMapping,
+                newClassBuilderCriteria,
                 newPropertiesMapping,
                 newAnnotations);
     }

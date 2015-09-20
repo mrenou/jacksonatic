@@ -3,13 +3,14 @@ package org.jacksonatic.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static org.jacksonatic.mapping.ParametersMappingBuilder.buildParametersMapping;
 
 public class ClassBuilderCriteria {
 
     private String methodName;
 
-    private List<ParameterMapping> parameterCriteria;
+    private List<ParameterMapping> parametersMapping;
 
     private boolean staticFactory = false;
 
@@ -31,26 +32,28 @@ public class ClassBuilderCriteria {
         return new ClassBuilderCriteria();
     }
 
+
     private ClassBuilderCriteria(Class<?> classToBuild, String methodName, List<ParameterCriteria> parameterCriterias, boolean staticFactory) {
-        this.methodName = methodName;
-        this.parameterCriteria = buildParametersMapping(classToBuild, parameterCriterias);
-        this.staticFactory = staticFactory;
-        this.any = false;
+        this(methodName, buildParametersMapping(classToBuild, parameterCriterias), staticFactory, false);
     }
 
     private ClassBuilderCriteria() {
-        this.methodName = "";
-        this.parameterCriteria = new ArrayList<>();
-        this.staticFactory = false;
-        this.any = true;
+        this("", new ArrayList<>(), false, true);
+    }
+
+    private ClassBuilderCriteria(String methodName, List<ParameterMapping> parametersMapping, boolean staticFactory, boolean any) {
+        this.methodName = methodName;
+        this.parametersMapping = parametersMapping;
+        this.staticFactory = staticFactory;
+        this.any = any;
     }
 
     public boolean isAny() {
         return any;
     }
 
-    public List<ParameterMapping> getParameterCriteria() {
-        return parameterCriteria;
+    public List<ParameterMapping> getParametersMapping() {
+        return parametersMapping;
     }
 
     public String getMethodName() {
@@ -61,4 +64,20 @@ public class ClassBuilderCriteria {
         return staticFactory;
     }
 
+    ClassBuilderCriteria copy() {
+        return new ClassBuilderCriteria(methodName,
+                parametersMapping,
+                staticFactory,
+                any);
+    }
+
+    public String mappingAsString() {
+        if (staticFactory) {
+            return "staticFactory='" + methodName + '(' + parametersMapping.stream().map(pm -> pm.getParameterClass()).collect(toList()) + ")";
+        } else if (!any) {
+            return "constructor='" + + '(' + parametersMapping.stream().map(pm -> pm.getParameterClass()).collect(toList()) + ")";
+        } else {
+            return "any";
+        }
+    }
 }

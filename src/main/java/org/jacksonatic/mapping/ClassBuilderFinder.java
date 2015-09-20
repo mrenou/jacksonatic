@@ -14,11 +14,16 @@ import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
 public class ClassBuilderFinder {
 
     public static Optional<ClassBuilderMapping> findClassBuilderMapping(ClassMapping<Object> classMapping, ClassBuilderCriteria classBuilderCriteria) {
+        Optional<ClassBuilderMapping> classBuilderMappingOpt;
         if (classBuilderCriteria.isAny()) {
-            return findClassBuilderFrom(classMapping);
+            classBuilderMappingOpt = findClassBuilderFrom(classMapping);
         } else {
-            return findClassBuilderFrom(classMapping, classBuilderCriteria);
+            classBuilderMappingOpt = findClassBuilderFrom(classMapping, classBuilderCriteria);
         }
+        if (!classBuilderMappingOpt.isPresent() && !classBuilderCriteria.isAny()) {
+            throw new IllegalArgumentException("Cannot find constructor with criteria " + classBuilderCriteria.mappingAsString());
+        }
+        return classBuilderMappingOpt;
     }
 
     public static Optional<ClassBuilderMapping> findClassBuilderFrom(ClassMapping<Object> classMapping, ClassBuilderCriteria classBuilderCriteria) {
@@ -26,12 +31,12 @@ public class ClassBuilderFinder {
         if (classBuilderCriteria.isStaticFactory()) {
             classBuilderOptional = asList(classMapping.getType().getDeclaredMethods()).stream()
                     .filter(method -> Modifier.isStatic(method.getModifiers()) && Modifier.isPublic(method.getModifiers()))
-                    .map(method -> new ClassBuilderMapping(method, classBuilderCriteria.getParameterCriteria()))
+                    .map(method -> new ClassBuilderMapping(method, classBuilderCriteria.getParametersMapping()))
                     .filter(classBuilder -> hasToBuild(classBuilder, classBuilderCriteria))
                     .findFirst();
         } else {
             classBuilderOptional = asList(classMapping.getType().getConstructors()).stream()
-                    .map(method -> new ClassBuilderMapping(method, classBuilderCriteria.getParameterCriteria()))
+                    .map(method -> new ClassBuilderMapping(method, classBuilderCriteria.getParametersMapping()))
                     .filter(classBuilder -> hasToBuild(classBuilder, classBuilderCriteria))
                     .findFirst();
         }
@@ -42,11 +47,11 @@ public class ClassBuilderFinder {
     private static boolean hasToBuild(ClassBuilderMapping classBuilderMapping, ClassBuilderCriteria classBuilderCriteria) {
         boolean match = false;
         if ((classBuilderCriteria.getMethodName() == null || classBuilderCriteria.getMethodName().equals(classBuilderMapping.getName()))
-                && classBuilderMapping.getParameterCount() == classBuilderCriteria.getParameterCriteria().size()
+                && classBuilderMapping.getParameterCount() == classBuilderCriteria.getParametersMapping().size()
                 && classBuilderMapping.isPublic()) {
             match = true;
             for (int i = 0; i < classBuilderMapping.getParameterCount(); i++) {
-                if (!classBuilderMapping.getParameterTypes()[i].equals(classBuilderCriteria.getParameterCriteria().get(i).getParameterClass())) {
+                if (!classBuilderMapping.getParameterTypes()[i].equals(classBuilderCriteria.getParametersMapping().get(i).getParameterClass())) {
                     match = false;
                 }
             }
@@ -59,7 +64,7 @@ public class ClassBuilderFinder {
                 Comparator.<ClassBuilderMapping>comparingInt(o -> o.getParametersMapping().size())
                         .reversed()
                         .thenComparing(o -> o.getConstructor() != null ? "constructor=" + o.getConstructor() : "staticFactory=" + o.getStaticFactory())
-                        .thenComparingInt(o -> o.getConstructor() != null  ? o.getConstructor().getParameterCount() : o.getStaticFactory().getParameterCount())
+                        .thenComparingInt(o -> o.getConstructor() != null ? o.getConstructor().getParameterCount() : o.getStaticFactory().getParameterCount())
         );
         addConstructorScored(classMapping, classBuilderMappingScored);
 
@@ -86,11 +91,13 @@ public class ClassBuilderFinder {
 
     private static void addStaticFactoryScored(ClassMapping<Object> classMapping, SortedSet<ClassBuilderMapping> classBuilderMappingScored) {
         for (Method method : classMapping.getType().getDeclaredMethods()) {
-            List<Field> declaredFields = getPropertiesWithInheritance(classMapping.getType()).collect(toList());
-            List<ParameterMapping> parametersMapping = getParametersMapping(classMapping, Arrays.asList(method.getParameterTypes()), declaredFields);
-            classBuilderMappingScored.add(new ClassBuilderMapping(method, parametersMapping));
-            if (parametersMapping.size() == declaredFields.size()) {
-                break;
+            if (Modifier.isStatic(method.getModifiers())) {
+                List<Field> declaredFields = getPropertiesWithInheritance(classMapping.getType()).collect(toList());
+                List<ParameterMapping> parametersMapping = getParametersMapping(classMapping, Arrays.asList(method.getParameterTypes()), declaredFields);
+                classBuilderMappingScored.add(new ClassBuilderMapping(method, parametersMapping));
+                if (parametersMapping.size() == declaredFields.size()) {
+                    break;
+                }
             }
         }
     }
