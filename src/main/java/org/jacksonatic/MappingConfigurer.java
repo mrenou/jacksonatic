@@ -9,8 +9,6 @@ import org.jacksonatic.mapping.ClassesMapping;
 
 import java.util.function.Function;
 
-import static org.jacksonatic.mapping.ClassBuilderCriteria.mapStaticFactory;
-
 public class MappingConfigurer {
 
     private Function<Class<Object>, ClassMappingConfigurer<Object>> defaultClassMappingProducer = (clazz) ->  null;

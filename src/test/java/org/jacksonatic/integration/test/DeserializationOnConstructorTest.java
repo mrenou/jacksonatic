@@ -127,51 +127,6 @@ public class DeserializationOnConstructorTest {
         assertThat(firstConstructorCalled).isEqualTo("public Pojo(String field1, Integer field2)");
     }
 
-    static class Pojo2 {
-
-        private String field1;
-
-        private Integer field2;
-
-        private Pojo2(String field1, Integer field2) {
-            setConstructorCallIfEmpty("private Pojo2(String field1, Integer field2)");
-            this.field1 = field1;
-            this.field2 = field2;
-        }
-
-        public static Pojo2 newFakePojo(Integer other, Integer field2) {
-            setConstructorCallIfEmpty("public static Pojo2 newFakePojo(Integer other, Integer field2)");
-            return null;
-        }
-
-        public static Pojo2 newPojoLight(String field1) {
-            setConstructorCallIfEmpty("public static Pojo2 newPojoLight");
-            return new Pojo2(field1, null);
-        }
-
-        public static Pojo2 newPojo(String field1, Integer field2) {
-            setConstructorCallIfEmpty("public static Pojo2 newPojo");
-            return new Pojo2(field1, field2);
-        }
-    }
-
-    @Test
-    public void find_a_static_factory_which_starts_exact_fields_to_deserialize() throws IOException {
-        Pojo2 expectedPojo = Pojo2.newPojo("field1", 42);
-        configureMapping()
-                .on(type(Pojo2.class)
-                        .all()
-                        .withAConstructorOrStaticFactory())
-                .registerIn(objectMapper);
-
-        captureConstructor();
-        Pojo2 pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo2.class);
-
-        assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
-        assertThat(firstConstructorCalled).isEqualTo("public static Pojo2 newPojo");
-    }
-
-
     static class Pojo3 {
 
         public static Integer staticToIgnore = 42;
@@ -216,50 +171,6 @@ public class DeserializationOnConstructorTest {
 
         assertThat(pojo).isEqualToComparingFieldByField(expectedPojo);
         assertThat(firstConstructorCalled).isEqualTo("public static Pojo3 newPojo");
-    }
-
-    static class Pojo4 {
-
-        private String field1;
-
-        private Integer field2;
-
-        private String field3;
-
-        private Pojo4(String field1, Integer field2) {
-            setConstructorCallIfEmpty("private Pojo4");
-            this.field1 = field1;
-            this.field2 = field2;
-        }
-
-        public static Pojo4 newFakePojo(Integer other, Integer field2) {
-            setConstructorCallIfEmpty("public static Pojo4 newFakePojo");
-            return null;
-        }
-
-        public static Pojo4 newPojo(String field1, Integer field2) {
-            setConstructorCallIfEmpty("public static Pojo4 newPojo");
-            final Pojo4 pojo = new Pojo4(field1, field2);
-            return pojo;
-        }
-    }
-
-    @Test
-    public void find_a_static_factory_which_starts_same_fields_to_deserialize() throws IOException {
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        Pojo4 expectedPojo = Pojo4.newPojo("field1", 42);
-        configureMapping()
-                .on(type(Pojo4.class)
-                        .all()
-                        .withAConstructorOrStaticFactory())
-                .registerIn(objectMapper);
-
-        captureConstructor();
-        Pojo4 pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo4.class);
-
-        assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
-        assertThat(firstConstructorCalled).isEqualTo("public static Pojo4 newPojo");
     }
 
     static class Pojo5 {

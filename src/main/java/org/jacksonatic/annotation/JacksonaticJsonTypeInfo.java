@@ -1,6 +1,5 @@
 package org.jacksonatic.annotation;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.lang.annotation.Annotation;

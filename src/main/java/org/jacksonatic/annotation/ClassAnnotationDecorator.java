@@ -32,8 +32,8 @@ public class ClassAnnotationDecorator {
 
     private static void addFieldAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {
         StreamSupport.stream(annotatedClass.fields().spliterator(), false)
-                .forEach(annotatedField -> ((Optional<PropertyMapping>) classMapping.findPropertyMapping(annotatedField.getName()))
-                        .ifPresent(propertyMapping -> {
+                .forEach(annotatedField -> {
+                            PropertyMapping propertyMapping = classMapping.getOrCreatePropertyMapping(annotatedField.getName());
                             if (classMapping.allPropertiesAreMapped() && !propertyMapping.isMapped() && !propertyMapping.isIgnored()) {
                                 propertyMapping.map();
                             }
@@ -42,7 +42,7 @@ public class ClassAnnotationDecorator {
                             }
                             propertyMapping.getAnnotations().values().stream()
                                     .forEach(annotation -> annotatedField.addOrOverride(annotation));
-                        }));
+                        });
     }
 
     private static void addConstructorAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {

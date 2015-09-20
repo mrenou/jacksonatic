@@ -79,9 +79,16 @@ public class AnnotatedClassConstructor {
 
         }
 
-        return mergeClassMappings(parentClassMappingOpt,
+        Optional<ClassMapping<Object>> finalClassMappingOpt = mergeClassMappings(parentClassMappingOpt,
                 Optional.ofNullable(classesMapping.get(ac.getAnnotated())),
                 getExtraClassMappingOpt(processType, ac.getAnnotated()))
+                .map(finalClassMapping -> {
+                    if (finalClassMapping.getType() != ac.getAnnotated()) {
+                        return finalClassMapping.createChildMapping((Class<Object>) ac.getAnnotated());
+                    }
+                    return finalClassMapping;
+                });
+        return finalClassMappingOpt
                 .map(finalClassMapping -> decorate(ac, finalClassMapping))
                 .orElse(ac);
     }
@@ -121,13 +128,13 @@ public class AnnotatedClassConstructor {
         if (processType == ProcessType.SERIALIZATION || processType == ProcessType.NO_SUPER_TYPES) {
             return Optional.ofNullable(
                     Optional.ofNullable(baseClassMappingConfigurer)
-                            .map(classesMappingConfigurer -> classesMappingConfigurer.getSerializationOnlyClassMapping().mergeWithParentMapping(baseClassMappingConfigurer.getClassMapping()))
+                            .map(classesMappingConfigurer -> classesMappingConfigurer.getSerializationOnlyClassMapping().copyWithParentMapping(baseClassMappingConfigurer.getClassMapping()))
                             .orElse(null)
             );
         } else {
             return Optional.ofNullable(
                     Optional.ofNullable(baseClassMappingConfigurer)
-                            .map(classesMappingConfigurer -> classesMappingConfigurer.getDeserializationOnlyClassMapping().mergeWithParentMapping(baseClassMappingConfigurer.getClassMapping()))
+                            .map(classesMappingConfigurer -> classesMappingConfigurer.getDeserializationOnlyClassMapping().copyWithParentMapping(baseClassMappingConfigurer.getClassMapping()))
                             .orElse(null)
             );
         }

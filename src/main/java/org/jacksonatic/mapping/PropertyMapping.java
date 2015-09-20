@@ -2,64 +2,62 @@ package org.jacksonatic.mapping;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jacksonatic.annotation.JacksonaticJsonIgnore;
-import org.jacksonatic.annotation.JacksonaticJsonProperty;
+import org.jacksonatic.annotation.AnnotationBuilder;
+import org.jacksonatic.annotation.Annotations;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.util.stream.Collectors.toMap;
+import static org.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
+import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 
 public class PropertyMapping {
 
-    private Field field;
+    private String fieldName;
 
-    private Map<Class<? extends Annotation>, Annotation> annotations;
+    private Annotations annotations;
 
-    public PropertyMapping(Field field) {
-        this(field, new HashMap<>());
+
+    public static PropertyMapping property(String fieldName) {
+        return new PropertyMapping(fieldName);
     }
 
-    PropertyMapping(Field field, Map<Class<? extends Annotation>, Annotation> annotations) {
-        this.field = field;
+    private PropertyMapping(String fieldName) {
+        this(fieldName, new Annotations());
+    }
+
+    private PropertyMapping(String fieldName, Annotations annotations) {
+        this.fieldName = fieldName;
         this.annotations = annotations;
     }
 
-    public void ignore() {
-        annotations.put(JsonIgnore.class, new JacksonaticJsonIgnore(true));
+    public PropertyMapping add(AnnotationBuilder annotationBuilder) {
+        annotations.add(annotationBuilder);
+        return this;
     }
 
-    public void map() {
-        annotations.put(JsonProperty.class, new JacksonaticJsonProperty(field.getName(), false, JsonProperty.INDEX_UNKNOWN, ""));
+    public PropertyMapping ignore() {
+        add(jsonIgnore());
+        return this;
     }
 
-    public void map(String mappedName) {
-        annotations.put(JsonProperty.class, new JacksonaticJsonProperty(mappedName, false, JsonProperty.INDEX_UNKNOWN, ""));
+    public PropertyMapping map() {
+        mapTo(fieldName);
+        return this;
     }
 
-    PropertyMapping copy() {
-        return new PropertyMapping(field, this.annotations.entrySet().stream().collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
+    public PropertyMapping mapTo(String mappedName) {
+        add(jsonProperty(mappedName));
+        return this;
     }
 
-    PropertyMapping copyWithParentMapping(PropertyMapping parentMapping) {
-        return new PropertyMapping(field, this.annotations.size() == 0 ?
-                parentMapping.annotations.entrySet().stream().collect(toMap(Map.Entry::getKey, Map.Entry::getValue)) :
-                annotations.entrySet().stream().collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
-    }
-
-    public String getName() {
-        return field.getName();
+    public String getFieldName() {
+        return fieldName;
     }
 
     public String getMappedName() {
-        return Optional.ofNullable(annotations.get(JsonProperty.class)).map(annotation -> ((JsonProperty)annotation).value()).orElse(field.getName());
-    }
-
-    public Map<Class<? extends Annotation>, Annotation> getAnnotations() {
-        return annotations;
+        return Optional.ofNullable(annotations.get(JsonProperty.class)).map(annotation -> ((JsonProperty)annotation).value()).orElse(fieldName);
     }
 
     public boolean isMapped() {
@@ -68,5 +66,19 @@ public class PropertyMapping {
 
     public boolean isIgnored() {
         return annotations.containsKey(JsonIgnore.class);
+    }
+
+    public Map<Class<? extends Annotation>, Annotation> getAnnotations() {
+        return annotations;
+    }
+
+    PropertyMapping copy() {
+        return new PropertyMapping(fieldName, this.annotations.copy());
+    }
+
+    PropertyMapping copyWithParentMapping(PropertyMapping parentMapping) {
+        return new PropertyMapping(fieldName, this.annotations.size() == 0 ?
+                parentMapping.annotations.copy():
+                annotations.copy());
     }
 }

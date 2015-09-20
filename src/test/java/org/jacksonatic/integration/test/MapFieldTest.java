@@ -2,6 +2,8 @@ package org.jacksonatic.integration.test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jacksonatic.annotation.JacksonaticJsonIgnore;
+import org.jacksonatic.annotation.JacksonaticJsonProperty;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -10,6 +12,8 @@ import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jacksonatic.ClassMappingConfigurer.type;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
+import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
+import static org.jacksonatic.mapping.PropertyMapping.property;
 
 public class MapFieldTest {
 
@@ -48,56 +52,6 @@ public class MapFieldTest {
     public static final Pojo POJO = new Pojo("field1", 42);
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    @Test
-    public void map_without_fields_to_serialize() throws JsonProcessingException {
-        objectMapper.disable(FAIL_ON_EMPTY_BEANS);
-        configureMapping()
-                .on(type(Pojo.class))
-                .registerIn(objectMapper);
-
-        String json = objectMapper.writeValueAsString(POJO);
-
-        assertThat(json).isEqualTo("{}");
-    }
-
-    @Test
-    public void map_without_fields_to_deserialize() throws IOException {
-        Pojo expectedPojo = new Pojo(null, null);
-        configureMapping()
-                .on(type(Pojo.class))
-                .registerIn(objectMapper);
-
-        Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\"}", Pojo.class);
-
-        assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
-    }
-
-    @Test
-    public void map_one_basic_field_to_serialize() throws JsonProcessingException {
-        configureMapping()
-                .on(type(Pojo.class)
-                        .map("field1"))
-                .registerIn(objectMapper);
-
-        String json = objectMapper.writeValueAsString(POJO);
-
-        assertThat(json).isEqualTo("{\"field1\":\"field1\"}");
-
-    }
-
-    @Test
-    public void map_one_basic_field_to_deserialize() throws IOException {
-        Pojo expectedPojo = new Pojo("field1", null);
-        configureMapping()
-                .on(type(Pojo.class)
-                        .map("field1"))
-                .registerIn(objectMapper);
-
-        Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\"}", Pojo.class);
-
-        assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
-    }
 
     @Test
     public void map_two_basic_fields_to_serialize() throws JsonProcessingException {
@@ -175,85 +129,5 @@ public class MapFieldTest {
 
         assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
     }
-
-    static class PojoParent {
-
-        private String field1;
-
-        PojoParent() {
-
-        }
-
-        PojoParent(String field1) {
-            this.field1 = field1;
-        }
-    }
-
-    static class PojoChild extends PojoParent {
-
-        private String field2;
-
-        public PojoChild() {
-
-        }
-
-        public PojoChild(String field1, String field2) {
-            super(field1);
-            this.field2 = field2;
-        }
-    }
-
-    @Test
-    public void map_one_inherited_field_to_serialize() throws JsonProcessingException {
-        configureMapping()
-                .on(type(PojoChild.class)
-                        .map("field1"))
-                .registerIn(objectMapper);
-
-        String json = objectMapper.writeValueAsString(new PojoChild("field1", "field2"));
-
-        assertThat(json).isEqualTo("{\"field1\":\"field1\"}");
-
-    }
-
-    @Test
-    public void map_one_parent_field_to_serialize2() throws JsonProcessingException {
-        configureMapping()
-                .on(type(PojoParent.class)
-                        .map("field1"))
-                .registerIn(objectMapper);
-
-        String json = objectMapper.writeValueAsString(new PojoChild("field1", "field2"));
-
-        assertThat(json).isEqualTo("{\"field1\":\"field1\"}");
-
-    }
-
-    @Test
-    public void map_one_inherited_field_to_deserialize() throws IOException {
-        PojoChild expectedPojo = new PojoChild("field1", null);
-        configureMapping()
-                .on(type(PojoChild.class)
-                        .map("field1"))
-                .registerIn(objectMapper);
-
-        PojoChild pojo = objectMapper.readValue("{\"field1\":\"field1\"}", PojoChild.class);
-
-        assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
-    }
-
-    @Test
-    public void map_one_parent_field_to_deserialize() throws IOException {
-        PojoChild expectedPojo = new PojoChild("field1", null);
-        configureMapping()
-                .on(type(PojoParent.class)
-                        .map("field1"))
-                .registerIn(objectMapper);
-
-        PojoChild pojo = objectMapper.readValue("{\"field1\":\"field1\"}", PojoChild.class);
-
-        assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
-    }
-
 
 }

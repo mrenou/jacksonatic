@@ -1,8 +1,8 @@
 package org.jacksonatic;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.mapping.ParameterCriteria;
+import org.jacksonatic.mapping.PropertyMapping;
 
 import static java.util.Arrays.asList;
 import static org.jacksonatic.mapping.ClassBuilderCriteria.*;
@@ -48,6 +48,12 @@ public class ClassMappingConfigurer<T> {
 
     public ClassMappingConfigurer all() {
         currentClassMapping.mapAllProperties();
+        return this;
+    }
+
+
+    public ClassMappingConfigurer on(PropertyMapping propertyMapping) {
+        currentClassMapping.on(propertyMapping);
         return this;
     }
 

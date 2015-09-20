@@ -6,10 +6,10 @@ import java.lang.annotation.Annotation;
 
 public class JacksonaticJsonIgnore implements JsonIgnore {
 
-    private final boolean value;
+    private boolean value = true;
 
-    public JacksonaticJsonIgnore(boolean value) {
-        this.value = value;
+    private JacksonaticJsonIgnore() {
+
     }
 
     @Override
@@ -20,5 +20,28 @@ public class JacksonaticJsonIgnore implements JsonIgnore {
     @Override
     public Class<? extends Annotation> annotationType() {
         return JsonIgnore.class;
+    }
+
+    public static Builder jsonIgnore() {
+        return new Builder();
+    }
+
+    public static Builder jsonIgnore(boolean value) {
+        return new Builder().value(value);
+    }
+
+    static class Builder implements AnnotationBuilder {
+
+        private JacksonaticJsonIgnore jsonIgnore = new JacksonaticJsonIgnore();
+
+        public  Builder value(boolean value) {
+            jsonIgnore.value = value;
+            return this;
+        }
+
+        @Override
+        public Annotation build() {
+            return jsonIgnore;
+        }
     }
 }

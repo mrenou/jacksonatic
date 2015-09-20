@@ -6,19 +6,15 @@ import java.lang.annotation.Annotation;
 
 public class JacksonaticJsonProperty implements JsonProperty {
 
-    private final String value;
+    private String value = USE_DEFAULT_NAME;
 
-    private final boolean required;
+    private boolean required = false;
 
-    private final int index;
+    private int index = INDEX_UNKNOWN;
 
-    private final String defaultValue;
+    private String defaultValue = "";
 
-    public JacksonaticJsonProperty(String value, boolean required, int index, String defaultValue) {
-        this.value = value;
-        this.required = required;
-        this.index = index;
-        this.defaultValue = defaultValue;
+    private JacksonaticJsonProperty() {
     }
 
     @Override
@@ -45,4 +41,43 @@ public class JacksonaticJsonProperty implements JsonProperty {
     public Class<? extends Annotation> annotationType() {
         return JsonProperty.class;
     }
+
+    public static Builder jsonProperty() {
+        return new Builder();
+    }
+
+    public static Builder jsonProperty(String value) {
+        return new Builder().value(value);
+    }
+
+    static class Builder implements AnnotationBuilder {
+
+        private JacksonaticJsonProperty jsonProperty = new JacksonaticJsonProperty();
+
+        public  Builder value(String value) {
+            jsonProperty.value = value;
+            return this;
+        }
+
+        public  Builder required(boolean required) {
+            jsonProperty.required = required;
+            return this;
+        }
+
+        public  Builder index(int index) {
+            jsonProperty.index = index;
+            return this;
+        }
+
+        public  Builder defaultValue(String defaultValue) {
+            jsonProperty.defaultValue = defaultValue;
+            return this;
+        }
+
+        @Override
+        public Annotation build() {
+            return jsonProperty;
+        }
+    }
 }
+

@@ -103,7 +103,7 @@ public class ClassBuilderFinder {
         while (iFields < fields.size() && iParameterType < parameterTypes.size()) {
             Field field = fields.get(iFields);
             Class<?> parameterType = parameterTypes.get(iParameterType);
-            PropertyMapping propertyMapping = classMapping.getPropertyMapping(field.getName());
+            PropertyMapping propertyMapping = classMapping.getOrCreatePropertyMapping(field.getName());
 
             if (!Modifier.isStatic(field.getModifiers()) && (classMapping.allPropertiesAreMapped() || propertyMapping.isMapped())) {
                 if (parameterType.equals(field.getType())) {

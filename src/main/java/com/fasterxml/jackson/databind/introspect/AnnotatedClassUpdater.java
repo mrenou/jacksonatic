@@ -1,11 +1,9 @@
 package com.fasterxml.jackson.databind.introspect;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jacksonatic.mapping.ClassBuilderMapping;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class AnnotatedClassUpdater {

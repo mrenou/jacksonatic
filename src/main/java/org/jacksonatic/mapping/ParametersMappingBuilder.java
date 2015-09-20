@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static org.jacksonatic.util.ReflectionUtil.getDeclaredFieldsWithInheritance;
 import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
 
 public class ParametersMappingBuilder {
