@@ -6,6 +6,9 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static org.jacksonatic.mapping.ParametersMappingBuilder.buildParametersMapping;
 
+/**
+ * Criteria to match a constructor or a static factory
+ */
 public class ClassBuilderCriteria {
 
     private String methodName;

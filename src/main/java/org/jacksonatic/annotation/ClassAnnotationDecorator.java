@@ -14,6 +14,9 @@ import java.util.stream.StreamSupport;
 
 import static org.jacksonatic.mapping.ClassBuilderFinder.findClassBuilderMapping;
 
+/**
+ * Add annotations defined in {@link org.jacksonatic.mapping.ClassMapping} to {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass}
+ */
 public class ClassAnnotationDecorator {
 
     public static AnnotatedClass decorate(AnnotatedClass annotatedClass, ClassMapping classMapping) {

@@ -16,6 +16,9 @@ import static org.jacksonatic.annotation.JacksonaticJsonTypeName.jsonTypeName;
 import static org.jacksonatic.mapping.PropertyMapping.property;
 import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
 
+/**
+ * Define class mapping
+ */
 public class ClassMapping<T> {
 
     private Class<T> type;
@@ -100,6 +103,7 @@ public class ClassMapping<T> {
 
     private void checkFieldExists(String name) {
         if (!fields.containsKey(name)) {
+            // TODO to enablee when method inspection will be implemented
             //throw new IllegalStateException("Field with name " + name + " doesn't exist in class mapping " + type.getName());
         }
     }

@@ -11,6 +11,9 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Define mapping for constructor or static factory
+ */
 public class ClassBuilderMapping {
 
     private Constructor<?> constructor;

@@ -11,6 +11,10 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
 
+/**
+ * Use {@link org.jacksonatic.mapping.ClassMapping } and {@link org.jacksonatic.mapping.ClassBuilderCriteria } to find
+ * constructor or static factory and build a {@ling org.jacksonatic.mapping.ClassBuilderMapping }
+ */
 public class ClassBuilderFinder {
 
     public static Optional<ClassBuilderMapping> findClassBuilderMapping(ClassMapping<Object> classMapping, ClassBuilderCriteria classBuilderCriteria) {

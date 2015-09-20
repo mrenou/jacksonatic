@@ -123,7 +123,7 @@ public class DeserializationOnStaticFactoryest {
         Pojo2 expectedPojo = Pojo2.newPojo("field1", 42);
         configureMapping()
                 .on(type(Pojo2.class)
-                        .all()
+                        .mapAll()
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 
@@ -168,7 +168,7 @@ public class DeserializationOnStaticFactoryest {
         Pojo4 expectedPojo = Pojo4.newPojo("field1", 42);
         configureMapping()
                 .on(type(Pojo4.class)
-                        .all()
+                        .mapAll()
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 

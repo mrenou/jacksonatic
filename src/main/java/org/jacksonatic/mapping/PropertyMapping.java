@@ -12,13 +12,20 @@ import java.util.Optional;
 import static org.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 
+/**
+ * Allowing to define jackson property mapping in a programmatic way.
+ */
 public class PropertyMapping {
 
     private String fieldName;
 
     private Annotations annotations;
 
-
+    /**
+     * Start a property mapping for the given field name
+     * @param fieldName
+     * @return
+     */
     public static PropertyMapping property(String fieldName) {
         return new PropertyMapping(fieldName);
     }
@@ -32,21 +39,38 @@ public class PropertyMapping {
         this.annotations = annotations;
     }
 
+    /**
+     * Add an annotation
+     * @param annotationBuilder
+     * @return
+     */
     public PropertyMapping add(AnnotationBuilder annotationBuilder) {
         annotations.add(annotationBuilder);
         return this;
     }
 
+    /**
+     * ignore the property
+     * @return
+     */
     public PropertyMapping ignore() {
         add(jsonIgnore());
         return this;
     }
 
+    /**
+     * map the property
+     * @return
+     */
     public PropertyMapping map() {
         mapTo(fieldName);
         return this;
     }
 
+    /**
+     * map the property with the given name
+     * @return
+     */
     public PropertyMapping mapTo(String mappedName) {
         add(jsonProperty(mappedName));
         return this;

@@ -103,7 +103,7 @@ public class MapFieldWhenDeserializationOnConstructorTest {
         Pojo expectedPojo = new Pojo("field1", 42);
         configureMapping()
                 .on(type(Pojo.class)
-                        .all()
+                        .mapAll()
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 

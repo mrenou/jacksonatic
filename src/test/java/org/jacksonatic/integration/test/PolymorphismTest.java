@@ -102,7 +102,7 @@ public class PolymorphismTest {
     private void configureMappingPolymorphism() {
         configureMapping()
                 .on(type(PojoParent.class)
-                                .all()
+                                .mapAll()
                         .propertyForTypeName("type")
                         .addNamedSubType(PojoChild1.class, "CHILD1")
                         .addNamedSubType(PojoChild2.class, "CHILD2")
@@ -111,7 +111,7 @@ public class PolymorphismTest {
                 .on(type(PojoChild1.class)
                         .typeName("CHILD1"))
                 .on(type(PojoChild2.class)
-                        .all()
+                        .mapAll()
                         .typeName("CHILD2"))
                 .registerIn(objectMapper);
     }

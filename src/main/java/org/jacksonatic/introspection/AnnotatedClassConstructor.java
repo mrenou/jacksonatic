@@ -17,6 +17,22 @@ import java.util.function.Function;
 
 import static org.jacksonatic.annotation.ClassAnnotationDecorator.decorate;
 
+/**
+ * Build {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass} adding annotations defined in class mapping;
+ *
+ * Class mapping is share in three sources :
+ * - standard class mapping  {@link #classesMapping
+ * - class mapping defined only for serialization process {@link #serializationOnlyClassesMapping
+ * - class mapping defined only for deserialization process {@link #deserializationOnlyClassesMapping
+ *
+ * Class mapping for serialization and deserialization overrides the standard class mapping.
+ *
+ * Class mapping can be inherited from class mapping parent (expected when process is NO_SUPER_TYPES). Child class
+ * mapping override parent class mapping.
+ *
+ * When final class mapping is built from all these class mapping, it is saved into {@link #mergedClassesMapping} to
+ * avoid a re-computation.
+ */
 public class AnnotatedClassConstructor {
 
     private enum ProcessType {SERIALIZATION, DESERIALIZATION, NO_SUPER_TYPES}

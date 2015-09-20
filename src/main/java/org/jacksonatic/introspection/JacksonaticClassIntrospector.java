@@ -13,6 +13,10 @@ import org.jacksonatic.MappingConfigurer;
 
 import java.util.function.Function;
 
+/**
+ * Customized class introspector to use our own {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass}
+ * construction.
+ */
 public class JacksonaticClassIntrospector extends BasicClassIntrospector {
 
     private AnnotatedClassConstructor annotatedClassConstructor;

@@ -9,6 +9,9 @@ import org.jacksonatic.mapping.ClassesMapping;
 
 import java.util.function.Function;
 
+/**
+ * Entry point of the api, allowing to define a jackson class mapping collection in a programmatic way.
+ */
 public class MappingConfigurer {
 
     private Function<Class<Object>, ClassMappingConfigurer<Object>> defaultClassMappingProducer = (clazz) ->  null;
@@ -19,6 +22,10 @@ public class MappingConfigurer {
 
     private ClassesMapping deserializationOnlyClassesMapping = new ClassesMapping();
 
+    /**
+     * Entry point of the api
+     * @return
+     */
     public static MappingConfigurer configureMapping() {
         return new MappingConfigurer();
     }
@@ -28,6 +35,11 @@ public class MappingConfigurer {
         return this;
     }
 
+    /**
+     * to define a class mapping
+     * @param classMappingConfigurer
+     * @return
+     */
     public MappingConfigurer on(ClassMappingConfigurer classMappingConfigurer) {
         addType(classMappingConfigurer);
         return this;
@@ -39,12 +51,21 @@ public class MappingConfigurer {
         deserializationOnlyClassesMapping.put(classMappingConfigurer.getDeserializationOnlyClassMapping().getType(), classMappingConfigurer.getDeserializationOnlyClassMapping());
     }
 
+    /**
+     * to define a class mapping with all its properties mapped
+     * @param classMappingConfigurer
+     * @return
+     */
     public MappingConfigurer mapAllOn(ClassMappingConfigurer classMappingConfigurer) {
         addType(classMappingConfigurer);
         classMappingConfigurer.getClassMapping().mapAllProperties();
         return this;
     }
 
+    /**
+     * register mapping configuration in a {@ling com.fasterxml.jackson.databind.ObjectMapper}
+     * @param objectMapper
+     */
     public void registerIn(ObjectMapper objectMapper) {
         registerForSerializationIn(objectMapper);
         registerForDeserializationIn(objectMapper);

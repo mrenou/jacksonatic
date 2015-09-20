@@ -4,6 +4,9 @@ import java.util.HashMap;
 
 import static java.util.stream.Collectors.toMap;
 
+/**
+ * Class mapping map
+ */
 public class ClassesMapping extends HashMap<Class<Object>, ClassMapping<Object>> {
 
     public ClassesMapping copy() {

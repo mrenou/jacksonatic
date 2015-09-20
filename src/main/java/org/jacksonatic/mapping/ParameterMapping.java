@@ -8,6 +8,9 @@ import java.util.Map;
 
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 
+/**
+ * Define parameter mapping
+ */
 public class ParameterMapping {
 
     private Class<?> parameterClass;

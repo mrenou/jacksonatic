@@ -83,7 +83,7 @@ public class SerializationDeserializationOnlyTest {
 
         configureMapping()
                 .on(type(Pojo.class)
-                        .all()
+                        .mapAll()
                         .map("field1")
                         .ignore("field2")
                         .ignore("field3")

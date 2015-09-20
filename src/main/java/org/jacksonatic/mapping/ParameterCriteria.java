@@ -1,5 +1,8 @@
 package org.jacksonatic.mapping;
 
+/**
+ * Criteria to match a parameter by class or field name class
+ */
 public class ParameterCriteria {
 
     private Class<?> parameterClass;

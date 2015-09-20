@@ -78,7 +78,7 @@ public class MapFieldTest {
     public void map_all_basic_fields_to_serialize() throws JsonProcessingException {
         configureMapping()
                 .on(type(Pojo.class)
-                        .all())
+                        .mapAll())
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
@@ -90,7 +90,7 @@ public class MapFieldTest {
     public void map_all_basic_fields_to_deserialize() throws IOException {
         configureMapping()
                 .on(type(Pojo.class)
-                        .all())
+                        .mapAll())
                 .registerIn(objectMapper);
 
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);

@@ -22,7 +22,7 @@ public class JsonIgnoreFieldTest {
     public void ignore_one_field() throws JsonProcessingException {
         configureMapping()
                 .on(type(Pojo.class)
-                        .all()
+                        .mapAll()
                         .on(property("field1").add(jsonIgnore())))
                 .registerIn(objectMapper);
 
@@ -36,7 +36,7 @@ public class JsonIgnoreFieldTest {
         objectMapper.disable(FAIL_ON_EMPTY_BEANS);
         configureMapping()
                 .on(type(Pojo.class)
-                        .all()
+                        .mapAll()
                         .on(property("field1").add(jsonIgnore()))
                         .on(property("field2").add(jsonIgnore())))
                 .registerIn(objectMapper);
