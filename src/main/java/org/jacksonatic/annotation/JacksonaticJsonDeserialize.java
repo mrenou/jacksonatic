@@ -1,10 +1,8 @@
 package org.jacksonatic.annotation;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.util.Converter;
 
 import java.lang.annotation.Annotation;
@@ -133,7 +131,7 @@ public class JacksonaticJsonDeserialize implements JsonDeserialize {
         }
 
         @Override
-        public Annotation build() {
+        public JsonDeserialize build() {
             return jsonDeserialize;
         }
     }

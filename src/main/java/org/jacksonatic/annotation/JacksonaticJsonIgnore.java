@@ -40,7 +40,7 @@ public class JacksonaticJsonIgnore implements JsonIgnore {
         }
 
         @Override
-        public Annotation build() {
+        public JsonIgnore build() {
             return jsonIgnore;
         }
     }

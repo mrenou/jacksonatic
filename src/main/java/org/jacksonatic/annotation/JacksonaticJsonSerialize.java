@@ -80,6 +80,7 @@ public class JacksonaticJsonSerialize implements JsonSerialize {
         return contentConverter;
     }
 
+    @Deprecated
     @Override
     public Inclusion include() {
         return include;
@@ -154,7 +155,7 @@ public class JacksonaticJsonSerialize implements JsonSerialize {
         }
 
         @Override
-        public Annotation build() {
+        public JsonSerialize build() {
             return jsonSerialize;
         }
     }

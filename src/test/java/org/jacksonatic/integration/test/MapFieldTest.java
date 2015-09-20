@@ -2,18 +2,13 @@ package org.jacksonatic.integration.test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jacksonatic.annotation.JacksonaticJsonIgnore;
-import org.jacksonatic.annotation.JacksonaticJsonProperty;
 import org.junit.Test;
 
 import java.io.IOException;
 
-import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jacksonatic.ClassMappingConfigurer.type;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
-import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
-import static org.jacksonatic.mapping.PropertyMapping.property;
 
 public class MapFieldTest {
 

@@ -6,13 +6,11 @@ import java.lang.annotation.Annotation;
 
 public class JacksonaticJsonSubTypesType implements JsonSubTypes.Type {
 
-    private final String name;
+    private String name = "";
 
-    private final Class<?> value;
+    private Class<?> value;
 
-    public JacksonaticJsonSubTypesType(String name, Class<?> value) {
-        this.name = name;
-        this.value = value;
+    private JacksonaticJsonSubTypesType() {
     }
 
     @Override
@@ -30,4 +28,31 @@ public class JacksonaticJsonSubTypesType implements JsonSubTypes.Type {
         return JsonSubTypes.Type.class;
     }
 
+    public static Builder type() {
+        return new Builder();
+    }
+
+    public static Builder type(String name, Class<?> value) {
+        return new Builder().name(name).value(value);
+    }
+
+    public static class Builder implements AnnotationBuilder {
+
+        private JacksonaticJsonSubTypesType type = new JacksonaticJsonSubTypesType();
+
+        public Builder name(String name) {
+            type.name = name;
+            return this;
+        }
+
+        public Builder value(Class<?> value) {
+            type.value = value;
+            return this;
+        }
+
+        @Override
+        public  JsonSubTypes.Type build() {
+            return type;
+        }
+    }
 }

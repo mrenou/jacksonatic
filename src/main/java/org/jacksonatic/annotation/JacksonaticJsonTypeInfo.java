@@ -6,25 +6,19 @@ import java.lang.annotation.Annotation;
 
 public class JacksonaticJsonTypeInfo implements JsonTypeInfo {
 
-    private final Id use;
+    private Id use;
 
-    private final As include;
+    private As include = As.PROPERTY;
 
-    private final String property;
+    private String property = "";
 
+    private Class<?> defaultImpl = None.class;
 
-    private final Class<?> defaultImpl;
+    private boolean visible = false;
 
-    private final boolean visible;
+    private JacksonaticJsonTypeInfo() {
 
-    public JacksonaticJsonTypeInfo(Id use, As include, String property, Class<?> defaultImpl, boolean visible) {
-        this.use = use;
-        this.include = include == null ? As.PROPERTY : include;
-        this.property = property == null ? "" : property;
-        this.defaultImpl = defaultImpl == null ? None.class : defaultImpl;
-        this.visible = visible;
     }
-
 
     @Override
     public Id use() {
@@ -54,6 +48,45 @@ public class JacksonaticJsonTypeInfo implements JsonTypeInfo {
     @Override
     public Class<? extends Annotation> annotationType() {
         return JsonTypeInfo.class;
+    }
+
+    public static Builder jsonTypeInfo() {
+        return new Builder();
+    }
+
+    public static class Builder implements AnnotationBuilder {
+
+        private JacksonaticJsonTypeInfo jsonTypeInfo = new JacksonaticJsonTypeInfo();
+
+        public Builder use(Id use) {
+            jsonTypeInfo.use = use;
+            return this;
+        }
+
+        public Builder include(As include) {
+            jsonTypeInfo.include = include;
+            return this;
+        }
+
+        public Builder property(String property) {
+            jsonTypeInfo.property = property;
+            return this;
+        }
+
+        public Builder defaultImpl(Class<?> defaultImpl) {
+            jsonTypeInfo.defaultImpl = defaultImpl;
+            return this;
+        }
+
+        public Builder use(boolean visible) {
+            jsonTypeInfo.visible = visible;
+            return this;
+        }
+
+        @Override
+        public JsonTypeInfo build() {
+            return jsonTypeInfo;
+        }
     }
 
 }

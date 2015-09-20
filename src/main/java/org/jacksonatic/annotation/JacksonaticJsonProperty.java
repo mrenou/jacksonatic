@@ -75,7 +75,7 @@ public class JacksonaticJsonProperty implements JsonProperty {
         }
 
         @Override
-        public Annotation build() {
+        public JsonProperty build() {
             return jsonProperty;
         }
     }

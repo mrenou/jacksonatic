@@ -111,7 +111,7 @@ public class PolymorphismTest {
                         .withAConstructorOrStaticFactory())
                 .on(type(PojoChild2.class)
                         .all()
-                        .typeName("CHILD1")
+                        .typeName("CHILD2")
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
     }

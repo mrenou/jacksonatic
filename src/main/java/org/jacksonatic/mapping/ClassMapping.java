@@ -10,6 +10,10 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
+import static org.jacksonatic.annotation.JacksonaticJsonSubTypes.jsonSubTypes;
+import static org.jacksonatic.annotation.JacksonaticJsonSubTypesType.type;
+import static org.jacksonatic.annotation.JacksonaticJsonTypeInfo.jsonTypeInfo;
+import static org.jacksonatic.annotation.JacksonaticJsonTypeName.jsonTypeName;
 import static org.jacksonatic.mapping.ClassBuilderFinder.findClassBuilderMapping;
 import static org.jacksonatic.mapping.PropertyMapping.property;
 import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
@@ -71,19 +75,19 @@ public class ClassMapping<T> {
     }
 
     public void propertyForTypeName(String property) {
-        annotations.put(JsonTypeInfo.class, new JacksonaticJsonTypeInfo(JsonTypeInfo.Id.NAME, null, property, null, false));
+        annotations.add(jsonTypeInfo().use(JsonTypeInfo.Id.NAME).property(property));
     }
 
     public void typeName(String name) {
-        annotations.put(JsonTypeName.class, new JacksonaticJsonTypeName(name));
+        annotations.add(jsonTypeName(name));
     }
 
     public void addNamedSubType(Class<? extends T> subType, String name) {
         List<JsonSubTypes.Type> types = Optional.ofNullable(annotations.get(JsonSubTypes.class))
                 .map(annotation -> new ArrayList<>(Arrays.asList(((JsonSubTypes) annotation).value())))
                 .orElse(new ArrayList<>());
-        types.add(new JacksonaticJsonSubTypesType(name, subType));
-        annotations.put(JsonSubTypes.class, new JacksonaticJsonSubTypes(types.toArray(new JsonSubTypes.Type[types.size()])));
+        types.add(JacksonaticJsonSubTypesType.type(name, subType).build());
+        annotations.add(jsonSubTypes(types.toArray(new JsonSubTypes.Type[types.size()])));
     }
 
     public PropertyMapping getOrCreatePropertyMapping(String name) {

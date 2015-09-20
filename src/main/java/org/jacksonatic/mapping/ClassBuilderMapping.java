@@ -1,17 +1,13 @@
 package org.jacksonatic.mapping;
 
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import org.jacksonatic.annotation.Annotations;
 import org.jacksonatic.annotation.JacksonaticJsonCreator;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -21,11 +17,11 @@ public class ClassBuilderMapping {
 
     private Method staticFactory;
 
-    private Map<Class<? extends Annotation>, Annotation> annotations;
+    private Annotations annotations;
 
     private List<ParameterMapping> parametersMapping;
 
-    ClassBuilderMapping(Constructor<?> constructor, Method staticFactory, Map<Class<? extends Annotation>, Annotation> annotations, List<ParameterMapping> parametersMapping) {
+    ClassBuilderMapping(Constructor<?> constructor, Method staticFactory, Annotations annotations, List<ParameterMapping> parametersMapping) {
         this.constructor = constructor;
         this.staticFactory = staticFactory;
         this.annotations = annotations;
@@ -34,20 +30,20 @@ public class ClassBuilderMapping {
 
     public ClassBuilderMapping(Constructor<?> constructor, List<ParameterMapping> parametersMapping) {
         this.constructor = constructor;
-        this.annotations = new HashMap<>();
+        this.annotations = new Annotations();
         this.parametersMapping = parametersMapping;
         putJsonCreator();
     }
 
     public ClassBuilderMapping(Method staticFactory, List<ParameterMapping> parametersMapping) {
         this.staticFactory = staticFactory;
-        this.annotations = new HashMap<>();
+        this.annotations = new Annotations();
         this.parametersMapping = parametersMapping;
         putJsonCreator();
     }
 
     private void putJsonCreator() {
-        annotations.put(JsonCreator.class, new JacksonaticJsonCreator());
+        annotations.add(JacksonaticJsonCreator.jsonCreator());
     }
 
     public boolean isStaticFactory() {
@@ -90,7 +86,7 @@ public class ClassBuilderMapping {
         return staticFactory;
     }
 
-    public Map<Class<? extends Annotation>, Annotation> getAnnotations() {
+    public Annotations getAnnotations() {
         return annotations;
     }
 
@@ -101,7 +97,7 @@ public class ClassBuilderMapping {
     ClassBuilderMapping copy() {
         return new ClassBuilderMapping(constructor,
                 staticFactory,
-                annotations.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue())),
+                annotations.copy(),
                 parametersMapping.stream().map(parameterMapping -> parameterMapping.copy()).collect(toList()));
     }
 

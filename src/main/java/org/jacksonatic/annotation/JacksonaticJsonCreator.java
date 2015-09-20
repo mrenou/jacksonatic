@@ -6,14 +6,9 @@ import java.lang.annotation.Annotation;
 
 public class JacksonaticJsonCreator implements JsonCreator {
 
-    private final Mode mode;
+    private Mode mode = Mode.DEFAULT;
 
-    public JacksonaticJsonCreator() {
-        this(Mode.DEFAULT);
-    }
-
-    public JacksonaticJsonCreator(Mode mode) {
-        this.mode = mode;
+    private JacksonaticJsonCreator() {
     }
 
     @Override
@@ -24,5 +19,28 @@ public class JacksonaticJsonCreator implements JsonCreator {
     @Override
     public Class<? extends Annotation> annotationType() {
         return JsonCreator.class;
+    }
+
+    public static Builder jsonCreator() {
+        return new Builder();
+    }
+
+    public static Builder jsonCreator(Mode mode) {
+        return new Builder().mode(mode);
+    }
+
+    public static class Builder implements AnnotationBuilder {
+
+        private JacksonaticJsonCreator jsonCreator = new JacksonaticJsonCreator();
+
+        public Builder mode(Mode mode) {
+            jsonCreator.mode = mode;
+            return this;
+        }
+
+        @Override
+        public JsonCreator build() {
+            return jsonCreator;
+        }
     }
 }
