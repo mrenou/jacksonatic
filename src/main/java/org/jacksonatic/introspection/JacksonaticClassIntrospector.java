@@ -21,8 +21,8 @@ public class JacksonaticClassIntrospector extends BasicClassIntrospector {
 
     private AnnotatedClassConstructor annotatedClassConstructor;
 
-    public void register(Function<Class<Object>, ClassMappingConfigurer<Object>> baseClassMappingProducer, MappingConfigurer mappingConfigurer) {
-        annotatedClassConstructor = new AnnotatedClassConstructor(baseClassMappingProducer, mappingConfigurer);
+    public void register(MappingConfigurer mappingConfigurer) {
+        annotatedClassConstructor = new AnnotatedClassConstructor(mappingConfigurer);
     }
 
     @Override

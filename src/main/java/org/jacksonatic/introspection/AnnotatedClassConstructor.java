@@ -37,8 +37,6 @@ public class AnnotatedClassConstructor {
 
     private enum ProcessType {SERIALIZATION, DESERIALIZATION, NO_SUPER_TYPES}
 
-    private Function<Class<Object>, ClassMappingConfigurer<Object>> baseClassMappingProducer;
-
     private ClassesMapping classesMapping;
 
     private ClassesMapping serializationOnlyClassesMapping;
@@ -47,8 +45,7 @@ public class AnnotatedClassConstructor {
 
     private Map<ProcessType, ClassesMapping> mergedClassesMapping = new HashMap<>();
 
-    public AnnotatedClassConstructor(Function<Class<Object>, ClassMappingConfigurer<Object>> baseClassMappingProducer, MappingConfigurer mappingConfigurer) {
-        this.baseClassMappingProducer = baseClassMappingProducer;
+    public AnnotatedClassConstructor(MappingConfigurer mappingConfigurer) {
         this.classesMapping = mappingConfigurer.getClassesMapping().copy();
         this.serializationOnlyClassesMapping = mappingConfigurer.getSerializationOnlyClassesMapping().copy();
         this.deserializationOnlyClassesMapping = mappingConfigurer.getDeserializationOnlyClassesMapping().copy();
@@ -79,7 +76,7 @@ public class AnnotatedClassConstructor {
 
         List<Class<?>> superTypes = ClassUtil.findSuperTypes(ac.getAnnotated(), Object.class);
         superTypes.add(Object.class);
-        Optional<ClassMapping<Object>> parentClassMappingOpt = getBaseClassMappingOpt(processType, baseClassMappingProducer.apply((Class<Object>) ac.getAnnotated()));
+        Optional<ClassMapping<Object>> parentClassMappingOpt = Optional.empty();
 
         for (int i = superTypes.size() - 1; i >= 0; i--) {
             Class<?> superType = superTypes.get(i);
@@ -105,6 +102,7 @@ public class AnnotatedClassConstructor {
                     }
                     return finalClassMapping;
                 });
+
         return finalClassMappingOpt
                 .map(finalClassMapping -> decorate(ac, finalClassMapping))
                 .orElse(ac);
@@ -139,21 +137,5 @@ public class AnnotatedClassConstructor {
             extraClassMapping = Optional.ofNullable(deserializationOnlyClassesMapping.get(clazz));
         }
         return extraClassMapping;
-    }
-
-    private Optional<ClassMapping<Object>> getBaseClassMappingOpt(ProcessType processType, ClassMappingConfigurer<Object> baseClassMappingConfigurer) {
-        if (processType == ProcessType.SERIALIZATION || processType == ProcessType.NO_SUPER_TYPES) {
-            return Optional.ofNullable(
-                    Optional.ofNullable(baseClassMappingConfigurer)
-                            .map(classesMappingConfigurer -> classesMappingConfigurer.getSerializationOnlyClassMapping().copyWithParentMapping(baseClassMappingConfigurer.getClassMapping()))
-                            .orElse(null)
-            );
-        } else {
-            return Optional.ofNullable(
-                    Optional.ofNullable(baseClassMappingConfigurer)
-                            .map(classesMappingConfigurer -> classesMappingConfigurer.getDeserializationOnlyClassMapping().copyWithParentMapping(baseClassMappingConfigurer.getClassMapping()))
-                            .orElse(null)
-            );
-        }
     }
 }

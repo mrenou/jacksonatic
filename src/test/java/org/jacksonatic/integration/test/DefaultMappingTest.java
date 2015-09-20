@@ -52,7 +52,9 @@ public class DefaultMappingTest {
     @Test
     public void find_constructor_by_default() throws IOException {
         configureMapping()
-                .forEach((clazz -> type(clazz).mapAll().withAConstructorOrStaticFactory()))
+                .on(type(Object.class)
+                        .mapAll()
+                        .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
@@ -71,7 +73,8 @@ public class DefaultMappingTest {
     public void map_all_by_default() throws IOException {
         objectMapper.disable(FAIL_ON_EMPTY_BEANS);
         configureMapping()
-                .forEach((clazz -> type(clazz).mapAll()))
+                .on(type(Object.class)
+                        .mapAll())
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
@@ -83,7 +86,7 @@ public class DefaultMappingTest {
     public void map_none_by_default() throws IOException {
         objectMapper.disable(FAIL_ON_EMPTY_BEANS);
         configureMapping()
-                .forEach((clazz -> type(clazz)))
+                .on(type(Object.class))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);

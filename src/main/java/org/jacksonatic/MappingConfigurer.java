@@ -14,8 +14,6 @@ import java.util.function.Function;
  */
 public class MappingConfigurer {
 
-    private Function<Class<Object>, ClassMappingConfigurer<Object>> defaultClassMappingProducer = (clazz) ->  null;
-
     private ClassesMapping classesMapping = new ClassesMapping();
 
     private ClassesMapping serializationOnlyClassesMapping = new ClassesMapping();
@@ -28,11 +26,6 @@ public class MappingConfigurer {
      */
     public static MappingConfigurer configureMapping() {
         return new MappingConfigurer();
-    }
-
-    public MappingConfigurer forEach(Function<Class<Object>, ClassMappingConfigurer<Object>> defaultClassMappingProducer) {
-        this.defaultClassMappingProducer= defaultClassMappingProducer;
-        return this;
     }
 
     /**
@@ -78,7 +71,7 @@ public class MappingConfigurer {
             objectMapper.setConfig(serializationConfig.with(new JacksonaticClassIntrospector()));
         }
         JacksonaticClassIntrospector basicClassIntrospector = (JacksonaticClassIntrospector) objectMapper.getSerializationConfig().getClassIntrospector();
-        basicClassIntrospector.register(defaultClassMappingProducer, this);
+        basicClassIntrospector.register(this);
     }
 
     private void registerForDeserializationIn(ObjectMapper objectMapper) {
@@ -88,7 +81,7 @@ public class MappingConfigurer {
             objectMapper.setConfig(deserializationConfig.with(new JacksonaticClassIntrospector()));
         }
         JacksonaticClassIntrospector basicClassIntrospector = (JacksonaticClassIntrospector) objectMapper.getDeserializationConfig().getClassIntrospector();
-        basicClassIntrospector.register(defaultClassMappingProducer, this);
+        basicClassIntrospector.register(this);
     }
 
     public ClassesMapping getClassesMapping() {
