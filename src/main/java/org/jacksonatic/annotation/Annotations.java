@@ -1,12 +1,13 @@
 package org.jacksonatic.annotation;
 
+import org.jacksonatic.util.MyHashMap;
+
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toMap;
 
-public class Annotations extends HashMap<Class<? extends Annotation>, Annotation> {
+public class Annotations extends MyHashMap<Class<? extends Annotation>, Annotation> {
 
     public void add(AnnotationBuilder annotationBuilder) {
         Annotation annotation = annotationBuilder.build();

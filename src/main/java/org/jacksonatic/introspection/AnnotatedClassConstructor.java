@@ -4,32 +4,29 @@ import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 import com.fasterxml.jackson.databind.util.ClassUtil;
-import org.jacksonatic.ClassMappingConfigurer;
 import org.jacksonatic.MappingConfigurer;
 import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.mapping.ClassesMapping;
+import org.jacksonatic.util.MyHashMap;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static org.jacksonatic.annotation.ClassAnnotationDecorator.decorate;
 
 /**
  * Build {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass} adding annotations defined in class mapping;
- *
+ * <p>
  * Class mapping is share in three sources :
  * - standard class mapping  {@link #classesMapping
  * - class mapping defined only for serialization process {@link #serializationOnlyClassesMapping
  * - class mapping defined only for deserialization process {@link #deserializationOnlyClassesMapping
- *
+ * <p>
  * Class mapping for serialization and deserialization overrides the standard class mapping.
- *
+ * <p>
  * Class mapping can be inherited from class mapping parent (expected when process is NO_SUPER_TYPES). Child class
  * mapping override parent class mapping.
- *
+ * <p>
  * When final class mapping is built from all these class mapping, it is saved into {@link #mergedClassesMapping} to
  * avoid a re-computation.
  */
@@ -43,7 +40,7 @@ public class AnnotatedClassConstructor {
 
     private ClassesMapping deserializationOnlyClassesMapping;
 
-    private Map<ProcessType, ClassesMapping> mergedClassesMapping = new HashMap<>();
+    private MyHashMap<ProcessType, ClassesMapping> mergedClassesMapping = new MyHashMap<>();
 
     public AnnotatedClassConstructor(MappingConfigurer mappingConfigurer) {
         this.classesMapping = mappingConfigurer.getClassesMapping().copy();
@@ -80,12 +77,12 @@ public class AnnotatedClassConstructor {
 
         for (int i = superTypes.size() - 1; i >= 0; i--) {
             Class<?> superType = superTypes.get(i);
-            Optional<ClassMapping<Object>> mergedClassMapping = Optional.ofNullable(mergedClassesMapping.get(processType).get(superType));
+            Optional<ClassMapping<Object>> mergedClassMapping = Optional.ofNullable(mergedClassesMapping.getTyped(processType).get(superType));
             if (!mergedClassMapping.isPresent()) {
                 mergedClassMapping = mergeClassMappings(parentClassMappingOpt,
                         Optional.ofNullable(classesMapping.get(superType)),
                         getExtraClassMappingOpt(processType, superType));
-                mergedClassMapping.ifPresent(classMapping -> mergedClassesMapping.get(processType).put((Class<Object>) superType, classMapping));
+                mergedClassMapping.ifPresent(classMapping -> mergedClassesMapping.getTyped(processType).put((Class<Object>) superType, classMapping));
             }
             if (mergedClassMapping.isPresent()) {
                 parentClassMappingOpt = mergedClassMapping;

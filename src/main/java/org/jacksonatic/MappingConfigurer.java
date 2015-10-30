@@ -1,5 +1,7 @@
 package org.jacksonatic;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -7,8 +9,12 @@ import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 import org.jacksonatic.introspection.JacksonaticClassIntrospector;
 import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.mapping.ClassesMapping;
+import org.jacksonatic.mapping.TypeNameAutoAssigner;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Entry point of the api, allowing to define a jackson class mapping collection in a programmatic way.
@@ -21,8 +27,11 @@ public class MappingConfigurer {
 
     private ClassesMapping deserializationOnlyClassesMapping = new ClassesMapping();
 
+    private TypeNameAutoAssigner typeNameAutoAssigner = new TypeNameAutoAssigner();
+
     /**
      * Entry point of the api
+     *
      * @return
      */
     public static MappingConfigurer configureMapping() {
@@ -31,11 +40,14 @@ public class MappingConfigurer {
 
     /**
      * to define a class mapping
+     *
      * @param classMappingConfigurer
      * @return
      */
     public MappingConfigurer on(ClassMappingConfigurer classMappingConfigurer) {
         addType(classMappingConfigurer);
+        typeNameAutoAssigner.assignTypeNameIfNeccesary(classesMapping, classMappingConfigurer);
+        typeNameAutoAssigner.saveTypeWithJsonSubTypes(classMappingConfigurer);
         return this;
     }
 
@@ -54,6 +66,7 @@ public class MappingConfigurer {
 
     /**
      * to define a class mapping with all its properties mapped
+     *
      * @param classMappingConfigurer
      * @return
      */
@@ -65,6 +78,7 @@ public class MappingConfigurer {
 
     /**
      * register mapping configuration in a {@ling com.fasterxml.jackson.databind.ObjectMapper}
+     *
      * @param objectMapper
      */
     public void registerIn(ObjectMapper objectMapper) {

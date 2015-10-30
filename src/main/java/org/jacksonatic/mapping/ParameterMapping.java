@@ -11,7 +11,7 @@ import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 /**
  * Define parameter mapping
  */
-public class ParameterMapping {
+public class ParameterMapping implements HasAnnotations {
 
     private Class<?> parameterClass;
 
@@ -40,7 +40,8 @@ public class ParameterMapping {
         return parameterClass;
     }
 
-    public Map<Class<? extends Annotation>, Annotation> getAnnotations() {
+    @Override
+    public Annotations getAnnotations() {
         return annotations;
     }
 

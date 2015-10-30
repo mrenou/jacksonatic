@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.jacksonatic.annotation.Annotations;
 import org.jacksonatic.annotation.JacksonaticJsonSubTypesType;
+import org.jacksonatic.util.MyHashMap;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -19,7 +19,7 @@ import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
 /**
  * Define class mapping
  */
-public class ClassMapping<T> {
+public class ClassMapping<T> implements HasAnnotations {
 
     private Class<T> type;
 
@@ -43,7 +43,7 @@ public class ClassMapping<T> {
     }
 
     public ClassMapping(Class<T> type) {
-        this(type, false, Optional.empty(), new HashMap<>(), new Annotations());
+        this(type, false, Optional.empty(), new MyHashMap<>(), new Annotations());
     }
 
     public void mapAllProperties() {
@@ -116,8 +116,9 @@ public class ClassMapping<T> {
         return classBuilderCriteriaOpt;
     }
 
-    public Collection<Annotation> getAnnotations() {
-        return annotations.values();
+    @Override
+    public Annotations getAnnotations() {
+        return annotations;
     }
 
     ClassMapping<Object> copy() {

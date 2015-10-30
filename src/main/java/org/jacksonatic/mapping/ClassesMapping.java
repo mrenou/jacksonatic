@@ -1,13 +1,13 @@
 package org.jacksonatic.mapping;
 
-import java.util.HashMap;
+import org.jacksonatic.util.MyHashMap;
 
 import static java.util.stream.Collectors.toMap;
 
 /**
  * Class mapping map
  */
-public class ClassesMapping extends HashMap<Class<Object>, ClassMapping<Object>> {
+public class ClassesMapping extends MyHashMap<Class<Object>, ClassMapping<Object>> {
 
     public ClassesMapping copy() {
         return this.entrySet().stream().collect(toMap(
@@ -19,4 +19,5 @@ public class ClassesMapping extends HashMap<Class<Object>, ClassMapping<Object>>
                         () -> new ClassesMapping())
         );
     }
+
 }

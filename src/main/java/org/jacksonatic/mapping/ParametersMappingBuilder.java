@@ -1,5 +1,7 @@
 package org.jacksonatic.mapping;
 
+import org.jacksonatic.util.MyHashMap;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,10 +13,10 @@ import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
 public class ParametersMappingBuilder {
 
     public static List<ParameterMapping> buildParametersMapping(Class<?> classToBuild, List<ParameterCriteria> parameterCriterias) {
-        Map<Class<?>, PriorityQueue<String>> propertiesByClass = new HashMap<>();
+        MyHashMap<Class<?>, PriorityQueue<String>> propertiesByClass = new MyHashMap<>();
         Map<String, Class<?>> classByProperty = new HashMap<>();
         getPropertiesWithInheritance(classToBuild).forEach(field -> {
-            PriorityQueue<String> properties = propertiesByClass.get(field.getType());
+            PriorityQueue<String> properties = propertiesByClass.getTyped(field.getType());
             if (properties == null) {
                 properties = new PriorityQueue<>();
                 propertiesByClass.put(field.getType(), properties);

@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Define mapping for constructor or static factory
  */
-public class ClassBuilderMapping {
+public class ClassBuilderMapping implements HasAnnotations {
 
     private Constructor<?> constructor;
 
@@ -89,6 +89,7 @@ public class ClassBuilderMapping {
         return staticFactory;
     }
 
+    @Override
     public Annotations getAnnotations() {
         return annotations;
     }

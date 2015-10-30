@@ -15,7 +15,7 @@ import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 /**
  * Allowing to define jackson property mapping in a programmatic way.
  */
-public class PropertyMapping {
+public class PropertyMapping implements HasAnnotations {
 
     private String fieldName;
 
@@ -92,7 +92,7 @@ public class PropertyMapping {
         return annotations.containsKey(JsonIgnore.class);
     }
 
-    public Map<Class<? extends Annotation>, Annotation> getAnnotations() {
+    public Annotations getAnnotations() {
         return annotations;
     }
 
