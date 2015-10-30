@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 import org.jacksonatic.introspection.JacksonaticClassIntrospector;
+import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.mapping.ClassesMapping;
 
-import java.util.function.Function;
+import java.util.Optional;
 
 /**
  * Entry point of the api, allowing to define a jackson class mapping collection in a programmatic way.
@@ -39,9 +40,16 @@ public class MappingConfigurer {
     }
 
     private void addType(ClassMappingConfigurer classMappingConfigurer) {
-        classesMapping.put(classMappingConfigurer.getClassMapping().getType(), classMappingConfigurer.getClassMapping());
-        serializationOnlyClassesMapping.put(classMappingConfigurer.getSerializationOnlyClassMapping().getType(), classMappingConfigurer.getSerializationOnlyClassMapping());
-        deserializationOnlyClassesMapping.put(classMappingConfigurer.getDeserializationOnlyClassMapping().getType(), classMappingConfigurer.getDeserializationOnlyClassMapping());
+        mergeClassMappingInClassesMapping(classMappingConfigurer.getClassMapping(), classesMapping);
+        mergeClassMappingInClassesMapping(classMappingConfigurer.getSerializationOnlyClassMapping(), serializationOnlyClassesMapping);
+        mergeClassMappingInClassesMapping(classMappingConfigurer.getDeserializationOnlyClassMapping(), deserializationOnlyClassesMapping);
+    }
+
+    private void mergeClassMappingInClassesMapping(ClassMapping classMapping, ClassesMapping classesMapping) {
+        classesMapping.put(classMapping.getType(),
+                Optional.ofNullable(classesMapping.get(classMapping.getType()))
+                        .map(parentClassMapping -> classMapping.copyWithParentMapping(parentClassMapping))
+                        .orElse(classMapping));
     }
 
     /**
@@ -82,6 +90,14 @@ public class MappingConfigurer {
         }
         JacksonaticClassIntrospector basicClassIntrospector = (JacksonaticClassIntrospector) objectMapper.getDeserializationConfig().getClassIntrospector();
         basicClassIntrospector.register(this);
+    }
+
+    public MappingConfigurer copy() {
+        MappingConfigurer mappingConfigurerCopy = configureMapping();
+        mappingConfigurerCopy.classesMapping = classesMapping.copy();
+        mappingConfigurerCopy.serializationOnlyClassesMapping = serializationOnlyClassesMapping.copy();
+        mappingConfigurerCopy.deserializationOnlyClassesMapping = deserializationOnlyClassesMapping.copy();
+        return mappingConfigurerCopy;
     }
 
     public ClassesMapping getClassesMapping() {
