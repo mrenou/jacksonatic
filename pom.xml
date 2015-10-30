@@ -6,7 +6,7 @@
 
     <groupId>org.jacksonatic</groupId>
     <artifactId>jacksonatic</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2</version>
 
     <dependencies>
         <dependency>
