@@ -20,8 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jacksonatic.annotation.AnnotationBuilder;
 import org.jacksonatic.annotation.Annotations;
 
-import java.lang.annotation.Annotation;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;

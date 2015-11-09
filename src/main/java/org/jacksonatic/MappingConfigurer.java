@@ -15,8 +15,6 @@
  */
 package org.jacksonatic;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -26,10 +24,7 @@ import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.mapping.ClassesMapping;
 import org.jacksonatic.mapping.TypeNameAutoAssigner;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Entry point of the api, allowing to define a jackson class mapping collection in a programmatic way.

@@ -42,8 +42,12 @@ public class Pojo {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Pojo pojo = (Pojo) o;
         return Objects.equals(field1, pojo.field1)
                 && Objects.equals(field2, pojo.field2);

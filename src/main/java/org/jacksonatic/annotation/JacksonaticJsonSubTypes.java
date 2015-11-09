@@ -16,20 +16,12 @@
 package org.jacksonatic.annotation;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.lang.annotation.Annotation;
 
 public class JacksonaticJsonSubTypes implements JsonSubTypes {
 
     private Type[] value;
-
-    public JacksonaticJsonSubTypes(Type[] value) {
-        this.value = value;
-    }
-
-    private JacksonaticJsonSubTypes() {
-    }
 
     @Override
     public Class<? extends Annotation> annotationType() {

@@ -23,10 +23,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.BasicBeanDescription;
 import com.fasterxml.jackson.databind.introspect.BasicClassIntrospector;
 import com.fasterxml.jackson.databind.introspect.POJOPropertiesCollector;
-import org.jacksonatic.ClassMappingConfigurer;
 import org.jacksonatic.MappingConfigurer;
-
-import java.util.function.Function;
 
 /**
  * Customized class introspector to use our own {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass}

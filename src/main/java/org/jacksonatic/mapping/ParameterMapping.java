@@ -19,7 +19,6 @@ import org.jacksonatic.annotation.AnnotationBuilder;
 import org.jacksonatic.annotation.Annotations;
 
 import java.lang.annotation.Annotation;
-import java.util.Map;
 
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 
