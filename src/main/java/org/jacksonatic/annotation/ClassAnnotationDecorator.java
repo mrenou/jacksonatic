@@ -16,6 +16,7 @@
 package org.jacksonatic.annotation;
 
 import com.fasterxml.jackson.databind.introspect.*;
+import org.jacksonatic.AnnotatedClassLogger;
 import org.jacksonatic.mapping.*;
 
 import java.lang.annotation.Annotation;
@@ -39,6 +40,8 @@ public class ClassAnnotationDecorator {
         addFieldAnnotations(annotatedClass, classMapping);
         addMethodAnnotations(annotatedClass, classMapping);
         addConstructorAnnotations(annotatedClass, classMapping);
+
+        AnnotatedClassLogger.log(annotatedClass);
 
         return annotatedClass;
     }
