@@ -33,6 +33,13 @@ public class JacksonaticJsonIgnore implements JsonIgnore {
     }
 
     @Override
+    public String toString() {
+        return "JacksonaticJsonIgnore{" +
+                "value=" + value +
+                '}';
+    }
+
+    @Override
     public Class<? extends Annotation> annotationType() {
         return JsonIgnore.class;
     }

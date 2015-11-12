@@ -16,6 +16,7 @@
 package org.jacksonatic;
 
 import org.jacksonatic.mapping.ClassMapping;
+import org.jacksonatic.mapping.MethodMapping;
 import org.jacksonatic.mapping.ParameterCriteria;
 import org.jacksonatic.mapping.PropertyMapping;
 
@@ -94,6 +95,11 @@ public class ClassMappingConfigurer<T> {
      */
     public ClassMappingConfigurer on(PropertyMapping propertyMapping) {
         currentClassMapping.on(propertyMapping);
+        return this;
+    }
+
+    public ClassMappingConfigurer on(MethodMapping methodMapping) {
+        currentClassMapping.on(methodMapping);
         return this;
     }
 

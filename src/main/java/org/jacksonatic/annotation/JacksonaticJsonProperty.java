@@ -57,6 +57,16 @@ public class JacksonaticJsonProperty implements JsonProperty {
         return JsonProperty.class;
     }
 
+    @Override
+    public String toString() {
+        return "JacksonaticJsonProperty{" +
+                "value='" + value + '\'' +
+                ", required=" + required +
+                ", index=" + index +
+                ", defaultValue='" + defaultValue + '\'' +
+                '}';
+    }
+
     public static Builder jsonProperty() {
         return new Builder();
     }
