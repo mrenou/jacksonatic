@@ -13,62 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.integration.test;
+package org.jacksonatic.integration.test.field;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
+import java.io.IOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jacksonatic.ClassMappingConfigurer.type;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
+import static org.jacksonatic.mapping.FieldMapping.field;
 
-public class IgnoreFieldTest {
+public class FieldNotFoundTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
+    public static final Pojo POJO = new Pojo();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static class Pojo {
+    static class Pojo {
 
         private String field1;
 
-        private Integer field2;
-
-        public Pojo(String field1, Integer field2) {
-            this.field1 = field1;
-            this.field2 = field2;
-        }
     }
 
-
-    @Test
-    public void ignore_one_field() throws JsonProcessingException {
-        Pojo pojo = new Pojo("field1", 42);
-
+    @Test(expected = IllegalStateException.class)
+    public void unknown_field_on_serialization() throws JsonProcessingException {
         configureMapping()
                 .on(type(Pojo.class)
-                        .mapAll()
-                        .ignore("field1"))
+                        .on(field("unknown")))
                 .registerIn(objectMapper);
 
-        String json = objectMapper.writeValueAsString(pojo);
-
-        assertThat(json).isEqualTo("{\"field2\":42}");
+        objectMapper.writeValueAsString(POJO);
     }
 
-    @Test
-    public void ignore_all_fields() throws JsonProcessingException {
-        objectMapper.disable(FAIL_ON_EMPTY_BEANS);
+    @Test(expected = IllegalStateException.class)
+    public void unknown_field_on_deserialization() throws IOException {
+        Pojo expectedPojo = new Pojo();
         configureMapping()
                 .on(type(Pojo.class)
-                        .mapAll()
-                        .ignore("field1")
-                        .ignore("field2"))
+                        .on(field("unknown")))
                 .registerIn(objectMapper);
 
-        String json = objectMapper.writeValueAsString(new Pojo("field1", 42));
+        Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\"}", Pojo.class);
 
-        assertThat(json).isEqualTo("{}");
+        assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
     }
 
 }

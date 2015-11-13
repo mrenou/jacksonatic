@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,17 +21,19 @@ import org.jacksonatic.annotation.Annotations;
 import org.jacksonatic.annotation.JacksonaticJsonSubTypesType;
 import org.jacksonatic.util.MyHashMap;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 import static org.jacksonatic.annotation.JacksonaticJsonSubTypes.jsonSubTypes;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeInfo.jsonTypeInfo;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeName.jsonTypeName;
-import static org.jacksonatic.mapping.MethodMapping.method;
 import static org.jacksonatic.mapping.FieldMapping.field;
+import static org.jacksonatic.mapping.MethodMapping.method;
+import static org.jacksonatic.mapping.MethodSignature.methodSignature;
 import static org.jacksonatic.util.ReflectionUtil.getFieldsWithInheritance;
+import static org.jacksonatic.util.ReflectionUtil.getMethodsWithInheritance;
 import static org.jacksonatic.util.StringUtil.firstToUpperCase;
 
 /**
@@ -51,7 +53,11 @@ public class ClassMapping<T> implements HasAnnotations {
 
     private Annotations annotations;
 
-    private Map<String, Field> fields;
+    private Set<String> existingFieldNames;
+
+    private Set<MethodSignature> existingMethodSignatures;
+
+    private Set<String> existingMethodNames;
 
     ClassMapping(Class<T> type, boolean allFields, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, MyHashMap<String, FieldMapping> fieldsMapping, MyHashMap<MethodSignature, MethodMapping> methodsMapping, Annotations annotations) {
         this.type = type;
@@ -60,7 +66,9 @@ public class ClassMapping<T> implements HasAnnotations {
         this.fieldsMapping = fieldsMapping;
         this.methodsMapping = methodsMapping;
         this.annotations = annotations;
-        this.fields = getFieldsWithInheritance(type).collect(toMap(Field::getName, f -> f));
+        this.existingFieldNames = getFieldsWithInheritance(type).map(field -> field.getName()).collect(toSet());
+        this.existingMethodSignatures = getMethodsWithInheritance(type).map(method -> methodSignature(method.getName(), method.getParameterTypes())).collect(toSet());
+        this.existingMethodNames = getMethodsWithInheritance(type).map(method -> method.getName()).collect(toSet());
     }
 
     public ClassMapping(Class<T> type) {
@@ -93,7 +101,14 @@ public class ClassMapping<T> implements HasAnnotations {
     }
 
     public void on(MethodMapping methodMapping) {
+        checkMethodExists(methodMapping.getMethodSignature());
         methodsMapping.put(methodMapping.getMethodSignature(), methodMapping);
+    }
+
+    private void checkMethodExists(MethodSignature methodSignature) {
+            if (!existingMethodSignatures.contains(methodSignature) && !existingMethodNames.contains(methodSignature.name)) {
+                throw new IllegalStateException(String.format("Method with signature '%s' doesn't exist in class mapping %s", methodSignature, type.getName()));
+            }
     }
 
     public void mapGetter(String fieldName) {
@@ -143,9 +158,8 @@ public class ClassMapping<T> implements HasAnnotations {
     }
 
     private void checkFieldExists(String name) {
-        if (!fields.containsKey(name)) {
-            // TODO to enablee when method inspection will be implemented
-            //throw new IllegalStateException("Field with name " + name + " doesn't exist in class mapping " + type.getName());
+        if (!existingFieldNames.contains(name)) {
+            throw new IllegalStateException(String.format("Field with name '%s' doesn't exist in class mapping %s", name, type.getName()));
         }
     }
 

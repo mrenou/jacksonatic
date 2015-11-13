@@ -16,6 +16,7 @@
 package org.jacksonatic.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +38,21 @@ public class ReflectionUtil {
 
     public static Stream<Field> getFieldsWithInheritance(Class<?> classToBuild) {
         return getDeclaredFieldsWithInheritance(classToBuild).stream().filter(field -> !Modifier.isStatic(field.getModifiers()));
+    }
+
+    public static List<Method> getDeclaredMethodsWithInheritance(Class<?> classToBuild) {
+        if (classToBuild == null || classToBuild.equals(Object.class)) {
+            return new ArrayList<>();
+        } else {
+            List<Method> declaredMethods = getDeclaredMethodsWithInheritance(classToBuild.getSuperclass());
+            declaredMethods.addAll(Arrays.asList(classToBuild.getDeclaredMethods()));
+            return declaredMethods;
+
+        }
+    }
+
+    public static Stream<Method> getMethodsWithInheritance(Class<?> classToBuild) {
+        return getDeclaredMethodsWithInheritance(classToBuild).stream().filter(method -> !Modifier.isStatic(method.getModifiers()));
     }
 
 }
