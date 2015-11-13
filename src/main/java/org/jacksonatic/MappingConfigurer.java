@@ -75,14 +75,14 @@ public class MappingConfigurer {
     }
 
     /**
-     * to define a class mapping with all its properties mapped
+     * to define a class mapping with all its fields mapped
      *
      * @param classMappingConfigurer
      * @return
      */
     public MappingConfigurer mapAllOn(ClassMappingConfigurer classMappingConfigurer) {
         addType(classMappingConfigurer);
-        classMappingConfigurer.getClassMapping().mapAllProperties();
+        classMappingConfigurer.getClassMapping().mapAllFields();
         return this;
     }
 

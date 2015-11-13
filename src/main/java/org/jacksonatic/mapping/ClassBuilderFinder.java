@@ -24,7 +24,7 @@ import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
+import static org.jacksonatic.util.ReflectionUtil.getFieldsWithInheritance;
 
 /**
  * Use {@link org.jacksonatic.mapping.ClassMapping } and {@link org.jacksonatic.mapping.ClassBuilderCriteria } to find
@@ -99,7 +99,7 @@ public class ClassBuilderFinder {
 
     private static void addConstructorScored(ClassMapping<Object> classMapping, SortedSet<ClassBuilderMapping> classBuilderMappingScored) {
         for (Constructor<?> constructor : classMapping.getType().getConstructors()) {
-            List<Field> declaredFields = getPropertiesWithInheritance(classMapping.getType()).collect(toList());
+            List<Field> declaredFields = getFieldsWithInheritance(classMapping.getType()).collect(toList());
             List<ParameterMapping> parametersMapping = getParametersMapping(classMapping, Arrays.asList(constructor.getParameterTypes()), declaredFields);
             classBuilderMappingScored.add(new ClassBuilderMapping(constructor, parametersMapping));
             if (parametersMapping.size() == declaredFields.size()) {
@@ -111,7 +111,7 @@ public class ClassBuilderFinder {
     private static void addStaticFactoryScored(ClassMapping<Object> classMapping, SortedSet<ClassBuilderMapping> classBuilderMappingScored) {
         for (Method method : classMapping.getType().getDeclaredMethods()) {
             if (Modifier.isStatic(method.getModifiers())) {
-                List<Field> declaredFields = getPropertiesWithInheritance(classMapping.getType()).collect(toList());
+                List<Field> declaredFields = getFieldsWithInheritance(classMapping.getType()).collect(toList());
                 List<ParameterMapping> parametersMapping = getParametersMapping(classMapping, Arrays.asList(method.getParameterTypes()), declaredFields);
                 classBuilderMappingScored.add(new ClassBuilderMapping(method, parametersMapping));
                 if (parametersMapping.size() == declaredFields.size()) {
@@ -129,11 +129,11 @@ public class ClassBuilderFinder {
         while (iFields < fields.size() && iParameterType < parameterTypes.size()) {
             Field field = fields.get(iFields);
             Class<?> parameterType = parameterTypes.get(iParameterType);
-            PropertyMapping propertyMapping = classMapping.getOrCreatePropertyMapping(field.getName());
+            FieldMapping fieldMapping = classMapping.getOrCreateFieldMapping(field.getName());
 
-            if (!Modifier.isStatic(field.getModifiers()) && (classMapping.allPropertiesAreMapped() || propertyMapping.isMapped())) {
+            if (!Modifier.isStatic(field.getModifiers()) && (classMapping.allFieldsAreMapped() || fieldMapping.isMapped())) {
                 if (parameterType.equals(field.getType())) {
-                    parametersMapping.add(new ParameterMapping(field.getType(), propertyMapping.getMappedName()));
+                    parametersMapping.add(new ParameterMapping(field.getType(), fieldMapping.getMappedName()));
                     iFields++;
                     iParameterType++;
                 } else {

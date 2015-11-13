@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.jacksonatic.ClassMappingConfigurer.type;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
-import static org.jacksonatic.mapping.PropertyMapping.property;
+import static org.jacksonatic.mapping.FieldMapping.field;
 
 public class JsonPropertyTest {
 
@@ -94,7 +94,7 @@ public class JsonPropertyTest {
     public void map_one_basic_field_to_serialize() throws JsonProcessingException {
         configureMapping()
                 .on(type(Pojo.class)
-                        .on(property("field1").add(jsonProperty())))
+                        .on(field("field1").add(jsonProperty())))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
@@ -108,7 +108,7 @@ public class JsonPropertyTest {
         Pojo expectedPojo = new Pojo("field1", null);
         configureMapping()
                 .on(type(Pojo.class)
-                        .on(property("field1").add(jsonProperty())))
+                        .on(field("field1").add(jsonProperty())))
                 .registerIn(objectMapper);
 
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\"}", Pojo.class);
@@ -120,8 +120,8 @@ public class JsonPropertyTest {
     public void map_two_basic_fields_to_serialize() throws JsonProcessingException {
         configureMapping()
                 .on(type(Pojo.class)
-                        .on(property("field1").add(jsonProperty()))
-                        .on(property("field2").add(jsonProperty())))
+                        .on(field("field1").add(jsonProperty()))
+                        .on(field("field2").add(jsonProperty())))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
@@ -133,8 +133,8 @@ public class JsonPropertyTest {
     public void map_two_basic_fields_to_deserialize() throws IOException {
         configureMapping()
                 .on(type(Pojo.class)
-                        .on(property("field1").add(jsonProperty()))
-                        .on(property("field2").add(jsonProperty())))
+                        .on(field("field1").add(jsonProperty()))
+                        .on(field("field2").add(jsonProperty())))
                 .registerIn(objectMapper);
 
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
@@ -146,8 +146,8 @@ public class JsonPropertyTest {
     public void map_with_another_name_to_serialize() throws JsonProcessingException {
         configureMapping()
                 .on(type(Pojo.class)
-                        .on(property("field1").add(jsonProperty("toto")))
-                        .on(property("field2").add(jsonProperty())))
+                        .on(field("field1").add(jsonProperty("toto")))
+                        .on(field("field2").add(jsonProperty())))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
@@ -160,8 +160,8 @@ public class JsonPropertyTest {
         Pojo expectedPojo = new Pojo("field1", 42);
         configureMapping()
                 .on(type(Pojo.class)
-                        .on(property("field1").add(jsonProperty("toto")))
-                        .on(property("field2").add(jsonProperty())))
+                        .on(field("field1").add(jsonProperty("toto")))
+                        .on(field("field2").add(jsonProperty())))
                 .registerIn(objectMapper);
 
         Pojo pojo = objectMapper.readValue("{\"toto\":\"field1\",\"field2\":42}", Pojo.class);
@@ -200,7 +200,7 @@ public class JsonPropertyTest {
     public void map_one_inherited_field_to_serialize() throws JsonProcessingException {
         configureMapping()
                 .on(type(PojoChild.class)
-                        .on(property("field1").add(jsonProperty())))
+                        .on(field("field1").add(jsonProperty())))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(new PojoChild("field1", "field2"));
@@ -213,7 +213,7 @@ public class JsonPropertyTest {
     public void map_one_parent_field_to_serialize2() throws JsonProcessingException {
         configureMapping()
                 .on(type(PojoParent.class)
-                        .on(property("field1").add(jsonProperty())))
+                        .on(field("field1").add(jsonProperty())))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(new PojoChild("field1", "field2"));
@@ -227,7 +227,7 @@ public class JsonPropertyTest {
         PojoChild expectedPojo = new PojoChild("field1", null);
         configureMapping()
                 .on(type(PojoChild.class)
-                        .on(property("field1").add(jsonProperty())))
+                        .on(field("field1").add(jsonProperty())))
                 .registerIn(objectMapper);
 
         PojoChild pojo = objectMapper.readValue("{\"field1\":\"field1\"}", PojoChild.class);
@@ -240,7 +240,7 @@ public class JsonPropertyTest {
         PojoChild expectedPojo = new PojoChild("field1", null);
         configureMapping()
                 .on(type(PojoParent.class)
-                        .on(property("field1").add(jsonProperty())))
+                        .on(field("field1").add(jsonProperty())))
                 .registerIn(objectMapper);
 
         PojoChild pojo = objectMapper.readValue("{\"field1\":\"field1\"}", PojoChild.class);

@@ -26,29 +26,29 @@ import static org.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 
 /**
- * Allowing to define jackson property mapping in a programmatic way.
+ * Allowing to define jackson field mapping in a programmatic way.
  */
-public class PropertyMapping implements HasAnnotations {
+public class FieldMapping implements HasAnnotations {
 
-    private String fieldName;
+    private String name;
 
     private Annotations annotations;
 
     /**
-     * Start a property mapping for the given field name
+     * Start a field mapping for the given field name
      * @param fieldName
      * @return
      */
-    public static PropertyMapping property(String fieldName) {
-        return new PropertyMapping(fieldName);
+    public static FieldMapping field(String fieldName) {
+        return new FieldMapping(fieldName);
     }
 
-    private PropertyMapping(String fieldName) {
-        this(fieldName, new Annotations());
+    private FieldMapping(String name) {
+        this(name, new Annotations());
     }
 
-    private PropertyMapping(String fieldName, Annotations annotations) {
-        this.fieldName = fieldName;
+    private FieldMapping(String name, Annotations annotations) {
+        this.name = name;
         this.annotations = annotations;
     }
 
@@ -57,44 +57,44 @@ public class PropertyMapping implements HasAnnotations {
      * @param annotationBuilder
      * @return
      */
-    public PropertyMapping add(AnnotationBuilder annotationBuilder) {
+    public FieldMapping add(AnnotationBuilder annotationBuilder) {
         annotations.add(annotationBuilder);
         return this;
     }
 
     /**
-     * ignore the property
+     * ignore the field
      * @return
      */
-    public PropertyMapping ignore() {
+    public FieldMapping ignore() {
         add(jsonIgnore());
         return this;
     }
 
     /**
-     * map the property
+     * map the field
      * @return
      */
-    public PropertyMapping map() {
-        mapTo(fieldName);
+    public FieldMapping map() {
+        mapTo(name);
         return this;
     }
 
     /**
-     * map the property with the given name
+     * map the field with the given name
      * @return
      */
-    public PropertyMapping mapTo(String mappedName) {
+    public FieldMapping mapTo(String mappedName) {
         add(jsonProperty(mappedName));
         return this;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public String getName() {
+        return name;
     }
 
     public String getMappedName() {
-        return Optional.ofNullable(annotations.get(JsonProperty.class)).map(annotation -> ((JsonProperty)annotation).value()).orElse(fieldName);
+        return Optional.ofNullable(annotations.get(JsonProperty.class)).map(annotation -> ((JsonProperty)annotation).value()).orElse(name);
     }
 
     public boolean isMapped() {
@@ -109,12 +109,12 @@ public class PropertyMapping implements HasAnnotations {
         return annotations;
     }
 
-    PropertyMapping copy() {
-        return new PropertyMapping(fieldName, this.annotations.copy());
+    FieldMapping copy() {
+        return new FieldMapping(name, this.annotations.copy());
     }
 
-    PropertyMapping copyWithParentMapping(PropertyMapping parentMapping) {
-        return new PropertyMapping(fieldName, this.annotations.size() == 0 ?
+    FieldMapping copyWithParentMapping(FieldMapping parentMapping) {
+        return new FieldMapping(name, this.annotations.size() == 0 ?
                 parentMapping.annotations.copy():
                 annotations.copy());
     }

@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,19 +15,13 @@
  */
 package org.jacksonatic;
 
-import org.jacksonatic.annotation.JacksonaticJsonProperty;
 import org.jacksonatic.mapping.ClassMapping;
+import org.jacksonatic.mapping.FieldMapping;
 import org.jacksonatic.mapping.MethodMapping;
 import org.jacksonatic.mapping.ParameterCriteria;
-import org.jacksonatic.mapping.PropertyMapping;
-import org.jacksonatic.util.StringUtil;
 
 import static java.util.Arrays.asList;
-import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 import static org.jacksonatic.mapping.ClassBuilderCriteria.*;
-import static org.jacksonatic.mapping.MethodMapping.method;
-import static org.jacksonatic.mapping.PropertyMapping.property;
-import static org.jacksonatic.util.StringUtil.firstToUpperCase;
 
 /**
  * Allowing to define jackson class mapping in a programmatic way.
@@ -95,12 +89,12 @@ public class ClassMappingConfigurer<T> {
     }
 
     /**
-     * Start a property mapping
-     * @param propertyMapping
+     * Start a field mapping
+     * @param fieldMapping
      * @return
      */
-    public ClassMappingConfigurer on(PropertyMapping propertyMapping) {
-        currentClassMapping.on(propertyMapping);
+    public ClassMappingConfigurer on(FieldMapping fieldMapping) {
+        currentClassMapping.on(fieldMapping);
         return this;
     }
 
@@ -110,42 +104,42 @@ public class ClassMappingConfigurer<T> {
     }
 
     /**
-     * Map all properties
+     * Map all fields
      * @return
      */
     public ClassMappingConfigurer mapAll() {
-        currentClassMapping.mapAllProperties();
+        currentClassMapping.mapAllFields();
         return this;
     }
 
     /**
-     * Map the named property
-     * @param propertyName
+     * Map the named field
+     * @param fieldName
      * @return
      */
-    public ClassMappingConfigurer map(String propertyName) {
-        currentClassMapping.map(propertyName);
+    public ClassMappingConfigurer map(String fieldName) {
+        currentClassMapping.map(fieldName);
         return this;
     }
 
     /**
-     * Map the named property with another name
-     * @param propertyName
+     * Map the named field with another name
+     * @param fieldName
      * @param mappedName
      * @return
      */
-    public ClassMappingConfigurer map(String propertyName, String mappedName) {
-        currentClassMapping.map(propertyName, mappedName);
+    public ClassMappingConfigurer map(String fieldName, String mappedName) {
+        currentClassMapping.map(fieldName, mappedName);
         return this;
     }
 
     /**
-     * Ignore the named property
-     * @param propertyName
+     * Ignore the named field
+     * @param fieldName
      * @return
      */
-    public ClassMappingConfigurer ignore(String propertyName) {
-        currentClassMapping.ignore(propertyName);
+    public ClassMappingConfigurer ignore(String fieldName) {
+        currentClassMapping.ignore(fieldName);
         return this;
     }
 
@@ -186,12 +180,12 @@ public class ClassMappingConfigurer<T> {
     }
 
     /**
-     * Define the property use to store the type name
-     * @param property
+     * Define the field use to store the type name
+     * @param field
      * @return
      */
-    public ClassMappingConfigurer propertyForTypeName(String property) {
-        currentClassMapping.propertyForTypeName(property);
+    public ClassMappingConfigurer fieldForTypeName(String field) {
+        currentClassMapping.fieldForTypeName(field);
         return this;
     }
 

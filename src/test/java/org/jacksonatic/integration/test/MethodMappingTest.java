@@ -15,8 +15,6 @@
  */
 package org.jacksonatic.integration.test;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
@@ -28,7 +26,7 @@ import static org.jacksonatic.MappingConfigurer.configureMapping;
 import static org.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 import static org.jacksonatic.mapping.MethodMapping.method;
-import static org.jacksonatic.mapping.PropertyMapping.property;
+import static org.jacksonatic.mapping.FieldMapping.field;
 
 public class MethodMappingTest {
 
@@ -86,7 +84,7 @@ public class MethodMappingTest {
 
         configureMapping()
                 .on(type(Pojo.class)
-                        .on(property("field1").add(jsonIgnore()))
+                        .on(field("field1").add(jsonIgnore()))
                         .on(method("getField1").add(jsonProperty()))
                         .on(method("setField1", String.class).add(jsonIgnore())))
                 .registerIn(objectMapper);

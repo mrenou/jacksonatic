@@ -35,7 +35,7 @@ public class ReflectionUtil {
         }
     }
 
-    public static Stream<Field> getPropertiesWithInheritance(Class<?> classToBuild) {
+    public static Stream<Field> getFieldsWithInheritance(Class<?> classToBuild) {
         return getDeclaredFieldsWithInheritance(classToBuild).stream().filter(field -> !Modifier.isStatic(field.getModifiers()));
     }
 

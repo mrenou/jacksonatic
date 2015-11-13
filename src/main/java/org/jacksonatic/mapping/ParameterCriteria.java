@@ -24,22 +24,22 @@ public class ParameterCriteria {
 
     private String jsonProperty;
 
-    private String fieldProperty;
+    private String fieldName;
 
     public static ParameterCriteria match(Class<?> parameterClass, String jsonProperty) {
         return new ParameterCriteria(parameterClass, jsonProperty, null);
     }
 
-    public static ParameterCriteria match(String fieldProperty, String jsonProperty) {
-        return new ParameterCriteria(null, jsonProperty, fieldProperty);
+    public static ParameterCriteria match(String fieldName, String jsonProperty) {
+        return new ParameterCriteria(null, jsonProperty, fieldName);
     }
 
     public static ParameterCriteria matchType(Class<?> parameterClass) {
         return new ParameterCriteria(parameterClass, null, null);
     }
 
-    public static ParameterCriteria matchField(String fieldProperty) {
-        return new ParameterCriteria(null, null, fieldProperty);
+    public static ParameterCriteria matchField(String fieldName) {
+        return new ParameterCriteria(null, null, fieldName);
     }
 
     public ParameterCriteria mappedBy(String jsonProperty) {
@@ -47,18 +47,18 @@ public class ParameterCriteria {
         return this;
     }
 
-    public ParameterCriteria(Class<?> parameterClass, String jsonProperty, String fieldProperty) {
+    public ParameterCriteria(Class<?> parameterClass, String jsonProperty, String fieldName) {
         this.parameterClass = parameterClass;
         this.jsonProperty = jsonProperty;
-        this.fieldProperty = fieldProperty;
+        this.fieldName = fieldName;
     }
 
     public String getJsonProperty() {
         return jsonProperty;
     }
 
-    public String getFieldProperty() {
-        return fieldProperty;
+    public String getFieldName() {
+        return fieldName;
     }
 
     public Class<?> getParameterClass() {
@@ -70,7 +70,7 @@ public class ParameterCriteria {
         return "ParameterCriteria{" +
                 "parameterClass=" + parameterClass +
                 ", jsonProperty='" + jsonProperty + '\'' +
-                ", fieldProperty='" + fieldProperty + '\'' +
+                ", fieldName='" + fieldName + '\'' +
                 '}';
     }
 }

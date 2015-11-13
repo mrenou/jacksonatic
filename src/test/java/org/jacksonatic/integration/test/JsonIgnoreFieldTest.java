@@ -25,7 +25,7 @@ import static org.jacksonatic.ClassMappingConfigurer.type;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
 import static org.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
-import static org.jacksonatic.mapping.PropertyMapping.property;
+import static org.jacksonatic.mapping.FieldMapping.field;
 
 public class JsonIgnoreFieldTest {
 
@@ -38,7 +38,7 @@ public class JsonIgnoreFieldTest {
         configureMapping()
                 .on(type(Pojo.class)
                         .mapAll()
-                        .on(property("field1").add(jsonIgnore())))
+                        .on(field("field1").add(jsonIgnore())))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
@@ -52,8 +52,8 @@ public class JsonIgnoreFieldTest {
         configureMapping()
                 .on(type(Pojo.class)
                         .mapAll()
-                        .on(property("field1").add(jsonIgnore()))
-                        .on(property("field2").add(jsonIgnore())))
+                        .on(field("field1").add(jsonIgnore()))
+                        .on(field("field2").add(jsonIgnore())))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(POJO);
@@ -66,7 +66,7 @@ public class JsonIgnoreFieldTest {
         objectMapper.disable(FAIL_ON_EMPTY_BEANS);
         configureMapping()
                 .on(type(Pojo.class)
-                        .on(property("field1")
+                        .on(field("field1")
                                 .add(jsonProperty())
                                 .add(jsonIgnore())))
                 .registerIn(objectMapper);

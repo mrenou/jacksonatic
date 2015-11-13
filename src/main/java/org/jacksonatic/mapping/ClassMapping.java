@@ -30,8 +30,8 @@ import static org.jacksonatic.annotation.JacksonaticJsonSubTypes.jsonSubTypes;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeInfo.jsonTypeInfo;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeName.jsonTypeName;
 import static org.jacksonatic.mapping.MethodMapping.method;
-import static org.jacksonatic.mapping.PropertyMapping.property;
-import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
+import static org.jacksonatic.mapping.FieldMapping.field;
+import static org.jacksonatic.util.ReflectionUtil.getFieldsWithInheritance;
 import static org.jacksonatic.util.StringUtil.firstToUpperCase;
 
 /**
@@ -41,11 +41,11 @@ public class ClassMapping<T> implements HasAnnotations {
 
     private Class<T> type;
 
-    private boolean allProperties;
+    private boolean allFields;
 
     private Optional<ClassBuilderCriteria> classBuilderCriteriaOpt;
 
-    private MyHashMap<String, PropertyMapping> propertiesMapping;
+    private MyHashMap<String, FieldMapping> fieldsMapping;
 
     private MyHashMap<MethodSignature, MethodMapping> methodsMapping;
 
@@ -53,43 +53,43 @@ public class ClassMapping<T> implements HasAnnotations {
 
     private Map<String, Field> fields;
 
-    ClassMapping(Class<T> type, boolean allProperties, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, MyHashMap<String, PropertyMapping> propertiesMapping, MyHashMap<MethodSignature, MethodMapping> methodsMapping, Annotations annotations) {
+    ClassMapping(Class<T> type, boolean allFields, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, MyHashMap<String, FieldMapping> fieldsMapping, MyHashMap<MethodSignature, MethodMapping> methodsMapping, Annotations annotations) {
         this.type = type;
-        this.allProperties = allProperties;
+        this.allFields = allFields;
         this.classBuilderCriteriaOpt = classBuilderCriteriaOpt;
-        this.propertiesMapping = propertiesMapping;
+        this.fieldsMapping = fieldsMapping;
         this.methodsMapping = methodsMapping;
         this.annotations = annotations;
-        this.fields = getPropertiesWithInheritance(type).collect(toMap(Field::getName, f -> f));
+        this.fields = getFieldsWithInheritance(type).collect(toMap(Field::getName, f -> f));
     }
 
     public ClassMapping(Class<T> type) {
         this(type, false, Optional.empty(), new MyHashMap<>(), new MyHashMap<>(), new Annotations());
     }
 
-    public void mapAllProperties() {
-        this.allProperties = true;
+    public void mapAllFields() {
+        this.allFields = true;
     }
 
-    public void ignore(String propertyName) {
-        getOrCreatePropertyMapping(propertyName).ignore();
+    public void ignore(String fieldName) {
+        getOrCreateFieldMapping(fieldName).ignore();
     }
 
-    public void map(String propertyName) {
-        getOrCreatePropertyMapping(propertyName).map();
+    public void map(String fieldName) {
+        getOrCreateFieldMapping(fieldName).map();
     }
 
-    public void map(String propertyName, String mappedName) {
-        getOrCreatePropertyMapping(propertyName).mapTo(mappedName);
+    public void map(String fieldName, String mappedName) {
+        getOrCreateFieldMapping(fieldName).mapTo(mappedName);
     }
 
     public void onConstructor(ClassBuilderCriteria classBuilderCriteria) {
         classBuilderCriteriaOpt = Optional.of(classBuilderCriteria);
     }
 
-    public void on(PropertyMapping propertyMapping) {
-        checkFieldExists(propertyMapping.getFieldName());
-        propertiesMapping.put(propertyMapping.getFieldName(), propertyMapping);
+    public void on(FieldMapping fieldMapping) {
+        checkFieldExists(fieldMapping.getName());
+        fieldsMapping.put(fieldMapping.getName(), fieldMapping);
     }
 
     public void on(MethodMapping methodMapping) {
@@ -108,12 +108,12 @@ public class ClassMapping<T> implements HasAnnotations {
         this.on(method("set" + firstToUpperCase(fieldName), parameterTypes).add(jsonProperty()));
     }
 
-    public boolean allPropertiesAreMapped() {
-        return this.allProperties;
+    public boolean allFieldsAreMapped() {
+        return this.allFields;
     }
 
-    public void propertyForTypeName(String property) {
-        annotations.add(jsonTypeInfo().use(JsonTypeInfo.Id.NAME).property(property));
+    public void fieldForTypeName(String field) {
+        annotations.add(jsonTypeInfo().use(JsonTypeInfo.Id.NAME).property(field));
     }
 
     public void typeName(String name) {
@@ -132,14 +132,14 @@ public class ClassMapping<T> implements HasAnnotations {
         return methodsMapping.getOpt(methodSignature);
     }
 
-    public PropertyMapping getOrCreatePropertyMapping(String name) {
-        PropertyMapping propertyMapping = propertiesMapping.get(name);
-        if (propertyMapping == null) {
-            propertyMapping = property(name);
+    public FieldMapping getOrCreateFieldMapping(String name) {
+        FieldMapping fieldMapping = fieldsMapping.get(name);
+        if (fieldMapping == null) {
+            fieldMapping = field(name);
             checkFieldExists(name);
-            propertiesMapping.put(name, propertyMapping);
+            fieldsMapping.put(name, fieldMapping);
         }
-        return propertyMapping;
+        return fieldMapping;
     }
 
     private void checkFieldExists(String name) {
@@ -164,9 +164,9 @@ public class ClassMapping<T> implements HasAnnotations {
 
     ClassMapping<Object> copy() {
         return new ClassMapping(type,
-                allProperties,
+                allFields,
                 Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(null)),
-                propertiesMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
+                fieldsMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
                     throw new UnsupportedOperationException();
                 }, () -> new MyHashMap<>())),
                 methodsMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
@@ -178,9 +178,9 @@ public class ClassMapping<T> implements HasAnnotations {
 
     public ClassMapping<Object> createChildMapping(Class<Object> childClass) {
         return new ClassMapping(childClass,
-                allProperties,
+                allFields,
                 Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(null)),
-                propertiesMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
+                fieldsMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
                     throw new UnsupportedOperationException();
                 }, () -> new MyHashMap<>())),
                 methodsMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
@@ -192,15 +192,15 @@ public class ClassMapping<T> implements HasAnnotations {
 
     public ClassMapping<Object> copyWithParentMapping(ClassMapping<Object> parentMapping) {
         Optional<ClassBuilderCriteria> newClassBuilderCriteria = Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(parentMapping.classBuilderCriteriaOpt.map(cm -> cm.copy()).orElse(null)));
-        boolean newAllProperties = allProperties == false ? parentMapping.allProperties : allProperties;
-        MyHashMap<String, PropertyMapping> newPropertiesMapping = propertiesMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
+        boolean newAllFields = allFields == false ? parentMapping.allFields : allFields;
+        MyHashMap<String, FieldMapping> newFieldsMapping = fieldsMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
             throw new UnsupportedOperationException();
         }, () -> new MyHashMap<>()));
-        parentMapping.propertiesMapping.values().stream()
-                .map(propertyParentMapping -> Optional.ofNullable(newPropertiesMapping.get(propertyParentMapping.getFieldName()))
-                        .map(propertyMapping -> propertyMapping.copyWithParentMapping(propertyParentMapping))
-                        .orElseGet(() -> propertyParentMapping.copy()))
-                .forEach(propertyMapping -> newPropertiesMapping.put(propertyMapping.getFieldName(), propertyMapping));
+        parentMapping.fieldsMapping.values().stream()
+                .map(fieldParentMapping -> Optional.ofNullable(newFieldsMapping.get(fieldParentMapping.getName()))
+                        .map(fieldMapping -> fieldMapping.copyWithParentMapping(fieldParentMapping))
+                        .orElseGet(() -> fieldParentMapping.copy()))
+                .forEach(fieldMapping -> newFieldsMapping.put(fieldMapping.getName(), fieldMapping));
 
         MyHashMap<MethodSignature, MethodMapping> newMethodsMapping = methodsMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
             throw new UnsupportedOperationException();
@@ -214,9 +214,9 @@ public class ClassMapping<T> implements HasAnnotations {
         Annotations newAnnotations = parentMapping.annotations.copy();
         annotations.values().stream().forEach(annotation -> newAnnotations.put(annotation.getClass(), annotation));
         return new ClassMapping(type,
-                newAllProperties,
+                newAllFields,
                 newClassBuilderCriteria,
-                newPropertiesMapping,
+                newFieldsMapping,
                 newMethodsMapping,
                 newAnnotations);
     }

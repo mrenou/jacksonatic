@@ -23,29 +23,29 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 import static java.util.stream.Collectors.toList;
-import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
+import static org.jacksonatic.util.ReflectionUtil.getFieldsWithInheritance;
 
 public class ParametersMappingBuilder {
 
     public static List<ParameterMapping> buildParametersMapping(Class<?> classToBuild, List<ParameterCriteria> parameterCriterias) {
-        MyHashMap<Class<?>, PriorityQueue<String>> propertiesByClass = new MyHashMap<>();
-        Map<String, Class<?>> classByProperty = new HashMap<>();
-        getPropertiesWithInheritance(classToBuild).forEach(field -> {
-            PriorityQueue<String> properties = propertiesByClass.getTyped(field.getType());
-            if (properties == null) {
-                properties = new PriorityQueue<>();
-                propertiesByClass.put(field.getType(), properties);
+        MyHashMap<Class<?>, PriorityQueue<String>> fieldNamesByType = new MyHashMap<>();
+        Map<String, Class<?>> typeByFieldName = new HashMap<>();
+        getFieldsWithInheritance(classToBuild).forEach(field -> {
+            PriorityQueue<String> fieldNames = fieldNamesByType.getTyped(field.getType());
+            if (fieldNames == null) {
+                fieldNames = new PriorityQueue<>();
+                fieldNamesByType.put(field.getType(), fieldNames);
             }
-            properties.add(field.getName());
-            classByProperty.put(field.getName(), field.getType());
+            fieldNames.add(field.getName());
+            typeByFieldName.put(field.getName(), field.getType());
         });
-        return parameterCriterias.stream().map(parameterCriteria -> new ParameterMapping(loadParameterClass(parameterCriteria, classByProperty), loadJsonProperty(parameterCriteria, propertiesByClass))).collect(toList());
+        return parameterCriterias.stream().map(parameterCriteria -> new ParameterMapping(loadParameterClass(parameterCriteria, typeByFieldName), loadJsonProperty(parameterCriteria, fieldNamesByType))).collect(toList());
     }
 
-    private static Class<?> loadParameterClass(ParameterCriteria parameterCriteria, Map<String, Class<?>> classByProperty) {
+    private static Class<?> loadParameterClass(ParameterCriteria parameterCriteria, Map<String, Class<?>> typeByFieldName) {
         Class<?> parameterClass = parameterCriteria.getParameterClass();
         if (parameterClass == null) {
-            parameterClass = classByProperty.get(parameterCriteria.getFieldProperty());
+            parameterClass = typeByFieldName.get(parameterCriteria.getFieldName());
         }
         if (parameterClass == null) {
             throw new RuntimeException("Cannot find class for parameter matcher " + parameterCriteria);
@@ -53,12 +53,12 @@ public class ParametersMappingBuilder {
         return parameterClass;
     }
 
-    private static String loadJsonProperty(ParameterCriteria parameterCriteria, Map<Class<?>, PriorityQueue<String>> propertiesByClass) {
+    private static String loadJsonProperty(ParameterCriteria parameterCriteria, Map<Class<?>, PriorityQueue<String>> fieldNamesByType) {
         String jsonProperty = parameterCriteria.getJsonProperty();
         if (jsonProperty == null) {
-            final PriorityQueue<String> properties = propertiesByClass.get(parameterCriteria.getParameterClass());
-            if (properties != null) {
-                jsonProperty = properties.poll();
+            final PriorityQueue<String> fieldNames = fieldNamesByType.get(parameterCriteria.getParameterClass());
+            if (fieldNames != null) {
+                jsonProperty = fieldNames.poll();
             }
         }
         if (jsonProperty == null) {
