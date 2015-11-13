@@ -25,11 +25,14 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
+import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 import static org.jacksonatic.annotation.JacksonaticJsonSubTypes.jsonSubTypes;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeInfo.jsonTypeInfo;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeName.jsonTypeName;
+import static org.jacksonatic.mapping.MethodMapping.method;
 import static org.jacksonatic.mapping.PropertyMapping.property;
 import static org.jacksonatic.util.ReflectionUtil.getPropertiesWithInheritance;
+import static org.jacksonatic.util.StringUtil.firstToUpperCase;
 
 /**
  * Define class mapping
@@ -91,6 +94,18 @@ public class ClassMapping<T> implements HasAnnotations {
 
     public void on(MethodMapping methodMapping) {
         methodsMapping.put(methodMapping.getMethodSignature(), methodMapping);
+    }
+
+    public void mapGetter(String fieldName) {
+        this.on(method("get" + firstToUpperCase(fieldName)).add(jsonProperty()));
+    }
+
+    public void mapSetter(String fieldName) {
+        this.on(method("set" + firstToUpperCase(fieldName)).ignoreParameters().add(jsonProperty()));
+    }
+
+    public void mapSetter(String fieldName, Class<?>... parameterTypes) {
+        this.on(method("set" + firstToUpperCase(fieldName), parameterTypes).add(jsonProperty()));
     }
 
     public boolean allPropertiesAreMapped() {

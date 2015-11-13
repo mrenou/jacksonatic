@@ -23,12 +23,13 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.jacksonatic.mapping.ClassBuilderFinder.findClassBuilderMapping;
+import static org.jacksonatic.mapping.MethodSignature.methodSignature;
+import static org.jacksonatic.mapping.MethodSignature.methodSignatureIgnoringParameters;
 
 /**
  * Add annotations defined in {@link org.jacksonatic.mapping.ClassMapping} to {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass}
@@ -70,9 +71,15 @@ public class ClassAnnotationDecorator {
 
     private static void addMethodAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {
         StreamSupport.stream(annotatedClass.memberMethods().spliterator(), false)
-                .forEach(annotatedMethod -> ((Optional<MethodMapping>) classMapping.getMethodMapping(new MethodSignature(annotatedMethod.getName(), annotatedMethod.getRawParameterTypes())))
-                        .ifPresent(methodMapping -> methodMapping.getAnnotations().values().stream()
-                                .forEach(annotation -> annotatedMethod.addOrOverride(annotation))));
+                .forEach(annotatedMethod -> {
+                    Optional<MethodMapping> methodMappingOpt = classMapping.getMethodMapping(methodSignature(annotatedMethod.getName(), annotatedMethod.getRawParameterTypes()));
+                    methodMappingOpt =  Optional.ofNullable(methodMappingOpt
+                            .orElse(((Optional<MethodMapping>)classMapping.getMethodMapping(methodSignatureIgnoringParameters(annotatedMethod.getName())))
+                            .orElse(null)));
+                    methodMappingOpt.ifPresent(methodMapping -> methodMapping.getAnnotations().values().stream()
+                                        .forEach(annotation -> annotatedMethod.addOrOverride(annotation)));
+
+                });
     }
 
     private static void addConstructorAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {

@@ -15,13 +15,19 @@
  */
 package org.jacksonatic;
 
+import org.jacksonatic.annotation.JacksonaticJsonProperty;
 import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.mapping.MethodMapping;
 import org.jacksonatic.mapping.ParameterCriteria;
 import org.jacksonatic.mapping.PropertyMapping;
+import org.jacksonatic.util.StringUtil;
 
 import static java.util.Arrays.asList;
+import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 import static org.jacksonatic.mapping.ClassBuilderCriteria.*;
+import static org.jacksonatic.mapping.MethodMapping.method;
+import static org.jacksonatic.mapping.PropertyMapping.property;
+import static org.jacksonatic.util.StringUtil.firstToUpperCase;
 
 /**
  * Allowing to define jackson class mapping in a programmatic way.
@@ -219,5 +225,20 @@ public class ClassMappingConfigurer<T> {
 
     public ClassMapping<T> getDeserializationOnlyClassMapping() {
         return deserializationOnlyClassMapping;
+    }
+
+    public ClassMappingConfigurer mapGetter(String fieldName) {
+        currentClassMapping.mapGetter(fieldName);
+        return this;
+    }
+
+    public ClassMappingConfigurer mapSetter(String fieldName) {
+        currentClassMapping.mapSetter(fieldName);
+        return this;
+    }
+
+    public ClassMappingConfigurer mapSetter(String fieldName, Class<?>... parameterTypes) {
+        currentClassMapping.mapSetter(fieldName, parameterTypes);
+        return this;
     }
 }

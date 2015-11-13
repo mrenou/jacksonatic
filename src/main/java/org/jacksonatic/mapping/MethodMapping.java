@@ -20,6 +20,9 @@ import org.jacksonatic.annotation.Annotations;
 
 import java.util.Arrays;
 
+import static org.jacksonatic.mapping.MethodSignature.methodSignature;
+import static org.jacksonatic.mapping.MethodSignature.methodSignatureIgnoringParameters;
+
 /**
  * Allowing to define jackson method mapping in a programmatic way.
  */
@@ -36,7 +39,7 @@ public class MethodMapping implements HasAnnotations {
      * @return
      */
     public static MethodMapping method(String name, Class<?>... parameterTypes) {
-        return new MethodMapping(new MethodSignature(name, Arrays.asList(parameterTypes)), new Annotations());
+        return new MethodMapping(methodSignature(name, Arrays.asList(parameterTypes)), new Annotations());
     }
 
     private MethodMapping(MethodSignature methodSignature, Annotations annotations) {
@@ -51,6 +54,11 @@ public class MethodMapping implements HasAnnotations {
      */
     public MethodMapping add(AnnotationBuilder annotationBuilder) {
         annotations.add(annotationBuilder);
+        return this;
+    }
+
+    public MethodMapping ignoreParameters() {
+       methodSignature = methodSignatureIgnoringParameters(methodSignature.name);
         return this;
     }
 
