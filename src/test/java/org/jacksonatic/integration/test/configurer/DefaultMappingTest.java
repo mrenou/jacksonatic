@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.integration.test;
+package org.jacksonatic.integration.test.configurer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;

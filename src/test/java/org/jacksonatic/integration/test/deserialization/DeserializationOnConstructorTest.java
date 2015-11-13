@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.integration.test;
+package org.jacksonatic.integration.test.deserialization;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -198,7 +198,7 @@ public class DeserializationOnConstructorTest {
         Pojo5 expectedPojo = new Pojo5();
         expectedPojo.field1 = "field1";
         configureMapping()
-                .mapAllOn(type(Pojo5.class)
+                .mapAllFieldsOn(type(Pojo5.class)
                         .mapAll()
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
@@ -231,7 +231,7 @@ public class DeserializationOnConstructorTest {
     }
 
     @Test
-    public void find_with_inheritance() throws IOException {
+    public void find_constructor_with_inheritance() throws IOException {
         PojoChild expectedPojo = new PojoChild("field1", "field2");
         configureMapping()
                 .on(type(PojoChild.class)

@@ -19,6 +19,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
+import java.util.Objects;
+
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jacksonatic.ClassMappingConfigurer.type;
@@ -26,19 +28,32 @@ import static org.jacksonatic.MappingConfigurer.configureMapping;
 
 public class IgnoreFieldTest {
 
-    public static final Pojo POJO = new Pojo("field1", 42);
-
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static class Pojo {
+
+        private String field1;
+
+        private Integer field2;
+
+        public Pojo(String field1, Integer field2) {
+            this.field1 = field1;
+            this.field2 = field2;
+        }
+    }
+
 
     @Test
     public void ignore_one_field() throws JsonProcessingException {
+        Pojo pojo = new Pojo("field1", 42);
+
         configureMapping()
                 .on(type(Pojo.class)
                         .mapAll()
                         .ignore("field1"))
                 .registerIn(objectMapper);
 
-        String json = objectMapper.writeValueAsString(POJO);
+        String json = objectMapper.writeValueAsString(pojo);
 
         assertThat(json).isEqualTo("{\"field2\":42}");
     }
@@ -53,7 +68,7 @@ public class IgnoreFieldTest {
                         .ignore("field2"))
                 .registerIn(objectMapper);
 
-        String json = objectMapper.writeValueAsString(POJO);
+        String json = objectMapper.writeValueAsString(new Pojo("field1", 42));
 
         assertThat(json).isEqualTo("{}");
     }

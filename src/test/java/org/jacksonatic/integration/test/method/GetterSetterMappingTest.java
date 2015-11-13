@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.integration.test;
+package org.jacksonatic.integration.test.method;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -23,12 +23,8 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jacksonatic.ClassMappingConfigurer.type;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
-import static org.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
-import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
-import static org.jacksonatic.mapping.MethodMapping.method;
-import static org.jacksonatic.mapping.FieldMapping.field;
 
-public class MethodMappingTest {
+public class GetterSetterMappingTest {
 
     static class Pojo {
 
@@ -66,49 +62,39 @@ public class MethodMappingTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    public void map_one_method_to_serialize() throws IOException {
-        Pojo pojo = new Pojo("field1", 42);
-
-        configureMapping()
-                .on(type(Pojo.class).on(method("getField1").add(jsonProperty())))
-                .registerIn(objectMapper);
-
-        String json = objectMapper.writeValueAsString(pojo);
-
-        assertThat(json).isEqualTo("{\"field1\":\"field1\"}");
-    }
-
-    @Test
-    public void map_one_method_to_disable_deserialize() throws IOException {
+    public void map_one_getter_to_serialize() throws IOException {
         Pojo pojo = new Pojo("field1", 42);
 
         configureMapping()
                 .on(type(Pojo.class)
-                        .on(field("field1").add(jsonIgnore()))
-                        .on(method("getField1").add(jsonProperty()))
-                        .on(method("setField1", String.class).add(jsonIgnore())))
+                        .mapGetter("field1"))
                 .registerIn(objectMapper);
 
         String json = objectMapper.writeValueAsString(pojo);
-        assertThat(json).isEqualTo("{\"field1\":\"field1\"}");
 
-        Pojo pojo2 = objectMapper.readValue("{\"field1\":\"field1\"}", Pojo.class);
-        assertThat(pojo2).isEqualToIgnoringGivenFields(new Pojo(null, null));
+        assertThat(json).isEqualTo("{\"field1\":\"field1\"}");
     }
 
     @Test
-    public void map_tow_methods_to_serialize() throws IOException {
-        Pojo pojo = new Pojo("field1", 42);
-
+    public void map_one_setter_ignoring_param_types_to_deserialize() throws IOException {
         configureMapping()
-                .on(type(Pojo.class).on(method("getField1").add(jsonProperty())))
-                .on(type(Pojo.class).on(method("getField2").add(jsonProperty())))
+                .on(type(Pojo.class)
+                        .mapSetter("field1"))
                 .registerIn(objectMapper);
 
-        String json = objectMapper.writeValueAsString(pojo);
-
-        assertThat(json).isEqualTo("{\"field1\":\"field1\",\"field2\":42}");
+        Pojo pojo2 = objectMapper.readValue("{\"field1\":\"field1\"}", Pojo.class);
+        assertThat(pojo2).isEqualToIgnoringGivenFields(new Pojo("field1", null));
     }
 
+    @Test
+    public void map_one_setter_to_deserialize() throws IOException {
+        configureMapping()
+                .on(type(Pojo.class)
+                        .mapSetter("field1", String.class))
+                .registerIn(objectMapper);
+
+        Pojo pojo2 = objectMapper.readValue("{\"field1\":\"field1\"}", Pojo.class);
+        assertThat(pojo2).isEqualToIgnoringGivenFields(new Pojo("field1", null));
+    }
 
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.integration.test;
+package org.jacksonatic.integration.test.configurer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,7 +78,7 @@ public class ConfigureMultipleClassesTest {
     @Test
     public void map_ignore_on_several_classes() throws JsonProcessingException {
         configureMapping()
-                .mapAllOn(type(Pojo1.class)
+                .mapAllFieldsOn(type(Pojo1.class)
                         .ignore("field2"))
                 .on(type(Pojo2.class)
                         .map("field4"))

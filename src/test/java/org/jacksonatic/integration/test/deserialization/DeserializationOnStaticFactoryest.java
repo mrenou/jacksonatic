@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.integration.test;
+package org.jacksonatic.integration.test.deserialization;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.StrictAssertions;
 import org.jacksonatic.mapping.ParameterCriteria;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,14 +25,13 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.StrictAssertions.assertThat;
 import static org.jacksonatic.ClassMappingConfigurer.type;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
 import static org.jacksonatic.mapping.ParameterCriteria.matchField;
 import static org.jacksonatic.mapping.ParameterCriteria.matchType;
 
 public class DeserializationOnStaticFactoryest {
-
-    public static final Pojo POJO = new Pojo("field1", 42);
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -47,16 +45,37 @@ public class DeserializationOnStaticFactoryest {
         captureConstructor = false;
     }
 
+    public static class Pojo {
+
+        private String field1;
+
+        private Integer field2;
+
+        public Pojo(String field1, Integer field2) {
+            this.field1 = field1;
+            this.field2 = field2;
+        }
+
+        public static Pojo newPojo(String field1, Integer field2) {
+            setConstructorCallIfEmpty("public static Pojo newPojo(String field1, Integer field2)");
+            return new Pojo(field1, field2);
+        }
+
+    }
+
     @Test
     public void deserialize_on_static_factory_with_classes_and_json_properties() throws IOException {
+
         configureMapping()
                 .on(type(Pojo.class)
                         .onStaticFactory(matchType(String.class).mappedBy("field1"), matchType(Integer.class).mappedBy("field2")))
                 .registerIn(objectMapper);
 
+        captureConstructor();
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
 
-        assertThat(pojo).isEqualTo(POJO);
+        assertThat(pojo).isEqualToComparingFieldByField(new Pojo("field1", 42));
+        assertThat(firstConstructorCalled).isEqualTo("public static Pojo newPojo(String field1, Integer field2)");
     }
 
     @Test
@@ -66,9 +85,11 @@ public class DeserializationOnStaticFactoryest {
                         .onStaticFactory(matchType(String.class), matchType(Integer.class)))
                 .registerIn(objectMapper);
 
+        captureConstructor();
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
 
-        assertThat(pojo).isEqualTo(POJO);
+        assertThat(pojo).isEqualToComparingFieldByField(new Pojo("field1", 42));
+        assertThat(firstConstructorCalled).isEqualTo("public static Pojo newPojo(String field1, Integer field2)");
     }
 
     @Test
@@ -78,9 +99,11 @@ public class DeserializationOnStaticFactoryest {
                         .onStaticFactory(matchField("field1").mappedBy("toto"), matchField("field2").mappedBy("tata")))
                 .registerIn(objectMapper);
 
+        captureConstructor();
         Pojo pojo = objectMapper.readValue("{\"toto\":\"field1\",\"tata\":42}", Pojo.class);
 
-        assertThat(pojo).isEqualTo(POJO);
+        assertThat(pojo).isEqualToComparingFieldByField(new Pojo("field1", 42));
+        assertThat(firstConstructorCalled).isEqualTo("public static Pojo newPojo(String field1, Integer field2)");
     }
 
     @Test(expected = JsonMappingException.class)
@@ -100,9 +123,11 @@ public class DeserializationOnStaticFactoryest {
                         .onStaticFactory(ParameterCriteria.match(String.class, "field1"), ParameterCriteria.match(Integer.class, "field2")))
                 .registerIn(objectMapper);
 
+        captureConstructor();
         Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo.class);
 
-        assertThat(pojo).isEqualTo(POJO);
+        assertThat(pojo).isEqualToComparingFieldByField(new Pojo("field1", 42));
+        assertThat(firstConstructorCalled).isEqualTo("public static Pojo newPojo(String field1, Integer field2)");
     }
 
     static class Pojo2 {
@@ -146,7 +171,7 @@ public class DeserializationOnStaticFactoryest {
         Pojo2 pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo2.class);
 
         assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
-        StrictAssertions.assertThat(firstConstructorCalled).isEqualTo("public static Pojo2 newPojo");
+        assertThat(firstConstructorCalled).isEqualTo("public static Pojo2 newPojo");
     }
 
 
@@ -191,7 +216,7 @@ public class DeserializationOnStaticFactoryest {
         Pojo4 pojo = objectMapper.readValue("{\"field1\":\"field1\",\"field2\":42}", Pojo4.class);
 
         assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
-        StrictAssertions.assertThat(firstConstructorCalled).isEqualTo("public static Pojo4 newPojo");
+        assertThat(firstConstructorCalled).isEqualTo("public static Pojo4 newPojo");
     }
 
     private void captureConstructor() {

@@ -80,7 +80,7 @@ public class MappingConfigurer {
      * @param classMappingConfigurer
      * @return
      */
-    public MappingConfigurer mapAllOn(ClassMappingConfigurer classMappingConfigurer) {
+    public MappingConfigurer mapAllFieldsOn(ClassMappingConfigurer classMappingConfigurer) {
         addType(classMappingConfigurer);
         classMappingConfigurer.getClassMapping().mapAllFields();
         return this;

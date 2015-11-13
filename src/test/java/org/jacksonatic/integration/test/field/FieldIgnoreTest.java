@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.integration.test;
+package org.jacksonatic.integration.test.field;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,11 +27,21 @@ import static org.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 import static org.jacksonatic.mapping.FieldMapping.field;
 
-public class JsonIgnoreFieldTest {
-
-    public static final Pojo POJO = new Pojo("field1", 42);
+public class FieldIgnoreTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static class Pojo {
+
+        private String field1;
+
+        private Integer field2;
+
+        public Pojo(String field1, Integer field2) {
+            this.field1 = field1;
+            this.field2 = field2;
+        }
+    }
 
     @Test
     public void ignore_one_field() throws JsonProcessingException {
@@ -41,7 +51,7 @@ public class JsonIgnoreFieldTest {
                         .on(field("field1").add(jsonIgnore())))
                 .registerIn(objectMapper);
 
-        String json = objectMapper.writeValueAsString(POJO);
+        String json = objectMapper.writeValueAsString(new Pojo("field1", 42));
 
         assertThat(json).isEqualTo("{\"field2\":42}");
     }
@@ -56,7 +66,7 @@ public class JsonIgnoreFieldTest {
                         .on(field("field2").add(jsonIgnore())))
                 .registerIn(objectMapper);
 
-        String json = objectMapper.writeValueAsString(POJO);
+        String json = objectMapper.writeValueAsString(new Pojo("field1", 42));
 
         assertThat(json).isEqualTo("{}");
     }
@@ -71,9 +81,9 @@ public class JsonIgnoreFieldTest {
                                 .add(jsonIgnore())))
                 .registerIn(objectMapper);
 
-        String json = objectMapper.writeValueAsString(POJO);
+        String json = objectMapper.writeValueAsString(new Pojo("field1", 42));
 
-        assertThat(json).isEqualTo("{\"field1\":\"field1\"}");
+        assertThat(json).isEqualTo("{}");
     }
 
 
