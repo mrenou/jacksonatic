@@ -17,6 +17,11 @@ package org.jacksonatic.util;
 
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 public class MyHashMap<K, V> extends HashMap<K, V> {
 
@@ -47,4 +52,17 @@ public class MyHashMap<K, V> extends HashMap<K, V> {
     public Optional<V> getOpt(K key) {
         return Optional.ofNullable(get(key));
     }
+
+    public MyHashMap<K, V> copy(Function<V, V> copyFunction) {
+        return  this.entrySet().stream().collect(toMap(e -> e.getKey(), e -> copyFunction.apply(e.getValue()), (v1, V2) -> {
+            throw new UnsupportedOperationException();
+        }, () -> new MyHashMap<>()));
+    }
+
+    public MyHashMap<K, V> mergeWith(MyHashMap<K, V> map2,
+                                        Function<V, V> copyFunction,
+                                        BiFunction<V, V, V> mergeFunction) {
+        return MapUtil.merge(this, map2, copyFunction, mergeFunction, () -> new MyHashMap<>());
+    }
+
 }

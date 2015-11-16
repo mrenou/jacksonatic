@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,6 @@ import org.jacksonatic.util.MyHashMap;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 import static org.jacksonatic.annotation.JacksonaticJsonSubTypes.jsonSubTypes;
@@ -106,9 +105,9 @@ public class ClassMapping<T> implements HasAnnotations {
     }
 
     private void checkMethodExists(MethodSignature methodSignature) {
-            if (!existingMethodSignatures.contains(methodSignature) && !existingMethodNames.contains(methodSignature.name)) {
-                throw new IllegalStateException(String.format("Method with signature '%s' doesn't exist in class mapping %s", methodSignature, type.getName()));
-            }
+        if (!existingMethodSignatures.contains(methodSignature) && !existingMethodNames.contains(methodSignature.name)) {
+            throw new IllegalStateException(String.format("Method with signature '%s' doesn't exist in class mapping %s", methodSignature, type.getName()));
+        }
     }
 
     public void mapGetter(String fieldName) {
@@ -176,17 +175,24 @@ public class ClassMapping<T> implements HasAnnotations {
         return annotations;
     }
 
-    ClassMapping<Object> copy() {
+    ClassMapping<T> copy() {
         return new ClassMapping(type,
                 allFields,
                 Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(null)),
-                fieldsMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
-                    throw new UnsupportedOperationException();
-                }, () -> new MyHashMap<>())),
-                methodsMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
-                    throw new UnsupportedOperationException();
-                }, () -> new MyHashMap<>())),
+                fieldsMapping.copy(fieldMapping -> fieldMapping.copy()),
+                methodsMapping.copy(fieldMapping -> fieldMapping.copy()),
                 annotations.copy()
+        );
+    }
+
+    public ClassMapping<T> copyWithParentMapping(ClassMapping<T> parentMapping) {
+
+        return new ClassMapping(type,
+                allFields | parentMapping.allFields,
+                Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(parentMapping.classBuilderCriteriaOpt.map(cm -> cm.copy()).orElse(null))),
+                this.fieldsMapping.mergeWith(parentMapping.fieldsMapping, fieldMapping -> fieldMapping.copy(), (fieldMapping, fieldParentMapping) -> fieldMapping.copyWithParentMapping(fieldParentMapping)),
+                this.methodsMapping.mergeWith(parentMapping.methodsMapping, methodMapping -> methodMapping.copy(), (methodMapping, methodParentMapping) -> methodMapping.copyWithParentMapping(methodParentMapping)),
+                this.annotations.mergeWith(parentMapping.annotations)
         );
     }
 
@@ -194,44 +200,10 @@ public class ClassMapping<T> implements HasAnnotations {
         return new ClassMapping(childClass,
                 allFields,
                 Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(null)),
-                fieldsMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
-                    throw new UnsupportedOperationException();
-                }, () -> new MyHashMap<>())),
-                methodsMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
-                    throw new UnsupportedOperationException();
-                }, () -> new MyHashMap<>())),
+                fieldsMapping.copy(fieldMapping -> fieldMapping.copy()),
+                methodsMapping.copy(fieldMapping -> fieldMapping.copy()),
                 annotations.copy()
         );
     }
 
-    public ClassMapping<Object> copyWithParentMapping(ClassMapping<Object> parentMapping) {
-        Optional<ClassBuilderCriteria> newClassBuilderCriteria = Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(parentMapping.classBuilderCriteriaOpt.map(cm -> cm.copy()).orElse(null)));
-        boolean newAllFields = allFields == false ? parentMapping.allFields : allFields;
-        MyHashMap<String, FieldMapping> newFieldsMapping = fieldsMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
-            throw new UnsupportedOperationException();
-        }, () -> new MyHashMap<>()));
-        parentMapping.fieldsMapping.values().stream()
-                .map(fieldParentMapping -> Optional.ofNullable(newFieldsMapping.get(fieldParentMapping.getName()))
-                        .map(fieldMapping -> fieldMapping.copyWithParentMapping(fieldParentMapping))
-                        .orElseGet(() -> fieldParentMapping.copy()))
-                .forEach(fieldMapping -> newFieldsMapping.put(fieldMapping.getName(), fieldMapping));
-
-        MyHashMap<MethodSignature, MethodMapping> newMethodsMapping = methodsMapping.entrySet().stream().collect(toMap(e -> e.getKey(), e -> e.getValue().copy(), (v1, V2) -> {
-            throw new UnsupportedOperationException();
-        }, () -> new MyHashMap<>()));
-        parentMapping.methodsMapping.values().stream()
-                .map(methodParentMapping -> Optional.ofNullable(newMethodsMapping.get(methodParentMapping.getMethodSignature()))
-                        .map(methodMapping -> methodMapping.copyWithParentMapping(methodParentMapping))
-                        .orElseGet(() -> methodParentMapping.copy()))
-                .forEach(methodMapping -> newMethodsMapping.put(methodMapping.getMethodSignature(), methodMapping));
-
-        Annotations newAnnotations = parentMapping.annotations.copy();
-        annotations.values().stream().forEach(annotation -> newAnnotations.put(annotation.getClass(), annotation));
-        return new ClassMapping(type,
-                newAllFields,
-                newClassBuilderCriteria,
-                newFieldsMapping,
-                newMethodsMapping,
-                newAnnotations);
-    }
 }

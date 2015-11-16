@@ -15,10 +15,13 @@
  */
 package org.jacksonatic.annotation;
 
+import org.jacksonatic.util.MapUtil;
 import org.jacksonatic.util.MyHashMap;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -37,5 +40,9 @@ public class Annotations extends MyHashMap<Class<? extends Annotation>, Annotati
                 },
                 () -> new Annotations()
         ));
+    }
+
+    public Annotations mergeWith(Annotations map) {
+        return MapUtil.merge(this, map, annotation -> annotation, (annotation, annotationParent) -> annotation, () -> new Annotations());
     }
 }

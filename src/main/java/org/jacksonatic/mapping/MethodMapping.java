@@ -76,6 +76,6 @@ public class MethodMapping implements HasAnnotations {
     }
 
     public MethodMapping copyWithParentMapping(MethodMapping methodParentMapping) {
-        return copy();
+        return new MethodMapping(methodSignature, this.annotations.size() == 0 ? methodParentMapping.annotations.copy() : annotations.copy());
     }
 }

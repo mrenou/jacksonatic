@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,6 +36,7 @@ public class FieldMapping implements HasAnnotations {
 
     /**
      * Start a field mapping for the given field name
+     *
      * @param fieldName
      * @return
      */
@@ -54,6 +55,7 @@ public class FieldMapping implements HasAnnotations {
 
     /**
      * Add an annotation
+     *
      * @param annotationBuilder
      * @return
      */
@@ -64,6 +66,7 @@ public class FieldMapping implements HasAnnotations {
 
     /**
      * ignore the field
+     *
      * @return
      */
     public FieldMapping ignore() {
@@ -73,6 +76,7 @@ public class FieldMapping implements HasAnnotations {
 
     /**
      * map the field
+     *
      * @return
      */
     public FieldMapping map() {
@@ -82,6 +86,7 @@ public class FieldMapping implements HasAnnotations {
 
     /**
      * map the field with the given name
+     *
      * @return
      */
     public FieldMapping mapTo(String mappedName) {
@@ -94,7 +99,7 @@ public class FieldMapping implements HasAnnotations {
     }
 
     public String getMappedName() {
-        return Optional.ofNullable(annotations.get(JsonProperty.class)).map(annotation -> ((JsonProperty)annotation).value()).orElse(name);
+        return Optional.ofNullable(annotations.get(JsonProperty.class)).map(annotation -> ((JsonProperty) annotation).value()).orElse(name);
     }
 
     public boolean isMapped() {
@@ -114,8 +119,6 @@ public class FieldMapping implements HasAnnotations {
     }
 
     FieldMapping copyWithParentMapping(FieldMapping parentMapping) {
-        return new FieldMapping(name, this.annotations.size() == 0 ?
-                parentMapping.annotations.copy():
-                annotations.copy());
+        return new FieldMapping(name, this.annotations.size() == 0 ? parentMapping.annotations.copy() : annotations.copy());
     }
 }
