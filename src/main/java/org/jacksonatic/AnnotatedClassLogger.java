@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,8 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+
+import static org.jacksonatic.util.StreamUtil.stream;
 
 public class AnnotatedClassLogger {
 
@@ -50,21 +51,21 @@ public class AnnotatedClassLogger {
     }
 
     private static void logFieldAnnotations(AnnotatedClass annotatedClass, StringBuilder sb) {
-        StreamSupport.stream(annotatedClass.fields().spliterator(), false)
-                .filter(annotatedField -> StreamSupport.stream(annotatedField.annotations().spliterator(), false).collect(Collectors.toList()).size() > 0)
+        stream(annotatedClass.fields())
+                .filter(annotatedField -> stream(annotatedField.annotations()).collect(Collectors.toList()).size() > 0)
                 .forEach(annotatedField -> sb.append("> Field[" + annotatedField.getName() + "] : " + annotationsItToStr(annotatedField.annotations()))
                         .append(ln));
     }
 
     private static void logMethodAnnotations(AnnotatedClass annotatedClass, StringBuilder sb) {
-        StreamSupport.stream(annotatedClass.memberMethods().spliterator(), false)
-                .filter(annotatedMethod -> StreamSupport.stream(annotatedMethod.annotations().spliterator(), false).collect(Collectors.toList()).size() > 0)
+        stream(annotatedClass.memberMethods())
+                .filter(annotatedMethod -> stream(annotatedMethod.annotations()).collect(Collectors.toList()).size() > 0)
                 .forEach(annotatedMethod -> sb.append("> Method[" + annotatedMethod.getName() + "] : " + annotationsItToStr(annotatedMethod.annotations()))
                         .append(ln));
     }
 
     private static String annotationsItToStr(Iterable<Annotation> annotations) {
-        return StreamSupport.stream(annotations.spliterator(), false)
+        return stream(annotations)
                 .map(annotation -> annotation.toString()).collect(Collectors.joining(","));
     }
 

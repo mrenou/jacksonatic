@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,11 +25,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static org.jacksonatic.mapping.ClassBuilderFinder.findClassBuilderMapping;
 import static org.jacksonatic.mapping.MethodSignature.methodSignature;
 import static org.jacksonatic.mapping.MethodSignature.methodSignatureIgnoringParameters;
+import static org.jacksonatic.util.StreamUtil.stream;
 
 /**
  * Add annotations defined in {@link org.jacksonatic.mapping.ClassMapping} to {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass}
@@ -41,21 +41,19 @@ public class ClassAnnotationDecorator {
         addFieldAnnotations(annotatedClass, classMapping);
         addMethodAnnotations(annotatedClass, classMapping);
         addConstructorAnnotations(annotatedClass, classMapping);
-
         AnnotatedClassLogger.log(annotatedClass);
-
         return annotatedClass;
     }
 
     private static AnnotatedClass addClassAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {
         AnnotationMap annotationMap = new AnnotationMap();
-        StreamSupport.stream(annotatedClass.annotations().spliterator(), false).forEach(annotation -> annotationMap.add(annotation));
+        stream(annotatedClass.annotations()).forEach(annotation -> annotationMap.add(annotation));
         classMapping.getAnnotations().values().stream().forEach(annotation -> annotationMap.add(annotation));
         return annotatedClass.withAnnotations(annotationMap);
     }
 
     private static void addFieldAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {
-        StreamSupport.stream(annotatedClass.fields().spliterator(), false)
+        stream(annotatedClass.fields())
                 .forEach(annotatedField -> {
                     FieldMapping fieldMapping = classMapping.getOrCreateFieldMapping(annotatedField.getName());
                     if (classMapping.allFieldsAreMapped() && !fieldMapping.isMapped() && !fieldMapping.isIgnored()) {
@@ -70,14 +68,14 @@ public class ClassAnnotationDecorator {
     }
 
     private static void addMethodAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {
-        StreamSupport.stream(annotatedClass.memberMethods().spliterator(), false)
+        stream(annotatedClass.memberMethods())
                 .forEach(annotatedMethod -> {
                     Optional<MethodMapping> methodMappingOpt = classMapping.getMethodMapping(methodSignature(annotatedMethod.getName(), annotatedMethod.getRawParameterTypes()));
-                    methodMappingOpt =  Optional.ofNullable(methodMappingOpt
-                            .orElse(((Optional<MethodMapping>)classMapping.getMethodMapping(methodSignatureIgnoringParameters(annotatedMethod.getName())))
-                            .orElse(null)));
+                    methodMappingOpt = Optional.ofNullable(methodMappingOpt
+                            .orElse(((Optional<MethodMapping>) classMapping.getMethodMapping(methodSignatureIgnoringParameters(annotatedMethod.getName())))
+                                    .orElse(null)));
                     methodMappingOpt.ifPresent(methodMapping -> methodMapping.getAnnotations().values().stream()
-                                        .forEach(annotation -> annotatedMethod.addOrOverride(annotation)));
+                            .forEach(annotation -> annotatedMethod.addOrOverride(annotation)));
 
                 });
     }
