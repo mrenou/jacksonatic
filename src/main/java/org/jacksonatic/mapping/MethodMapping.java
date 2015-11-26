@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,7 +15,6 @@
  */
 package org.jacksonatic.mapping;
 
-import org.jacksonatic.annotation.AnnotationBuilder;
 import org.jacksonatic.annotation.Annotations;
 
 import java.util.Arrays;
@@ -26,7 +25,7 @@ import static org.jacksonatic.mapping.MethodSignature.methodSignatureIgnoringPar
 /**
  * Allowing to define jackson method mapping in a programmatic way.
  */
-public class MethodMapping implements HasAnnotations {
+public class MethodMapping implements HasAnnotations<MethodMapping>, PropertyMapper<MethodMapping> {
 
     private MethodSignature methodSignature;
 
@@ -47,19 +46,8 @@ public class MethodMapping implements HasAnnotations {
         this.annotations = annotations;
     }
 
-    /**
-     * Add an annotation
-     * @param annotationBuilder
-     * @return
-     */
-    public MethodMapping add(AnnotationBuilder annotationBuilder) {
-        annotations.add(annotationBuilder);
-        return this;
-    }
-
-    public MethodMapping ignoreParameters() {
-       methodSignature = methodSignatureIgnoringParameters(methodSignature.name);
-        return this;
+    public void ignoreParameters() {
+        methodSignature = methodSignatureIgnoringParameters(methodSignature.name);
     }
 
     public MethodSignature getMethodSignature() {
@@ -69,6 +57,11 @@ public class MethodMapping implements HasAnnotations {
     @Override
     public Annotations getAnnotations() {
         return annotations;
+    }
+
+    @Override
+    public MethodMapping builder() {
+        return this;
     }
 
     MethodMapping copy() {

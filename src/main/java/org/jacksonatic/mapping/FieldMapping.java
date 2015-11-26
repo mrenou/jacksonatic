@@ -17,18 +17,14 @@ package org.jacksonatic.mapping;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jacksonatic.annotation.AnnotationBuilder;
 import org.jacksonatic.annotation.Annotations;
 
 import java.util.Optional;
 
-import static org.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
-import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
-
 /**
  * Allowing to define jackson field mapping in a programmatic way.
  */
-public class FieldMapping implements HasAnnotations {
+public class FieldMapping implements HasAnnotations<FieldMapping>, PropertyMapper<FieldMapping> {
 
     private String name;
 
@@ -53,53 +49,16 @@ public class FieldMapping implements HasAnnotations {
         this.annotations = annotations;
     }
 
-    /**
-     * Add an annotation
-     *
-     * @param annotationBuilder
-     * @return
-     */
-    public FieldMapping add(AnnotationBuilder annotationBuilder) {
-        annotations.add(annotationBuilder);
-        return this;
-    }
-
-    /**
-     * ignore the field
-     *
-     * @return
-     */
-    public FieldMapping ignore() {
-        add(jsonIgnore());
-        return this;
-    }
-
-    /**
-     * map the field
-     *
-     * @return
-     */
-    public FieldMapping map() {
-        mapTo(name);
-        return this;
-    }
-
-    /**
-     * map the field with the given name
-     *
-     * @return
-     */
-    public FieldMapping mapTo(String mappedName) {
-        add(jsonProperty(mappedName));
-        return this;
-    }
-
     public String getName() {
         return name;
     }
 
     public String getMappedName() {
-        return Optional.ofNullable(annotations.get(JsonProperty.class)).map(annotation -> ((JsonProperty) annotation).value()).orElse(name);
+        String s = Optional.ofNullable(annotations.get(JsonProperty.class))
+                .map(annotation -> ((JsonProperty) annotation).value())
+                .filter(name -> name != null && !name.isEmpty())
+                .orElse(name);
+        return s;
     }
 
     public boolean isMapped() {
@@ -112,6 +71,11 @@ public class FieldMapping implements HasAnnotations {
 
     public Annotations getAnnotations() {
         return annotations;
+    }
+
+    @Override
+    public FieldMapping builder() {
+        return this;
     }
 
     FieldMapping copy() {

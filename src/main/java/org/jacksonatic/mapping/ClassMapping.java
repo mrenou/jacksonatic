@@ -24,7 +24,6 @@ import org.jacksonatic.util.MyHashMap;
 import java.util.*;
 
 import static java.util.stream.Collectors.toSet;
-import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 import static org.jacksonatic.annotation.JacksonaticJsonSubTypes.jsonSubTypes;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeInfo.jsonTypeInfo;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeName.jsonTypeName;
@@ -38,7 +37,7 @@ import static org.jacksonatic.util.StringUtil.firstToUpperCase;
 /**
  * Define class mapping
  */
-public class ClassMapping<T> implements HasAnnotations {
+public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
 
     private Class<T> type;
 
@@ -111,15 +110,22 @@ public class ClassMapping<T> implements HasAnnotations {
     }
 
     public void mapGetter(String fieldName) {
-        this.on(method("get" + firstToUpperCase(fieldName)).add(jsonProperty()));
+        MethodMapping method = method("get" + firstToUpperCase(fieldName));
+        method.map();
+        this.on(method);
     }
 
     public void mapSetter(String fieldName) {
-        this.on(method("set" + firstToUpperCase(fieldName)).ignoreParameters().add(jsonProperty()));
+        MethodMapping method = method("set" + firstToUpperCase(fieldName));
+        method.ignoreParameters();
+        method.map();
+        this.on(method);
     }
 
     public void mapSetter(String fieldName, Class<?>... parameterTypes) {
-        this.on(method("set" + firstToUpperCase(fieldName), parameterTypes).add(jsonProperty()));
+        MethodMapping method = method("set" + firstToUpperCase(fieldName), parameterTypes);
+        method.map();
+        this.on(method);
     }
 
     public boolean allFieldsAreMapped() {
@@ -175,6 +181,11 @@ public class ClassMapping<T> implements HasAnnotations {
         return annotations;
     }
 
+    @Override
+    public ClassMapping<T> builder() {
+        return this;
+    }
+
     ClassMapping<T> copy() {
         return new ClassMapping(type,
                 allFields,
@@ -186,7 +197,6 @@ public class ClassMapping<T> implements HasAnnotations {
     }
 
     public ClassMapping<T> copyWithParentMapping(ClassMapping<T> parentMapping) {
-
         return new ClassMapping(type,
                 allFields | parentMapping.allFields,
                 Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(parentMapping.classBuilderCriteriaOpt.map(cm -> cm.copy()).orElse(null))),

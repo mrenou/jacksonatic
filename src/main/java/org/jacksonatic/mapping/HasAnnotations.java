@@ -15,14 +15,28 @@
  */
 package org.jacksonatic.mapping;
 
+import org.jacksonatic.annotation.AnnotationBuilder;
 import org.jacksonatic.annotation.Annotations;
 
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
-public interface HasAnnotations {
+public interface HasAnnotations<T> {
+
+    /**
+     * Add an annotation
+     *
+     * @param annotationBuilder
+     * @return
+     */
+    default T add(AnnotationBuilder annotationBuilder) {
+        getAnnotations().add(annotationBuilder);
+        return builder();
+    }
 
     Annotations getAnnotations();
+
+    T builder();
 
     default boolean hasAnnotation(Class<? extends Annotation> annotationType) {
         return getAnnotations().containsKey(annotationType);
