@@ -21,17 +21,16 @@ import org.jacksonatic.annotation.Annotations;
 import org.jacksonatic.annotation.JacksonaticJsonSubTypesType;
 import org.jacksonatic.util.MyHashMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
-import static java.util.stream.Collectors.toSet;
 import static org.jacksonatic.annotation.JacksonaticJsonSubTypes.jsonSubTypes;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeInfo.jsonTypeInfo;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeName.jsonTypeName;
 import static org.jacksonatic.mapping.FieldMapping.field;
 import static org.jacksonatic.mapping.MethodMapping.method;
-import static org.jacksonatic.mapping.MethodSignature.methodSignature;
-import static org.jacksonatic.util.ReflectionUtil.getFieldsWithInheritance;
-import static org.jacksonatic.util.ReflectionUtil.getMethodsWithInheritance;
 import static org.jacksonatic.util.StringUtil.firstToUpperCase;
 
 /**
@@ -41,7 +40,7 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
 
     private Class<T> type;
 
-    private boolean allFields;
+    private boolean mapAllFields;
 
     private Optional<ClassBuilderCriteria> classBuilderCriteriaOpt;
 
@@ -51,30 +50,24 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
 
     private Annotations annotations;
 
-    private Set<String> existingFieldNames;
+    private TypeChecker<T> typeChecker;
 
-    private Set<MethodSignature> existingMethodSignatures;
-
-    private Set<String> existingMethodNames;
-
-    ClassMapping(Class<T> type, boolean allFields, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, MyHashMap<String, FieldMapping> fieldsMapping, MyHashMap<MethodSignature, MethodMapping> methodsMapping, Annotations annotations) {
+    ClassMapping(Class<T> type, boolean mapAllFields, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, MyHashMap<String, FieldMapping> fieldsMapping, MyHashMap<MethodSignature, MethodMapping> methodsMapping, Annotations annotations, TypeChecker<T> typeChecker) {
         this.type = type;
-        this.allFields = allFields;
+        this.mapAllFields = mapAllFields;
         this.classBuilderCriteriaOpt = classBuilderCriteriaOpt;
         this.fieldsMapping = fieldsMapping;
         this.methodsMapping = methodsMapping;
         this.annotations = annotations;
-        this.existingFieldNames = getFieldsWithInheritance(type).map(field -> field.getName()).collect(toSet());
-        this.existingMethodSignatures = getMethodsWithInheritance(type).map(method -> methodSignature(method.getName(), method.getParameterTypes())).collect(toSet());
-        this.existingMethodNames = getMethodsWithInheritance(type).map(method -> method.getName()).collect(toSet());
+        this.typeChecker = typeChecker;
     }
 
     public ClassMapping(Class<T> type) {
-        this(type, false, Optional.empty(), new MyHashMap<>(), new MyHashMap<>(), new Annotations());
+        this(type, false, Optional.empty(), new MyHashMap<>(), new MyHashMap<>(), new Annotations(), new TypeChecker<>(type));
     }
 
     public void mapAllFields() {
-        this.allFields = true;
+        this.mapAllFields = true;
     }
 
     public void ignore(String fieldName) {
@@ -94,20 +87,15 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
     }
 
     public void on(FieldMapping fieldMapping) {
-        checkFieldExists(fieldMapping.getName());
+        typeChecker.checkFieldExists(fieldMapping.getName());
         fieldsMapping.put(fieldMapping.getName(), fieldMapping);
     }
 
     public void on(MethodMapping methodMapping) {
-        checkMethodExists(methodMapping.getMethodSignature());
+        typeChecker.checkMethodExists(methodMapping.getMethodSignature());
         methodsMapping.put(methodMapping.getMethodSignature(), methodMapping);
     }
 
-    private void checkMethodExists(MethodSignature methodSignature) {
-        if (!existingMethodSignatures.contains(methodSignature) && !existingMethodNames.contains(methodSignature.name)) {
-            throw new IllegalStateException(String.format("Method with signature '%s' doesn't exist in class mapping %s", methodSignature, type.getName()));
-        }
-    }
 
     public void mapGetter(String fieldName) {
         MethodMapping method = method("get" + firstToUpperCase(fieldName));
@@ -129,7 +117,7 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
     }
 
     public boolean allFieldsAreMapped() {
-        return this.allFields;
+        return this.mapAllFields;
     }
 
     public void fieldForTypeName(String field) {
@@ -156,17 +144,12 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
         FieldMapping fieldMapping = fieldsMapping.get(name);
         if (fieldMapping == null) {
             fieldMapping = field(name);
-            checkFieldExists(name);
+            typeChecker.checkFieldExists(name);
             fieldsMapping.put(name, fieldMapping);
         }
         return fieldMapping;
     }
 
-    private void checkFieldExists(String name) {
-        if (!existingFieldNames.contains(name)) {
-            throw new IllegalStateException(String.format("Field with name '%s' doesn't exist in class mapping %s", name, type.getName()));
-        }
-    }
 
     public Class<T> getType() {
         return type;
@@ -188,31 +171,35 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
 
     ClassMapping<T> copy() {
         return new ClassMapping(type,
-                allFields,
+                mapAllFields,
                 Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(null)),
                 fieldsMapping.copy(fieldMapping -> fieldMapping.copy()),
                 methodsMapping.copy(fieldMapping -> fieldMapping.copy()),
-                annotations.copy()
+                annotations.copy(),
+                typeChecker
+
         );
     }
 
     public ClassMapping<T> copyWithParentMapping(ClassMapping<T> parentMapping) {
         return new ClassMapping(type,
-                allFields | parentMapping.allFields,
+                mapAllFields | parentMapping.mapAllFields,
                 Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(parentMapping.classBuilderCriteriaOpt.map(cm -> cm.copy()).orElse(null))),
                 this.fieldsMapping.mergeWith(parentMapping.fieldsMapping, fieldMapping -> fieldMapping.copy(), (fieldMapping, fieldParentMapping) -> fieldMapping.copyWithParentMapping(fieldParentMapping)),
                 this.methodsMapping.mergeWith(parentMapping.methodsMapping, methodMapping -> methodMapping.copy(), (methodMapping, methodParentMapping) -> methodMapping.copyWithParentMapping(methodParentMapping)),
-                this.annotations.mergeWith(parentMapping.annotations)
+                this.annotations.mergeWith(parentMapping.annotations),
+                typeChecker
         );
     }
 
     public ClassMapping<Object> createChildMapping(Class<Object> childClass) {
         return new ClassMapping(childClass,
-                allFields,
+                mapAllFields,
                 Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(null)),
                 fieldsMapping.copy(fieldMapping -> fieldMapping.copy()),
                 methodsMapping.copy(fieldMapping -> fieldMapping.copy()),
-                annotations.copy()
+                annotations.copy(),
+                new TypeChecker(childClass)
         );
     }
 
