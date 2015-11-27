@@ -75,6 +75,20 @@ public class GetterSetterMappingTest {
     }
 
     @Test
+    public void map_one_getter_with_another_name_to_serialize() throws IOException {
+        Pojo pojo = new Pojo("field1", 42);
+
+        configureMapping()
+                .on(type(Pojo.class)
+                        .mapGetter("field1", "toto"))
+                .registerIn(objectMapper);
+
+        String json = objectMapper.writeValueAsString(pojo);
+
+        assertThat(json).isEqualTo("{\"toto\":\"field1\"}");
+    }
+
+    @Test
     public void map_one_setter_ignoring_param_types_to_deserialize() throws IOException {
         configureMapping()
                 .on(type(Pojo.class)
@@ -86,6 +100,17 @@ public class GetterSetterMappingTest {
     }
 
     @Test
+    public void map_one_setter_with_another_name_ignoring_param_types_to_deserialize() throws IOException {
+        configureMapping()
+                .on(type(Pojo.class)
+                        .mapSetter("field1", "toto"))
+                .registerIn(objectMapper);
+
+        Pojo pojo2 = objectMapper.readValue("{\"toto\":\"field1\"}", Pojo.class);
+        assertThat(pojo2).isEqualToIgnoringGivenFields(new Pojo("field1", null));
+    }
+
+    @Test
     public void map_one_setter_to_deserialize() throws IOException {
         configureMapping()
                 .on(type(Pojo.class)
@@ -93,6 +118,17 @@ public class GetterSetterMappingTest {
                 .registerIn(objectMapper);
 
         Pojo pojo2 = objectMapper.readValue("{\"field1\":\"field1\"}", Pojo.class);
+        assertThat(pojo2).isEqualToIgnoringGivenFields(new Pojo("field1", null));
+    }
+
+    @Test
+    public void map_one_setter_with_another_name_to_deserialize() throws IOException {
+        configureMapping()
+                .on(type(Pojo.class)
+                        .mapSetter("field1", "toto", String.class))
+                .registerIn(objectMapper);
+
+        Pojo pojo2 = objectMapper.readValue("{\"toto\":\"field1\"}", Pojo.class);
         assertThat(pojo2).isEqualToIgnoringGivenFields(new Pojo("field1", null));
     }
 

@@ -46,8 +46,9 @@ public class MethodMapping implements HasAnnotations<MethodMapping>, PropertyMap
         this.annotations = annotations;
     }
 
-    public void ignoreParameters() {
+    public MethodMapping ignoreParameters() {
         methodSignature = methodSignatureIgnoringParameters(methodSignature.name);
+        return this;
     }
 
     public MethodSignature getMethodSignature() {

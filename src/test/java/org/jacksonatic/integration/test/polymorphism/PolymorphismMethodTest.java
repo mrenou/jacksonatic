@@ -160,7 +160,6 @@ public class PolymorphismMethodTest {
                         .fieldForTypeName("type")
                         .addNamedSubType(PojoChild1.class, "CHILD1")
                         .addNamedSubType(PojoChild2.class, "CHILD2")
-                        .withAConstructorOrStaticFactory()
                 )
                 .on(type(PojoChild1.class)
                         .mapGetter("field21")

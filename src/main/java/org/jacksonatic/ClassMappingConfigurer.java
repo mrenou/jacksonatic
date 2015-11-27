@@ -125,11 +125,11 @@ public class ClassMappingConfigurer<T> {
     /**
      * Map the named field with another name
      * @param fieldName
-     * @param mappedName
+     * @param jsonProperty
      * @return
      */
-    public ClassMappingConfigurer map(String fieldName, String mappedName) {
-        currentClassMapping.map(fieldName, mappedName);
+    public ClassMappingConfigurer map(String fieldName, String jsonProperty) {
+        currentClassMapping.map(fieldName, jsonProperty);
         return this;
     }
 
@@ -226,13 +226,28 @@ public class ClassMappingConfigurer<T> {
         return this;
     }
 
+    public ClassMappingConfigurer mapGetter(String fieldName, String jsonProperty) {
+        currentClassMapping.mapGetter(fieldName, jsonProperty);
+        return this;
+    }
+
     public ClassMappingConfigurer mapSetter(String fieldName) {
         currentClassMapping.mapSetter(fieldName);
         return this;
     }
 
+    public ClassMappingConfigurer mapSetter(String fieldName, String jsonProperty) {
+        currentClassMapping.mapSetter(fieldName, jsonProperty);
+        return this;
+    }
+
     public ClassMappingConfigurer mapSetter(String fieldName, Class<?>... parameterTypes) {
         currentClassMapping.mapSetter(fieldName, parameterTypes);
+        return this;
+    }
+
+    public ClassMappingConfigurer mapSetter(String fieldName, String jsonProperty, Class<?>... parameterTypes) {
+        currentClassMapping.mapSetter(fieldName, jsonProperty, parameterTypes);
         return this;
     }
 }

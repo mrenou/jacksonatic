@@ -1,5 +1,8 @@
 package org.jacksonatic.mapping;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import static org.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 
@@ -20,8 +23,8 @@ public interface PropertyMapper<T> extends HasAnnotations<T> {
      *
      * @return
      */
-    default T mapTo(String mappedName) {
-        add(jsonProperty(mappedName));
+    default T mapTo(String jsonProperty) {
+        add(jsonProperty(jsonProperty));
         return builder();
     }
 
@@ -33,6 +36,10 @@ public interface PropertyMapper<T> extends HasAnnotations<T> {
     default T ignore() {
         add(jsonIgnore());
         return builder();
+    }
+
+    default boolean isMapped() {
+        return getAnnotations().containsKey(JsonProperty.class) && !getAnnotations().containsKey(JsonIgnore.class);
     }
 
 }

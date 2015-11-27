@@ -20,7 +20,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.jacksonatic.annotation.Annotations;
 import org.jacksonatic.annotation.JacksonaticJsonSubTypesType;
 import org.jacksonatic.util.MyHashMap;
+import org.jacksonatic.util.StringUtil;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +33,8 @@ import static org.jacksonatic.annotation.JacksonaticJsonTypeInfo.jsonTypeInfo;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeName.jsonTypeName;
 import static org.jacksonatic.mapping.FieldMapping.field;
 import static org.jacksonatic.mapping.MethodMapping.method;
+import static org.jacksonatic.mapping.MethodSignature.methodSignature;
+import static org.jacksonatic.mapping.MethodSignature.methodSignatureIgnoringParameters;
 import static org.jacksonatic.util.StringUtil.firstToUpperCase;
 
 /**
@@ -52,6 +56,10 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
 
     private TypeChecker<T> typeChecker;
 
+    public ClassMapping(Class<T> type) {
+        this(type, false, Optional.empty(), new MyHashMap<>(), new MyHashMap<>(), new Annotations(), new TypeChecker<>(type));
+    }
+
     ClassMapping(Class<T> type, boolean mapAllFields, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, MyHashMap<String, FieldMapping> fieldsMapping, MyHashMap<MethodSignature, MethodMapping> methodsMapping, Annotations annotations, TypeChecker<T> typeChecker) {
         this.type = type;
         this.mapAllFields = mapAllFields;
@@ -60,10 +68,6 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
         this.methodsMapping = methodsMapping;
         this.annotations = annotations;
         this.typeChecker = typeChecker;
-    }
-
-    public ClassMapping(Class<T> type) {
-        this(type, false, Optional.empty(), new MyHashMap<>(), new MyHashMap<>(), new Annotations(), new TypeChecker<>(type));
     }
 
     public void mapAllFields() {
@@ -96,24 +100,28 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
         methodsMapping.put(methodMapping.getMethodSignature(), methodMapping);
     }
 
-
     public void mapGetter(String fieldName) {
-        MethodMapping method = method("get" + firstToUpperCase(fieldName));
-        method.map();
-        this.on(method);
+        this.on(method("get" + firstToUpperCase(fieldName)).map());
+    }
+
+    public void mapGetter(String fieldName, String jsonProperty) {
+        this.on(method("get" + firstToUpperCase(fieldName)).map().mapTo(jsonProperty));
     }
 
     public void mapSetter(String fieldName) {
-        MethodMapping method = method("set" + firstToUpperCase(fieldName));
-        method.ignoreParameters();
-        method.map();
-        this.on(method);
+        this.on(method("set" + firstToUpperCase(fieldName)).ignoreParameters().map());
+    }
+
+    public void mapSetter(String fieldName, String jsonProperty) {
+        this.on(method("set" + firstToUpperCase(fieldName)).ignoreParameters().mapTo(jsonProperty));
     }
 
     public void mapSetter(String fieldName, Class<?>... parameterTypes) {
-        MethodMapping method = method("set" + firstToUpperCase(fieldName), parameterTypes);
-        method.map();
-        this.on(method);
+        this.on(method("set" + firstToUpperCase(fieldName), parameterTypes).map());
+    }
+
+    public void mapSetter(String fieldName, String jsonProperty, Class<?>... parameterTypes) {
+        this.on(method("set" + firstToUpperCase(fieldName), parameterTypes).mapTo(jsonProperty));
     }
 
     public boolean allFieldsAreMapped() {
@@ -138,6 +146,22 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
 
     public Optional<MethodMapping> getMethodMapping(MethodSignature methodSignature) {
         return methodsMapping.getOpt(methodSignature);
+    }
+
+    public Optional<MethodMapping> getSetterMapping(String fieldName, Class<?> fieldType) {
+        return findGetterSetterMapping("set" + StringUtil.firstToUpperCase(fieldName), fieldType);
+    }
+
+    public Optional<MethodMapping> getGetterMapping(String fieldName, Class<?> fieldType) {
+        return findGetterSetterMapping("get" + StringUtil.firstToUpperCase(fieldName), fieldType);
+    }
+
+    private Optional<MethodMapping> findGetterSetterMapping(String methodName, Class<?> fieldType) {
+        Optional<MethodMapping> methodMapping = getMethodMapping(methodSignature(methodName, fieldType));
+        if (!methodMapping.isPresent()) {
+            methodMapping = getMethodMapping(methodSignatureIgnoringParameters(methodName));
+        }
+        return methodMapping;
     }
 
     public FieldMapping getOrCreateFieldMapping(String name) {

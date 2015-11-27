@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,8 @@
 package org.jacksonatic.mapping;
 
 
+import org.jacksonatic.util.StringUtil;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -24,6 +26,8 @@ import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
+import static org.jacksonatic.mapping.MethodSignature.methodSignature;
+import static org.jacksonatic.mapping.MethodSignature.methodSignatureIgnoringParameters;
 import static org.jacksonatic.util.ReflectionUtil.getFieldsWithInheritance;
 
 /**
@@ -130,8 +134,8 @@ public class ClassBuilderFinder {
             Field field = fields.get(iFields);
             Class<?> parameterType = parameterTypes.get(iParameterType);
             FieldMapping fieldMapping = classMapping.getOrCreateFieldMapping(field.getName());
-
-            if (!Modifier.isStatic(field.getModifiers()) && (classMapping.allFieldsAreMapped() || fieldMapping.isMapped())) {
+            Optional<MethodMapping> setterMapping = classMapping.getSetterMapping(field.getName(), field.getType());
+            if (!Modifier.isStatic(field.getModifiers()) && isMapped(classMapping, fieldMapping, setterMapping)) {
                 if (parameterType.equals(field.getType())) {
                     parametersMapping.add(new ParameterMapping(field.getType(), fieldMapping.getMappedName()));
                     iFields++;
@@ -144,6 +148,10 @@ public class ClassBuilderFinder {
             }
         }
         return parametersMapping;
+    }
+
+    private static boolean isMapped(ClassMapping<Object> classMapping, FieldMapping fieldMapping, Optional<MethodMapping> methodMappingOpt) {
+        return classMapping.allFieldsAreMapped() || fieldMapping.isMapped() || methodMappingOpt.map(methodMapping -> methodMapping.isMapped()).orElse(false);
     }
 
 }
