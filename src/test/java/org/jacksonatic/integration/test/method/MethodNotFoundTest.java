@@ -50,7 +50,7 @@ public class MethodNotFoundTest {
                         .on(method("getField1")))
                 .registerIn(objectMapper);
 
-       objectMapper.writeValueAsString(POJO);
+        objectMapper.writeValueAsString(POJO);
     }
 
     @Test(expected = IllegalStateException.class)

@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,20 +15,13 @@
  */
 package org.jacksonatic.mapping;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jacksonatic.annotation.Annotations;
-
-import java.util.Optional;
+import org.jacksonatic.annotation.AnnotationBuilder;
+import org.jacksonatic.internal.mapping.FieldMappingInternal;
 
 /**
  * Allowing to define jackson field mapping in a programmatic way.
  */
-public class FieldMapping implements HasAnnotations<FieldMapping>, PropertyMapper<FieldMapping> {
-
-    private String name;
-
-    private Annotations annotations;
+public interface FieldMapping extends HasAnnotations, PropertyMapper {
 
     /**
      * Start a field mapping for the given field name
@@ -36,53 +29,27 @@ public class FieldMapping implements HasAnnotations<FieldMapping>, PropertyMappe
      * @param fieldName
      * @return
      */
-    public static FieldMapping field(String fieldName) {
-        return new FieldMapping(fieldName);
-    }
-
-    private FieldMapping(String name) {
-        this(name, new Annotations());
-    }
-
-    private FieldMapping(String name, Annotations annotations) {
-        this.name = name;
-        this.annotations = annotations;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getMappedName() {
-        String s = Optional.ofNullable(annotations.get(JsonProperty.class))
-                .map(annotation -> ((JsonProperty) annotation).value())
-                .filter(name -> name != null && !name.isEmpty())
-                .orElse(name);
-        return s;
-    }
-
-    public boolean isMapped() {
-        return annotations.containsKey(JsonProperty.class) && !annotations.containsKey(JsonIgnore.class);
-    }
-
-    public boolean isIgnored() {
-        return annotations.containsKey(JsonIgnore.class);
-    }
-
-    public Annotations getAnnotations() {
-        return annotations;
+    static FieldMapping field(String fieldName) {
+        return new FieldMappingInternal(fieldName);
     }
 
     @Override
-    public FieldMapping builder() {
-        return this;
+    default FieldMapping add(AnnotationBuilder annotationBuilder) {
+        return (FieldMapping) PropertyMapper.super.add(annotationBuilder);
     }
 
-    FieldMapping copy() {
-        return new FieldMapping(name, this.annotations.copy());
+    @Override
+    default FieldMapping map() {
+        return (FieldMapping) PropertyMapper.super.map();
     }
 
-    FieldMapping copyWithParentMapping(FieldMapping parentMapping) {
-        return new FieldMapping(name, this.annotations.size() == 0 ? parentMapping.annotations.copy() : annotations.copy());
+    @Override
+    default FieldMapping mapTo(String jsonProperty) {
+        return (FieldMapping) PropertyMapper.super.mapTo(jsonProperty);
+    }
+
+    @Override
+    default FieldMapping ignore() {
+        return (FieldMapping) PropertyMapper.super.ignore();
     }
 }

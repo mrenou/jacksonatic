@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.introspection;
+package org.jacksonatic.internal.introspection;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 import com.fasterxml.jackson.databind.util.ClassUtil;
-import org.jacksonatic.MappingConfigurer;
-import org.jacksonatic.mapping.ClassMapping;
-import org.jacksonatic.mapping.ClassesMapping;
-import org.jacksonatic.util.MyHashMap;
+import org.jacksonatic.internal.MappingConfigurerInternal;
+import org.jacksonatic.internal.mapping.ClassMapping;
+import org.jacksonatic.internal.mapping.ClassesMapping;
+import org.jacksonatic.internal.util.MyHashMap;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.jacksonatic.annotation.ClassAnnotationDecorator.decorate;
+import static org.jacksonatic.internal.annotations.ClassAnnotationDecorator.decorate;
 
 /**
  * Build {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass} adding annotations defined in class mapping;
@@ -57,7 +57,7 @@ public class AnnotatedClassConstructor {
 
     private MyHashMap<ProcessType, ClassesMapping> mergedClassesMapping = new MyHashMap<>();
 
-    public AnnotatedClassConstructor(MappingConfigurer mappingConfigurer) {
+    public AnnotatedClassConstructor(MappingConfigurerInternal mappingConfigurer) {
         this.classesMapping = mappingConfigurer.getClassesMapping().copy();
         this.serializationOnlyClassesMapping = mappingConfigurer.getSerializationOnlyClassesMapping().copy();
         this.deserializationOnlyClassesMapping = mappingConfigurer.getDeserializationOnlyClassesMapping().copy();

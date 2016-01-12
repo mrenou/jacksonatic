@@ -16,7 +16,7 @@
 package com.fasterxml.jackson.databind.introspect;
 
 
-import org.jacksonatic.mapping.ClassBuilderMapping;
+import org.jacksonatic.internal.mapping.ClassBuilderMapping;
 
 import java.util.List;
 import java.util.stream.IntStream;

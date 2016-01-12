@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.annotation;
+package org.jacksonatic.internal.annotations;
 
-import org.jacksonatic.util.MapUtil;
-import org.jacksonatic.util.MyHashMap;
+import org.jacksonatic.annotation.AnnotationBuilder;
+import org.jacksonatic.internal.util.MapUtil;
+import org.jacksonatic.internal.util.MyHashMap;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
 

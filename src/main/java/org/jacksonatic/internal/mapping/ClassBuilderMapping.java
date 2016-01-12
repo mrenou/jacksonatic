@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.mapping;
+package org.jacksonatic.internal.mapping;
 
 
-import org.jacksonatic.annotation.Annotations;
 import org.jacksonatic.annotation.JacksonaticJsonCreator;
+import org.jacksonatic.internal.annotations.Annotations;
+import org.jacksonatic.mapping.HasAnnotations;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -29,7 +30,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Define mapping for constructor or static factory
  */
-public class ClassBuilderMapping implements HasAnnotations<ClassBuilderMapping> {
+public class ClassBuilderMapping implements HasAnnotations {
 
     private Constructor<?> constructor;
 
@@ -107,11 +108,6 @@ public class ClassBuilderMapping implements HasAnnotations<ClassBuilderMapping> 
     @Override
     public Annotations getAnnotations() {
         return annotations;
-    }
-
-    @Override
-    public ClassBuilderMapping builder() {
-        return this;
     }
 
     public List<ParameterMapping> getParametersMapping() {

@@ -13,24 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.mapping;
+package org.jacksonatic.internal.util;
 
-import org.jacksonatic.annotation.AnnotationBuilder;
-import org.jacksonatic.internal.annotations.Annotations;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-public interface HasAnnotations {
+public class StreamUtil {
 
-    /**
-     * Add an annotation
-     *
-     * @param annotationBuilder
-     * @return
-     */
-    default HasAnnotations add(AnnotationBuilder annotationBuilder) {
-        getAnnotations().add(annotationBuilder);
-        return this;
+    public static <T> Stream<T> stream(Iterable<T> iterable) {
+        return  StreamSupport.stream(iterable.spliterator(), false);
     }
-
-    Annotations getAnnotations();
-
 }

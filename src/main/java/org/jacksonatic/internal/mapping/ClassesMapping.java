@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.mapping;
+package org.jacksonatic.internal.mapping;
 
-import org.jacksonatic.annotation.AnnotationBuilder;
-import org.jacksonatic.internal.annotations.Annotations;
+import org.jacksonatic.internal.util.MyHashMap;
 
-public interface HasAnnotations {
+import static java.util.stream.Collectors.toMap;
 
-    /**
-     * Add an annotation
-     *
-     * @param annotationBuilder
-     * @return
-     */
-    default HasAnnotations add(AnnotationBuilder annotationBuilder) {
-        getAnnotations().add(annotationBuilder);
-        return this;
+/**
+ * Class mapping map
+ */
+public class ClassesMapping extends MyHashMap<Class<Object>, ClassMapping<Object>> {
+
+    public ClassesMapping copy() {
+        return this.entrySet().stream().collect(toMap(
+                e -> e.getKey(),
+                e -> e.getValue().copy(),
+                (v1, v2) -> {
+                    throw new UnsupportedOperationException();
+                },
+                () -> new ClassesMapping())
+        );
     }
-
-    Annotations getAnnotations();
 
 }

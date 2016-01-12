@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.mapping;
+package org.jacksonatic.internal.mapping;
 
 /**
  * Criteria to match a parameter by class or field name class

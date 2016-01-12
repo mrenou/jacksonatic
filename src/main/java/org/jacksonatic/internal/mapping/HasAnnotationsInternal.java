@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.util;
+package org.jacksonatic.internal.mapping;
 
-public class StringUtil {
+import org.jacksonatic.mapping.HasAnnotations;
 
-    public static String firstToUpperCase(String value) {
-        return value.substring(0, 1).toUpperCase() + value.substring(1);
+import java.lang.annotation.Annotation;
+import java.util.Optional;
+
+public interface HasAnnotationsInternal extends HasAnnotations {
+
+    default boolean hasAnnotation(Class<? extends Annotation> annotationType) {
+        return getAnnotations().containsKey(annotationType);
+    }
+
+    default <T extends Annotation> Optional<T> getAnnotationOpt(Class<T> annotationType) {
+        return (Optional<T>) getAnnotations().getOpt(annotationType);
     }
 }

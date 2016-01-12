@@ -26,7 +26,7 @@ import static org.jacksonatic.MappingConfigurer.configureMapping;
 import static org.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 import static org.jacksonatic.mapping.FieldMapping.field;
-import static org.jacksonatic.mapping.MethodMapping.method;
+import static org.jacksonatic.internal.mapping.MethodMappingInternal.method;
 
 public class MethodMappingTest {
 

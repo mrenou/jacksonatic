@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.mapping;
+package org.jacksonatic.internal.mapping;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import org.jacksonatic.ClassMappingConfigurer;
+import org.jacksonatic.internal.ClassMappingConfigurerInternal;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -30,13 +30,13 @@ public class TypeNameAutoAssigner {
 
     private Set<Class<Object>> typesWithPolymorphism = new HashSet<>();
 
-    public void saveTypeWithJsonSubTypes(ClassMappingConfigurer classMappingConfigurer) {
+    public void saveTypeWithJsonSubTypes(ClassMappingConfigurerInternal classMappingConfigurer) {
         if (classMappingConfigurer.getClassMapping().hasAnnotation(JsonSubTypes.class)) {
             typesWithPolymorphism.add(classMappingConfigurer.getClassMapping().getType());
         }
     }
 
-    public void assignTypeNameIfNeccesary(ClassesMapping classesMapping, ClassMappingConfigurer classMappingConfigurer) {
+    public void assignTypeNameIfNeccesary(ClassesMapping classesMapping, ClassMappingConfigurerInternal classMappingConfigurer) {
         if (!classMappingConfigurer.getClassMapping().hasAnnotation(JsonTypeName.class)) {
             typesWithPolymorphism.stream()
                     .filter(typeWithPolymorphism -> typeWithPolymorphism.isAssignableFrom(classMappingConfigurer.getClassMapping().getType()))

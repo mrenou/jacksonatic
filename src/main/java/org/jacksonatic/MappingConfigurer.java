@@ -15,37 +15,16 @@
  */
 package org.jacksonatic;
 
-import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
-import org.jacksonatic.introspection.JacksonaticClassIntrospector;
-import org.jacksonatic.mapping.ClassMapping;
-import org.jacksonatic.mapping.ClassesMapping;
-import org.jacksonatic.mapping.TypeNameAutoAssigner;
-
-import java.util.Optional;
+import org.jacksonatic.internal.MappingConfigurerInternal;
 
 /**
  * Entry point of the api, allowing to define a jackson class mapping collection in a programmatic way.
  */
-public class MappingConfigurer {
+public interface MappingConfigurer {
 
-    private ClassesMapping classesMapping = new ClassesMapping();
-
-    private ClassesMapping serializationOnlyClassesMapping = new ClassesMapping();
-
-    private ClassesMapping deserializationOnlyClassesMapping = new ClassesMapping();
-
-    private TypeNameAutoAssigner typeNameAutoAssigner = new TypeNameAutoAssigner();
-
-    /**
-     * Entry point of the api
-     *
-     * @return
-     */
-    public static MappingConfigurer configureMapping() {
-        return new MappingConfigurer();
+    static MappingConfigurer configureMapping() {
+        return new MappingConfigurerInternal();
     }
 
     /**
@@ -54,25 +33,7 @@ public class MappingConfigurer {
      * @param classMappingConfigurer
      * @return
      */
-    public MappingConfigurer on(ClassMappingConfigurer classMappingConfigurer) {
-        addType(classMappingConfigurer);
-        typeNameAutoAssigner.assignTypeNameIfNeccesary(classesMapping, classMappingConfigurer);
-        typeNameAutoAssigner.saveTypeWithJsonSubTypes(classMappingConfigurer);
-        return this;
-    }
-
-    private void addType(ClassMappingConfigurer classMappingConfigurer) {
-        mergeClassMappingInClassesMapping(classMappingConfigurer.getClassMapping(), classesMapping);
-        mergeClassMappingInClassesMapping(classMappingConfigurer.getSerializationOnlyClassMapping(), serializationOnlyClassesMapping);
-        mergeClassMappingInClassesMapping(classMappingConfigurer.getDeserializationOnlyClassMapping(), deserializationOnlyClassesMapping);
-    }
-
-    private void mergeClassMappingInClassesMapping(ClassMapping classMapping, ClassesMapping classesMapping) {
-        classesMapping.put(classMapping.getType(),
-                Optional.ofNullable(classesMapping.get(classMapping.getType()))
-                        .map(parentClassMapping -> classMapping.copyWithParentMapping(parentClassMapping))
-                        .orElse(classMapping));
-    }
+    MappingConfigurer on(ClassMappingConfigurer classMappingConfigurer);
 
     /**
      * to define a class mapping with all its fields mapped
@@ -80,59 +41,15 @@ public class MappingConfigurer {
      * @param classMappingConfigurer
      * @return
      */
-    public MappingConfigurer mapAllFieldsOn(ClassMappingConfigurer classMappingConfigurer) {
-        addType(classMappingConfigurer);
-        classMappingConfigurer.getClassMapping().mapAllFields();
-        return this;
-    }
+    MappingConfigurer mapAllFieldsOn(ClassMappingConfigurer classMappingConfigurer);
 
     /**
      * register mapping configuration in a {@ling com.fasterxml.jackson.databind.ObjectMapper}
      *
      * @param objectMapper
      */
-    public void registerIn(ObjectMapper objectMapper) {
-        registerForSerializationIn(objectMapper);
-        registerForDeserializationIn(objectMapper);
-    }
+    void registerIn(ObjectMapper objectMapper);
 
-    private void registerForSerializationIn(ObjectMapper objectMapper) {
-        SerializationConfig serializationConfig = objectMapper.getSerializationConfig();
-        ClassIntrospector classIntrospector = serializationConfig.getClassIntrospector();
-        if (!(classIntrospector instanceof JacksonaticClassIntrospector)) {
-            objectMapper.setConfig(serializationConfig.with(new JacksonaticClassIntrospector()));
-        }
-        JacksonaticClassIntrospector basicClassIntrospector = (JacksonaticClassIntrospector) objectMapper.getSerializationConfig().getClassIntrospector();
-        basicClassIntrospector.register(this);
-    }
+    MappingConfigurer copy();
 
-    private void registerForDeserializationIn(ObjectMapper objectMapper) {
-        DeserializationConfig deserializationConfig = objectMapper.getDeserializationConfig();
-        ClassIntrospector classIntrospector = deserializationConfig.getClassIntrospector();
-        if (!(classIntrospector instanceof JacksonaticClassIntrospector)) {
-            objectMapper.setConfig(deserializationConfig.with(new JacksonaticClassIntrospector()));
-        }
-        JacksonaticClassIntrospector basicClassIntrospector = (JacksonaticClassIntrospector) objectMapper.getDeserializationConfig().getClassIntrospector();
-        basicClassIntrospector.register(this);
-    }
-
-    public MappingConfigurer copy() {
-        MappingConfigurer mappingConfigurerCopy = configureMapping();
-        mappingConfigurerCopy.classesMapping = classesMapping.copy();
-        mappingConfigurerCopy.serializationOnlyClassesMapping = serializationOnlyClassesMapping.copy();
-        mappingConfigurerCopy.deserializationOnlyClassesMapping = deserializationOnlyClassesMapping.copy();
-        return mappingConfigurerCopy;
-    }
-
-    public ClassesMapping getClassesMapping() {
-        return classesMapping;
-    }
-
-    public ClassesMapping getSerializationOnlyClassesMapping() {
-        return serializationOnlyClassesMapping;
-    }
-
-    public ClassesMapping getDeserializationOnlyClassesMapping() {
-        return deserializationOnlyClassesMapping;
-    }
 }

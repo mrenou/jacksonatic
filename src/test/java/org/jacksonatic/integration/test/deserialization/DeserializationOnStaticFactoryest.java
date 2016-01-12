@@ -18,7 +18,7 @@ package org.jacksonatic.integration.test.deserialization;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jacksonatic.mapping.ParameterCriteria;
+import org.jacksonatic.internal.mapping.ParameterCriteria;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,8 +27,8 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jacksonatic.ClassMappingConfigurer.type;
 import static org.jacksonatic.MappingConfigurer.configureMapping;
-import static org.jacksonatic.mapping.ParameterCriteria.matchField;
-import static org.jacksonatic.mapping.ParameterCriteria.matchType;
+import static org.jacksonatic.internal.mapping.ParameterCriteria.matchField;
+import static org.jacksonatic.internal.mapping.ParameterCriteria.matchType;
 
 public class DeserializationOnStaticFactoryest {
 

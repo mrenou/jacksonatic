@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.introspection;
+package org.jacksonatic.internal.introspection;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.JavaType;
@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.BasicBeanDescription;
 import com.fasterxml.jackson.databind.introspect.BasicClassIntrospector;
 import com.fasterxml.jackson.databind.introspect.POJOPropertiesCollector;
-import org.jacksonatic.MappingConfigurer;
+import org.jacksonatic.internal.MappingConfigurerInternal;
 
 /**
  * Customized class introspector to use our own {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass}
@@ -33,7 +33,7 @@ public class JacksonaticClassIntrospector extends BasicClassIntrospector {
 
     private AnnotatedClassConstructor annotatedClassConstructor;
 
-    public void register(MappingConfigurer mappingConfigurer) {
+    public void register(MappingConfigurerInternal mappingConfigurer) {
         annotatedClassConstructor = new AnnotatedClassConstructor(mappingConfigurer);
     }
 

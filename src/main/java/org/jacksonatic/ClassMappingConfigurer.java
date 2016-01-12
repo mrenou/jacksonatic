@@ -15,239 +15,159 @@
  */
 package org.jacksonatic;
 
-import org.jacksonatic.mapping.ClassMapping;
+import org.jacksonatic.internal.ClassMappingConfigurerInternal;
+import org.jacksonatic.internal.mapping.ParameterCriteria;
 import org.jacksonatic.mapping.FieldMapping;
 import org.jacksonatic.mapping.MethodMapping;
-import org.jacksonatic.mapping.ParameterCriteria;
-
-import static java.util.Arrays.asList;
-import static org.jacksonatic.mapping.ClassBuilderCriteria.*;
 
 /**
  * Allowing to define jackson class mapping in a programmatic way.
  */
-public class ClassMappingConfigurer<T> {
+public interface ClassMappingConfigurer<T> {
 
-    private ClassMapping<T> currentClassMapping;
-
-    private ClassMapping<T> classMapping;
-
-    private ClassMapping<T> serializationOnlyClassMapping;
-
-    private ClassMapping<T> deserializationOnlyClassMapping;
-
-    /**
-     * Start a class mapping for the given type
-     * @param clazz
-     * @return
-     */
-    public static ClassMappingConfigurer type(Class<?> clazz) {
-        return new ClassMappingConfigurer(clazz);
+    static <T> ClassMappingConfigurer<T> type(Class<T> clazz) {
+        return new ClassMappingConfigurerInternal<>(clazz);
     }
 
     /**
      * Start a class mapping for the given type only for serialization
+     *
      * @param clazz
      * @return
      */
-    public static ClassMappingConfigurer onSerializationOf(Class<?> clazz) {
+    static <T> ClassMappingConfigurer<T> onSerializationOf(Class<T> clazz) {
         return type(clazz).onSerialization();
     }
 
     /**
      * Start a class mapping for the given type only for deserialization
+     *
      * @param clazz
      * @return
      */
-    public static ClassMappingConfigurer onDeserialisationOf(Class<?> clazz) {
+    static <T> ClassMappingConfigurer<T> onDeserialisationOf(Class<T> clazz) {
         return type(clazz).onDeserialization();
     }
 
-    private ClassMappingConfigurer(Class<T> clazz) {
-        classMapping = new ClassMapping<>(clazz);
-        serializationOnlyClassMapping = new ClassMapping<>(clazz);
-        deserializationOnlyClassMapping = new ClassMapping<>(clazz);
-        currentClassMapping = classMapping;
-    }
 
     /**
      * Next class mapping instructions will be only for serialization
+     *
      * @return
      */
-    public ClassMappingConfigurer onSerialization() {
-        currentClassMapping = serializationOnlyClassMapping;
-        return this;
-    }
+    ClassMappingConfigurer<T> onSerialization();
 
     /**
      * Next class mapping instructions will be only for deserialization
+     *
      * @return
      */
-    public ClassMappingConfigurer onDeserialization() {
-        currentClassMapping = deserializationOnlyClassMapping;
-        return this;
-    }
+    ClassMappingConfigurer<T> onDeserialization();
 
     /**
      * Start a field mapping
+     *
      * @param fieldMapping
      * @return
      */
-    public ClassMappingConfigurer on(FieldMapping fieldMapping) {
-        currentClassMapping.on(fieldMapping);
-        return this;
-    }
+    ClassMappingConfigurer<T> on(FieldMapping fieldMapping);
 
-    public ClassMappingConfigurer on(MethodMapping methodMapping) {
-        currentClassMapping.on(methodMapping);
-        return this;
-    }
+    ClassMappingConfigurer<T> on(MethodMapping methodMapping);
 
     /**
      * Map all fields
+     *
      * @return
      */
-    public ClassMappingConfigurer mapAll() {
-        currentClassMapping.mapAllFields();
-        return this;
-    }
+    ClassMappingConfigurer<T> mapAll();
 
     /**
      * Map the named field
+     *
      * @param fieldName
      * @return
      */
-    public ClassMappingConfigurer map(String fieldName) {
-        currentClassMapping.map(fieldName);
-        return this;
-    }
+    ClassMappingConfigurer<T> map(String fieldName);
 
     /**
      * Map the named field with another name
+     *
      * @param fieldName
      * @param jsonProperty
      * @return
      */
-    public ClassMappingConfigurer map(String fieldName, String jsonProperty) {
-        currentClassMapping.map(fieldName, jsonProperty);
-        return this;
-    }
+    ClassMappingConfigurer<T> map(String fieldName, String jsonProperty);
 
     /**
      * Ignore the named field
+     *
      * @param fieldName
      * @return
      */
-    public ClassMappingConfigurer ignore(String fieldName) {
-        currentClassMapping.ignore(fieldName);
-        return this;
-    }
+    ClassMappingConfigurer<T> ignore(String fieldName);
 
     /**
      * Will try to map a constructor or a static factory for the object creation
+     *
      * @return
      */
-    public ClassMappingConfigurer withAConstructorOrStaticFactory() {
-        currentClassMapping.onConstructor(mapAConstructorOrStaticFactory());
-        return this;
-    }
+    ClassMappingConfigurer<T> withAConstructorOrStaticFactory();
 
     /**
      * Will try to map a constructor with these parameters for the object creation
+     *
      * @return
      */
-    public ClassMappingConfigurer withConstructor(ParameterCriteria... parameterCriterias) {
-        currentClassMapping.onConstructor(mapConstructor(currentClassMapping.getType(), asList(parameterCriterias)));
-        return this;
-    }
+    ClassMappingConfigurer<T> withConstructor(ParameterCriteria... parameterCriterias);
 
     /**
      * Will try to map the named static factory with these parameters for the object creation
+     *
      * @return
      */
-    public ClassMappingConfigurer onStaticFactory(String methodName, ParameterCriteria... parameterCriterias) {
-        currentClassMapping.onConstructor(mapStaticFactory(currentClassMapping.getType(), methodName, asList(parameterCriterias)));
-        return this;
-    }
+    ClassMappingConfigurer<T> onStaticFactory(String methodName, ParameterCriteria... parameterCriterias);
 
     /**
      * Will try to map a static factory with these parameters for the object creation
+     *
      * @return
      */
-    public ClassMappingConfigurer onStaticFactory(ParameterCriteria... parameterCriterias) {
-        currentClassMapping.onConstructor(mapStaticFactory(currentClassMapping.getType(), asList(parameterCriterias)));
-        return this;
-    }
+    ClassMappingConfigurer<T> onStaticFactory(ParameterCriteria... parameterCriterias);
 
     /**
      * Define the field use to store the type name
+     *
      * @param field
      * @return
      */
-    public ClassMappingConfigurer fieldForTypeName(String field) {
-        currentClassMapping.fieldForTypeName(field);
-        return this;
-    }
+    ClassMappingConfigurer<T> fieldForTypeName(String field);
 
     /**
      * Define the type name
+     *
      * @param name
      * @return
      */
-    public ClassMappingConfigurer typeName(String name) {
-        currentClassMapping.typeName(name);
-        return this;
-    }
+    ClassMappingConfigurer<T> typeName(String name);
 
     /**
      * Define a subtype with the given type name
+     *
      * @param name
      * @return
      */
-    public ClassMappingConfigurer addNamedSubType(Class<? extends T> subType, String name) {
-        currentClassMapping.addNamedSubType(subType, name);
-        return this;
-    }
+    ClassMappingConfigurer<T> addNamedSubType(Class<? extends T> subType, String name);
 
-    public ClassMapping<T> getClassMapping() {
-        return classMapping;
-    }
 
-    public ClassMapping<T> getSerializationOnlyClassMapping() {
-        return serializationOnlyClassMapping;
-    }
+    ClassMappingConfigurer<T> mapGetter(String fieldName);
 
-    public ClassMapping<T> getDeserializationOnlyClassMapping() {
-        return deserializationOnlyClassMapping;
-    }
+    ClassMappingConfigurer<T> mapGetter(String fieldName, String jsonProperty);
 
-    public ClassMappingConfigurer mapGetter(String fieldName) {
-        currentClassMapping.mapGetter(fieldName);
-        return this;
-    }
+    ClassMappingConfigurer<T> mapSetter(String fieldName);
 
-    public ClassMappingConfigurer mapGetter(String fieldName, String jsonProperty) {
-        currentClassMapping.mapGetter(fieldName, jsonProperty);
-        return this;
-    }
+    ClassMappingConfigurer<T> mapSetter(String fieldName, String jsonProperty);
 
-    public ClassMappingConfigurer mapSetter(String fieldName) {
-        currentClassMapping.mapSetter(fieldName);
-        return this;
-    }
+    ClassMappingConfigurer<T> mapSetter(String fieldName, Class<?>... parameterTypes);
 
-    public ClassMappingConfigurer mapSetter(String fieldName, String jsonProperty) {
-        currentClassMapping.mapSetter(fieldName, jsonProperty);
-        return this;
-    }
-
-    public ClassMappingConfigurer mapSetter(String fieldName, Class<?>... parameterTypes) {
-        currentClassMapping.mapSetter(fieldName, parameterTypes);
-        return this;
-    }
-
-    public ClassMappingConfigurer mapSetter(String fieldName, String jsonProperty, Class<?>... parameterTypes) {
-        currentClassMapping.mapSetter(fieldName, jsonProperty, parameterTypes);
-        return this;
-    }
+    ClassMappingConfigurer<T> mapSetter(String fieldName, String jsonProperty, Class<?>... parameterTypes);
 }

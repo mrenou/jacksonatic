@@ -1,28 +1,27 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.mapping;
+package org.jacksonatic.internal.mapping;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.jacksonatic.annotation.Annotations;
 import org.jacksonatic.annotation.JacksonaticJsonSubTypesType;
-import org.jacksonatic.util.MyHashMap;
-import org.jacksonatic.util.StringUtil;
+import org.jacksonatic.internal.annotations.Annotations;
+import org.jacksonatic.internal.util.MyHashMap;
+import org.jacksonatic.internal.util.StringUtil;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,16 +30,16 @@ import java.util.Optional;
 import static org.jacksonatic.annotation.JacksonaticJsonSubTypes.jsonSubTypes;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeInfo.jsonTypeInfo;
 import static org.jacksonatic.annotation.JacksonaticJsonTypeName.jsonTypeName;
+import static org.jacksonatic.internal.mapping.MethodSignature.methodSignature;
+import static org.jacksonatic.internal.mapping.MethodSignature.methodSignatureIgnoringParameters;
+import static org.jacksonatic.internal.util.StringUtil.firstToUpperCase;
 import static org.jacksonatic.mapping.FieldMapping.field;
 import static org.jacksonatic.mapping.MethodMapping.method;
-import static org.jacksonatic.mapping.MethodSignature.methodSignature;
-import static org.jacksonatic.mapping.MethodSignature.methodSignatureIgnoringParameters;
-import static org.jacksonatic.util.StringUtil.firstToUpperCase;
 
 /**
  * Define class mapping
  */
-public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
+public class ClassMapping<T> implements HasAnnotationsInternal {
 
     private Class<T> type;
 
@@ -48,9 +47,9 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
 
     private Optional<ClassBuilderCriteria> classBuilderCriteriaOpt;
 
-    private MyHashMap<String, FieldMapping> fieldsMapping;
+    private MyHashMap<String, FieldMappingInternal> fieldsMapping;
 
-    private MyHashMap<MethodSignature, MethodMapping> methodsMapping;
+    private MyHashMap<MethodSignature, MethodMappingInternal> methodsMapping;
 
     private Annotations annotations;
 
@@ -60,7 +59,7 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
         this(type, false, Optional.empty(), new MyHashMap<>(), new MyHashMap<>(), new Annotations(), new TypeChecker<>(type));
     }
 
-    ClassMapping(Class<T> type, boolean mapAllFields, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, MyHashMap<String, FieldMapping> fieldsMapping, MyHashMap<MethodSignature, MethodMapping> methodsMapping, Annotations annotations, TypeChecker<T> typeChecker) {
+    ClassMapping(Class<T> type, boolean mapAllFields, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, MyHashMap<String, FieldMappingInternal> fieldsMapping, MyHashMap<MethodSignature, MethodMappingInternal> methodsMapping, Annotations annotations, TypeChecker<T> typeChecker) {
         this.type = type;
         this.mapAllFields = mapAllFields;
         this.classBuilderCriteriaOpt = classBuilderCriteriaOpt;
@@ -75,53 +74,53 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
     }
 
     public void ignore(String fieldName) {
-        getOrCreateFieldMapping(fieldName).ignore();
+        getOrCreateFieldMappingInternal(fieldName).ignore();
     }
 
     public void map(String fieldName) {
-        getOrCreateFieldMapping(fieldName).map();
+        getOrCreateFieldMappingInternal(fieldName).map();
     }
 
     public void map(String fieldName, String mappedName) {
-        getOrCreateFieldMapping(fieldName).mapTo(mappedName);
+        getOrCreateFieldMappingInternal(fieldName).mapTo(mappedName);
     }
 
     public void onConstructor(ClassBuilderCriteria classBuilderCriteria) {
         classBuilderCriteriaOpt = Optional.of(classBuilderCriteria);
     }
 
-    public void on(FieldMapping fieldMapping) {
+    public void on(FieldMappingInternal fieldMapping) {
         typeChecker.checkFieldExists(fieldMapping.getName());
         fieldsMapping.put(fieldMapping.getName(), fieldMapping);
     }
 
-    public void on(MethodMapping methodMapping) {
+    public void on(MethodMappingInternal methodMapping) {
         typeChecker.checkMethodExists(methodMapping.getMethodSignature());
         methodsMapping.put(methodMapping.getMethodSignature(), methodMapping);
     }
 
     public void mapGetter(String fieldName) {
-        this.on(method("get" + firstToUpperCase(fieldName)).map());
+        this.on((MethodMappingInternal) method("get" + firstToUpperCase(fieldName)).map());
     }
 
     public void mapGetter(String fieldName, String jsonProperty) {
-        this.on(method("get" + firstToUpperCase(fieldName)).map().mapTo(jsonProperty));
+        this.on((MethodMappingInternal) method("get" + firstToUpperCase(fieldName)).map().mapTo(jsonProperty));
     }
 
     public void mapSetter(String fieldName) {
-        this.on(method("set" + firstToUpperCase(fieldName)).ignoreParameters().map());
+        this.on((MethodMappingInternal) method("set" + firstToUpperCase(fieldName)).ignoreParameters().map());
     }
 
     public void mapSetter(String fieldName, String jsonProperty) {
-        this.on(method("set" + firstToUpperCase(fieldName)).ignoreParameters().mapTo(jsonProperty));
+        this.on((MethodMappingInternal) method("set" + firstToUpperCase(fieldName)).ignoreParameters().mapTo(jsonProperty));
     }
 
     public void mapSetter(String fieldName, Class<?>... parameterTypes) {
-        this.on(method("set" + firstToUpperCase(fieldName), parameterTypes).map());
+        this.on((MethodMappingInternal) method("set" + firstToUpperCase(fieldName), parameterTypes).map());
     }
 
     public void mapSetter(String fieldName, String jsonProperty, Class<?>... parameterTypes) {
-        this.on(method("set" + firstToUpperCase(fieldName), parameterTypes).mapTo(jsonProperty));
+        this.on((MethodMappingInternal) method("set" + firstToUpperCase(fieldName), parameterTypes).mapTo(jsonProperty));
     }
 
     public boolean allFieldsAreMapped() {
@@ -144,30 +143,30 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
         annotations.add(jsonSubTypes(types.toArray(new JsonSubTypes.Type[types.size()])));
     }
 
-    public Optional<MethodMapping> getMethodMapping(MethodSignature methodSignature) {
+    public Optional<MethodMappingInternal> getMethodMappingInternal(MethodSignature methodSignature) {
         return methodsMapping.getOpt(methodSignature);
     }
 
-    public Optional<MethodMapping> getSetterMapping(String fieldName, Class<?> fieldType) {
+    public Optional<MethodMappingInternal> getSetterMapping(String fieldName, Class<?> fieldType) {
         return findGetterSetterMapping("set" + StringUtil.firstToUpperCase(fieldName), fieldType);
     }
 
-    public Optional<MethodMapping> getGetterMapping(String fieldName, Class<?> fieldType) {
+    public Optional<MethodMappingInternal> getGetterMapping(String fieldName, Class<?> fieldType) {
         return findGetterSetterMapping("get" + StringUtil.firstToUpperCase(fieldName), fieldType);
     }
 
-    private Optional<MethodMapping> findGetterSetterMapping(String methodName, Class<?> fieldType) {
-        Optional<MethodMapping> methodMapping = getMethodMapping(methodSignature(methodName, fieldType));
+    private Optional<MethodMappingInternal> findGetterSetterMapping(String methodName, Class<?> fieldType) {
+        Optional<MethodMappingInternal> methodMapping = getMethodMappingInternal(methodSignature(methodName, fieldType));
         if (!methodMapping.isPresent()) {
-            methodMapping = getMethodMapping(methodSignatureIgnoringParameters(methodName));
+            methodMapping = getMethodMappingInternal(methodSignatureIgnoringParameters(methodName));
         }
         return methodMapping;
     }
 
-    public FieldMapping getOrCreateFieldMapping(String name) {
-        FieldMapping fieldMapping = fieldsMapping.get(name);
+    public FieldMappingInternal getOrCreateFieldMappingInternal(String name) {
+        FieldMappingInternal fieldMapping = fieldsMapping.get(name);
         if (fieldMapping == null) {
-            fieldMapping = field(name);
+            fieldMapping = (FieldMappingInternal) field(name);
             typeChecker.checkFieldExists(name);
             fieldsMapping.put(name, fieldMapping);
         }
@@ -186,11 +185,6 @@ public class ClassMapping<T> implements HasAnnotations<ClassMapping<T>> {
     @Override
     public Annotations getAnnotations() {
         return annotations;
-    }
-
-    @Override
-    public ClassMapping<T> builder() {
-        return this;
     }
 
     ClassMapping<T> copy() {

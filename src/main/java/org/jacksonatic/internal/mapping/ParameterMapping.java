@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.mapping;
+package org.jacksonatic.internal.mapping;
 
 import org.jacksonatic.annotation.AnnotationBuilder;
-import org.jacksonatic.annotation.Annotations;
+import org.jacksonatic.internal.annotations.Annotations;
+import org.jacksonatic.mapping.HasAnnotations;
 
 import java.lang.annotation.Annotation;
 
@@ -25,7 +26,7 @@ import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 /**
  * Define parameter mapping
  */
-public class ParameterMapping implements HasAnnotations<ParameterMapping> {
+public class ParameterMapping implements HasAnnotations {
 
     private Class<?> parameterClass;
 
@@ -57,11 +58,6 @@ public class ParameterMapping implements HasAnnotations<ParameterMapping> {
     @Override
     public Annotations getAnnotations() {
         return annotations;
-    }
-
-    @Override
-    public ParameterMapping builder() {
-        return this;
     }
 
     ParameterMapping copy() {

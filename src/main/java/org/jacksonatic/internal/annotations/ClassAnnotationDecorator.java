@@ -1,23 +1,23 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.annotation;
+package org.jacksonatic.internal.annotations;
 
 import com.fasterxml.jackson.databind.introspect.*;
-import org.jacksonatic.AnnotatedClassLogger;
-import org.jacksonatic.mapping.*;
+import org.jacksonatic.internal.AnnotatedClassLogger;
+import org.jacksonatic.internal.mapping.*;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -26,13 +26,13 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.jacksonatic.mapping.ClassBuilderFinder.findClassBuilderMapping;
-import static org.jacksonatic.mapping.MethodSignature.methodSignature;
-import static org.jacksonatic.mapping.MethodSignature.methodSignatureIgnoringParameters;
-import static org.jacksonatic.util.StreamUtil.stream;
+import static org.jacksonatic.internal.mapping.ClassBuilderFinder.findClassBuilderMapping;
+import static org.jacksonatic.internal.mapping.MethodSignature.methodSignature;
+import static org.jacksonatic.internal.mapping.MethodSignature.methodSignatureIgnoringParameters;
+import static org.jacksonatic.internal.util.StreamUtil.stream;
 
 /**
- * Add annotations defined in {@link org.jacksonatic.mapping.ClassMapping} to {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass}
+ * Add annotations defined in {@link org.jacksonatic.internal.mapping.ClassMapping} to {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass}
  */
 public class ClassAnnotationDecorator {
 
@@ -55,7 +55,7 @@ public class ClassAnnotationDecorator {
     private static void addFieldAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {
         stream(annotatedClass.fields())
                 .forEach(annotatedField -> {
-                    FieldMapping fieldMapping = classMapping.getOrCreateFieldMapping(annotatedField.getName());
+                    FieldMappingInternal fieldMapping = classMapping.getOrCreateFieldMappingInternal(annotatedField.getName());
                     if (classMapping.allFieldsAreMapped() && !fieldMapping.isMapped() && !fieldMapping.isIgnored()) {
                         fieldMapping.map();
                     }
@@ -70,9 +70,9 @@ public class ClassAnnotationDecorator {
     private static void addMethodAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {
         stream(annotatedClass.memberMethods())
                 .forEach(annotatedMethod -> {
-                    Optional<MethodMapping> methodMappingOpt = classMapping.getMethodMapping(methodSignature(annotatedMethod.getName(), annotatedMethod.getRawParameterTypes()));
+                    Optional<MethodMappingInternal> methodMappingOpt = classMapping.getMethodMappingInternal(methodSignature(annotatedMethod.getName(), annotatedMethod.getRawParameterTypes()));
                     methodMappingOpt = Optional.ofNullable(methodMappingOpt
-                            .orElse(((Optional<MethodMapping>) classMapping.getMethodMapping(methodSignatureIgnoringParameters(annotatedMethod.getName())))
+                            .orElse(((Optional<MethodMappingInternal>) classMapping.getMethodMappingInternal(methodSignatureIgnoringParameters(annotatedMethod.getName())))
                                     .orElse(null)));
                     methodMappingOpt.ifPresent(methodMapping -> methodMapping.getAnnotations().values().stream()
                             .forEach(annotation -> annotatedMethod.addOrOverride(annotation)));

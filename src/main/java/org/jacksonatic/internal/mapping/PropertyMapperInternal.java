@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.mapping;
+package org.jacksonatic.internal.mapping;
 
-import org.jacksonatic.annotation.AnnotationBuilder;
-import org.jacksonatic.internal.annotations.Annotations;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jacksonatic.mapping.PropertyMapper;
 
-public interface HasAnnotations {
+public interface PropertyMapperInternal extends PropertyMapper, HasAnnotationsInternal {
 
-    /**
-     * Add an annotation
-     *
-     * @param annotationBuilder
-     * @return
-     */
-    default HasAnnotations add(AnnotationBuilder annotationBuilder) {
-        getAnnotations().add(annotationBuilder);
-        return this;
+    default boolean isMapped() {
+        return getAnnotations().containsKey(JsonProperty.class) && !getAnnotations().containsKey(JsonIgnore.class);
     }
-
-    Annotations getAnnotations();
 
 }

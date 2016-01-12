@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.mapping;
+package org.jacksonatic.internal.mapping;
 
-import org.jacksonatic.util.MyHashMap;
+import org.jacksonatic.internal.util.MyHashMap;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 import static java.util.stream.Collectors.toList;
-import static org.jacksonatic.util.ReflectionUtil.getFieldsWithInheritance;
+import static org.jacksonatic.internal.util.ReflectionUtil.getFieldsWithInheritance;
 
 public class ParametersMappingBuilder {
 

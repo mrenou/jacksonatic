@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.mapping;
+package org.jacksonatic.internal.mapping;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static org.jacksonatic.mapping.ParametersMappingBuilder.buildParametersMapping;
+import static org.jacksonatic.internal.mapping.ParametersMappingBuilder.buildParametersMapping;
 
 /**
  * Criteria to match a constructor or a static factory
