@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,10 +15,14 @@
  */
 package org.jacksonatic.internal.mapping;
 
-/**
- * Criteria to match a parameter by class or field name class
- */
-public class ParameterCriteria {
+import org.jacksonatic.mapping.ParameterCriteria;
+
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+
+public class ParameterCriteriaInternal implements org.jacksonatic.mapping.ParameterCriteria {
 
     private Class<?> parameterClass;
 
@@ -26,28 +30,15 @@ public class ParameterCriteria {
 
     private String fieldName;
 
-    public static ParameterCriteria match(Class<?> parameterClass, String jsonProperty) {
-        return new ParameterCriteria(parameterClass, jsonProperty, null);
+    public static List<ParameterCriteriaInternal> parameterCriteriasToInternal(ParameterCriteria... parameterCriterias) {
+        return parameterCriteriasToInternal(asList(parameterCriterias));
     }
 
-    public static ParameterCriteria match(String fieldName, String jsonProperty) {
-        return new ParameterCriteria(null, jsonProperty, fieldName);
+    public static List<ParameterCriteriaInternal> parameterCriteriasToInternal(List<ParameterCriteria> parameterCriterias) {
+        return parameterCriterias.stream().map(parameterCriteria -> (ParameterCriteriaInternal) parameterCriteria).collect(toList());
     }
 
-    public static ParameterCriteria matchType(Class<?> parameterClass) {
-        return new ParameterCriteria(parameterClass, null, null);
-    }
-
-    public static ParameterCriteria matchField(String fieldName) {
-        return new ParameterCriteria(null, null, fieldName);
-    }
-
-    public ParameterCriteria mappedBy(String jsonProperty) {
-        this.jsonProperty = jsonProperty;
-        return this;
-    }
-
-    public ParameterCriteria(Class<?> parameterClass, String jsonProperty, String fieldName) {
+    public ParameterCriteriaInternal(Class<?> parameterClass, String jsonProperty, String fieldName) {
         this.parameterClass = parameterClass;
         this.jsonProperty = jsonProperty;
         this.fieldName = fieldName;
@@ -66,6 +57,12 @@ public class ParameterCriteria {
     }
 
     @Override
+    public ParameterCriteria mappedBy(String jsonProperty) {
+        this.jsonProperty = jsonProperty;
+        return this;
+    }
+
+    @Override
     public String toString() {
         return "ParameterCriteria{" +
                 "parameterClass=" + parameterClass +
@@ -73,4 +70,6 @@ public class ParameterCriteria {
                 ", fieldName='" + fieldName + '\'' +
                 '}';
     }
+
+
 }

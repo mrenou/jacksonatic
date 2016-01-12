@@ -32,11 +32,11 @@ import static org.jacksonatic.internal.mapping.MethodSignature.methodSignatureIg
 import static org.jacksonatic.internal.util.StreamUtil.stream;
 
 /**
- * Add annotations defined in {@link org.jacksonatic.internal.mapping.ClassMapping} to {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass}
+ * Add annotations defined in {@link ClassMappingInternal} to {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass}
  */
 public class ClassAnnotationDecorator {
 
-    public static AnnotatedClass decorate(AnnotatedClass annotatedClass, ClassMapping classMapping) {
+    public static AnnotatedClass decorate(AnnotatedClass annotatedClass, ClassMappingInternal classMapping) {
         annotatedClass = addClassAnnotations(annotatedClass, classMapping);
         addFieldAnnotations(annotatedClass, classMapping);
         addMethodAnnotations(annotatedClass, classMapping);
@@ -45,14 +45,14 @@ public class ClassAnnotationDecorator {
         return annotatedClass;
     }
 
-    private static AnnotatedClass addClassAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {
+    private static AnnotatedClass addClassAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal classMapping) {
         AnnotationMap annotationMap = new AnnotationMap();
         stream(annotatedClass.annotations()).forEach(annotation -> annotationMap.add(annotation));
         classMapping.getAnnotations().values().stream().forEach(annotation -> annotationMap.add(annotation));
         return annotatedClass.withAnnotations(annotationMap);
     }
 
-    private static void addFieldAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {
+    private static void addFieldAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal classMapping) {
         stream(annotatedClass.fields())
                 .forEach(annotatedField -> {
                     FieldMappingInternal fieldMapping = classMapping.getOrCreateFieldMappingInternal(annotatedField.getName());
@@ -67,7 +67,7 @@ public class ClassAnnotationDecorator {
                 });
     }
 
-    private static void addMethodAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {
+    private static void addMethodAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal classMapping) {
         stream(annotatedClass.memberMethods())
                 .forEach(annotatedMethod -> {
                     Optional<MethodMappingInternal> methodMappingOpt = classMapping.getMethodMappingInternal(methodSignature(annotatedMethod.getName(), annotatedMethod.getRawParameterTypes()));
@@ -80,7 +80,7 @@ public class ClassAnnotationDecorator {
                 });
     }
 
-    private static void addConstructorAnnotations(AnnotatedClass annotatedClass, ClassMapping classMapping) {
+    private static void addConstructorAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal classMapping) {
         ((Optional<ClassBuilderCriteria>) classMapping.getClassBuilderCriteriaOpt())
                 .ifPresent(classBuilderCriteria -> ((Optional<ClassBuilderMapping>) findClassBuilderMapping(classMapping, classBuilderCriteria))
                         .ifPresent(classBuilderMapping -> {

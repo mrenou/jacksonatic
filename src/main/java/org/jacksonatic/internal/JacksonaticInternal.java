@@ -19,16 +19,17 @@ import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
-import org.jacksonatic.ClassMappingConfigurer;
-import org.jacksonatic.MappingConfigurer;
+import org.jacksonatic.mapping.ClassMapping;
+import org.jacksonatic.Jacksonatic;
 import org.jacksonatic.internal.introspection.JacksonaticClassIntrospector;
-import org.jacksonatic.internal.mapping.ClassMapping;
+import org.jacksonatic.internal.mapping.ClassMappingByProcessType;
+import org.jacksonatic.internal.mapping.ClassMappingInternal;
 import org.jacksonatic.internal.mapping.ClassesMapping;
 import org.jacksonatic.internal.mapping.TypeNameAutoAssigner;
 
 import java.util.Optional;
 
-public class MappingConfigurerInternal implements MappingConfigurer {
+public class JacksonaticInternal implements Jacksonatic {
 
     private ClassesMapping classesMapping = new ClassesMapping();
 
@@ -39,21 +40,21 @@ public class MappingConfigurerInternal implements MappingConfigurer {
     private TypeNameAutoAssigner typeNameAutoAssigner = new TypeNameAutoAssigner();
 
     @Override
-    public MappingConfigurerInternal on(ClassMappingConfigurer classMappingConfigurer) {
-        ClassMappingConfigurerInternal classMappingConfigurerInternal = (ClassMappingConfigurerInternal) classMappingConfigurer;
+    public JacksonaticInternal on(ClassMapping classMapping) {
+        ClassMappingByProcessType classMappingConfigurerInternal = (ClassMappingByProcessType) classMapping;
         addType(classMappingConfigurerInternal);
         typeNameAutoAssigner.assignTypeNameIfNeccesary(classesMapping, classMappingConfigurerInternal);
         typeNameAutoAssigner.saveTypeWithJsonSubTypes(classMappingConfigurerInternal);
         return this;
     }
 
-    private void addType(ClassMappingConfigurerInternal classMappingConfigurer) {
+    private void addType(ClassMappingByProcessType classMappingConfigurer) {
         mergeClassMappingInClassesMapping(classMappingConfigurer.getClassMapping(), classesMapping);
         mergeClassMappingInClassesMapping(classMappingConfigurer.getSerializationOnlyClassMapping(), serializationOnlyClassesMapping);
         mergeClassMappingInClassesMapping(classMappingConfigurer.getDeserializationOnlyClassMapping(), deserializationOnlyClassesMapping);
     }
 
-    private void mergeClassMappingInClassesMapping(ClassMapping classMapping, ClassesMapping classesMapping) {
+    private void mergeClassMappingInClassesMapping(ClassMappingInternal classMapping, ClassesMapping classesMapping) {
         classesMapping.put(classMapping.getType(),
                 Optional.ofNullable(classesMapping.get(classMapping.getType()))
                         .map(parentClassMapping -> classMapping.copyWithParentMapping(parentClassMapping))
@@ -61,8 +62,8 @@ public class MappingConfigurerInternal implements MappingConfigurer {
     }
 
     @Override
-    public MappingConfigurer mapAllFieldsOn(ClassMappingConfigurer classMappingConfigurer) {
-        ClassMappingConfigurerInternal classMappingConfigurerInternal = (ClassMappingConfigurerInternal) classMappingConfigurer;
+    public Jacksonatic mapAllFieldsOn(ClassMapping classMapping) {
+        ClassMappingByProcessType classMappingConfigurerInternal = (ClassMappingByProcessType) classMapping;
         addType(classMappingConfigurerInternal);
         (classMappingConfigurerInternal).getClassMapping().mapAllFields();
         return this;
@@ -95,8 +96,8 @@ public class MappingConfigurerInternal implements MappingConfigurer {
     }
 
     @Override
-    public MappingConfigurer copy() {
-        MappingConfigurerInternal mappingConfigurerCopy = (MappingConfigurerInternal) MappingConfigurer.configureMapping();
+    public Jacksonatic copy() {
+        JacksonaticInternal mappingConfigurerCopy = (JacksonaticInternal) Jacksonatic.configureMapping();
         mappingConfigurerCopy.classesMapping = classesMapping.copy();
         mappingConfigurerCopy.serializationOnlyClassesMapping = serializationOnlyClassesMapping.copy();
         mappingConfigurerCopy.deserializationOnlyClassesMapping = deserializationOnlyClassesMapping.copy();

@@ -22,8 +22,8 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jacksonatic.ClassMappingConfigurer.type;
-import static org.jacksonatic.MappingConfigurer.configureMapping;
+import static org.jacksonatic.mapping.ClassMapping.type;
+import static org.jacksonatic.Jacksonatic.configureMapping;
 
 public class PolymorphismFieldTest {
 

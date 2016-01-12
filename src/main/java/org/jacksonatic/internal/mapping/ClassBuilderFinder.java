@@ -27,12 +27,12 @@ import static java.util.stream.Collectors.toList;
 import static org.jacksonatic.internal.util.ReflectionUtil.getFieldsWithInheritance;
 
 /**
- * Use {@link org.jacksonatic.internal.mapping.ClassMapping } and {@link org.jacksonatic.internal.mapping.ClassBuilderCriteria } to find
+ * Use {@link ClassMappingInternal } and {@link org.jacksonatic.internal.mapping.ClassBuilderCriteria } to find
  * constructor or static factory and build a {@ling org.jacksonatic.mapping.ClassBuilderMapping }
  */
 public class ClassBuilderFinder {
 
-    public static Optional<ClassBuilderMapping> findClassBuilderMapping(ClassMapping<Object> classMapping, ClassBuilderCriteria classBuilderCriteria) {
+    public static Optional<ClassBuilderMapping> findClassBuilderMapping(ClassMappingInternal<Object> classMapping, ClassBuilderCriteria classBuilderCriteria) {
         Optional<ClassBuilderMapping> classBuilderMappingOpt;
         if (classBuilderCriteria.isAny()) {
             classBuilderMappingOpt = findClassBuilderFrom(classMapping);
@@ -45,7 +45,7 @@ public class ClassBuilderFinder {
         return classBuilderMappingOpt;
     }
 
-    public static Optional<ClassBuilderMapping> findClassBuilderFrom(ClassMapping<Object> classMapping, ClassBuilderCriteria classBuilderCriteria) {
+    public static Optional<ClassBuilderMapping> findClassBuilderFrom(ClassMappingInternal<Object> classMapping, ClassBuilderCriteria classBuilderCriteria) {
         final Optional<ClassBuilderMapping> classBuilderOptional;
         if (classBuilderCriteria.isStaticFactory()) {
             classBuilderOptional = asList(classMapping.getType().getDeclaredMethods()).stream()
@@ -78,7 +78,7 @@ public class ClassBuilderFinder {
         return match;
     }
 
-    private static Optional<ClassBuilderMapping> findClassBuilderFrom(ClassMapping<Object> classMapping) {
+    private static Optional<ClassBuilderMapping> findClassBuilderFrom(ClassMappingInternal<Object> classMapping) {
         SortedSet<ClassBuilderMapping> classBuilderMappingScored = new TreeSet(
                 Comparator.<ClassBuilderMapping>comparingInt(o -> o.getParametersMapping().size())
                         .reversed()
@@ -97,7 +97,7 @@ public class ClassBuilderFinder {
         return Optional.empty();
     }
 
-    private static void addConstructorScored(ClassMapping<Object> classMapping, SortedSet<ClassBuilderMapping> classBuilderMappingScored) {
+    private static void addConstructorScored(ClassMappingInternal<Object> classMapping, SortedSet<ClassBuilderMapping> classBuilderMappingScored) {
         for (Constructor<?> constructor : classMapping.getType().getConstructors()) {
             List<Field> declaredFields = getFieldsWithInheritance(classMapping.getType()).collect(toList());
             List<ParameterMapping> parametersMapping = getParametersMapping(classMapping, Arrays.asList(constructor.getParameterTypes()), declaredFields);
@@ -108,7 +108,7 @@ public class ClassBuilderFinder {
         }
     }
 
-    private static void addStaticFactoryScored(ClassMapping<Object> classMapping, SortedSet<ClassBuilderMapping> classBuilderMappingScored) {
+    private static void addStaticFactoryScored(ClassMappingInternal<Object> classMapping, SortedSet<ClassBuilderMapping> classBuilderMappingScored) {
         for (Method method : classMapping.getType().getDeclaredMethods()) {
             if (Modifier.isStatic(method.getModifiers())) {
                 List<Field> declaredFields = getFieldsWithInheritance(classMapping.getType()).collect(toList());
@@ -121,7 +121,7 @@ public class ClassBuilderFinder {
         }
     }
 
-    private static List<ParameterMapping> getParametersMapping(ClassMapping<Object> classMapping, List<Class<?>> parameterTypes, List<Field> fields) {
+    private static List<ParameterMapping> getParametersMapping(ClassMappingInternal<Object> classMapping, List<Class<?>> parameterTypes, List<Field> fields) {
         int iParameterType = 0;
         int iFields = 0;
         List<ParameterMapping> parametersMapping = new ArrayList<>();
@@ -146,7 +146,7 @@ public class ClassBuilderFinder {
         return parametersMapping;
     }
 
-    private static boolean isMapped(ClassMapping<Object> classMapping, FieldMappingInternal fieldMapping, Optional<MethodMappingInternal> methodMappingOpt) {
+    private static boolean isMapped(ClassMappingInternal<Object> classMapping, FieldMappingInternal fieldMapping, Optional<MethodMappingInternal> methodMappingOpt) {
         return classMapping.allFieldsAreMapped() || fieldMapping.isMapped() || methodMappingOpt.map(methodMapping -> methodMapping.isMapped()).orElse(false);
     }
 

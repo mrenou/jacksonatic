@@ -34,15 +34,15 @@ public class ClassBuilderCriteria {
 
     private boolean any = false;
 
-    public static ClassBuilderCriteria mapConstructor(Class<?> classToBuild, List<ParameterCriteria> parameterCriteriaList) {
+    public static ClassBuilderCriteria mapConstructor(Class<?> classToBuild, List<ParameterCriteriaInternal> parameterCriteriaList) {
         return new ClassBuilderCriteria(classToBuild, null, parameterCriteriaList, false);
     }
 
-    public static ClassBuilderCriteria mapStaticFactory(Class<?> classToBuild, List<ParameterCriteria> parameterCriteriaList) {
+    public static ClassBuilderCriteria mapStaticFactory(Class<?> classToBuild, List<ParameterCriteriaInternal> parameterCriteriaList) {
         return new ClassBuilderCriteria(classToBuild, null, parameterCriteriaList, true);
     }
 
-    public static ClassBuilderCriteria mapStaticFactory(Class<?> classToBuild, String methodName, List<ParameterCriteria> parameterCriteriaList) {
+    public static ClassBuilderCriteria mapStaticFactory(Class<?> classToBuild, String methodName, List<ParameterCriteriaInternal> parameterCriteriaList) {
         return new ClassBuilderCriteria(classToBuild, methodName, parameterCriteriaList, true);
     }
 
@@ -51,7 +51,7 @@ public class ClassBuilderCriteria {
     }
 
 
-    private ClassBuilderCriteria(Class<?> classToBuild, String methodName, List<ParameterCriteria> parameterCriterias, boolean staticFactory) {
+    private ClassBuilderCriteria(Class<?> classToBuild, String methodName, List<ParameterCriteriaInternal> parameterCriterias, boolean staticFactory) {
         this(methodName, buildParametersMapping(classToBuild, parameterCriterias), staticFactory, false);
     }
 

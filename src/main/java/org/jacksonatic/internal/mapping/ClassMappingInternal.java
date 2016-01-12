@@ -39,7 +39,7 @@ import static org.jacksonatic.mapping.MethodMapping.method;
 /**
  * Define class mapping
  */
-public class ClassMapping<T> implements HasAnnotationsInternal {
+public class ClassMappingInternal<T> implements HasAnnotationsInternal {
 
     private Class<T> type;
 
@@ -55,11 +55,11 @@ public class ClassMapping<T> implements HasAnnotationsInternal {
 
     private TypeChecker<T> typeChecker;
 
-    public ClassMapping(Class<T> type) {
+    public ClassMappingInternal(Class<T> type) {
         this(type, false, Optional.empty(), new MyHashMap<>(), new MyHashMap<>(), new Annotations(), new TypeChecker<>(type));
     }
 
-    ClassMapping(Class<T> type, boolean mapAllFields, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, MyHashMap<String, FieldMappingInternal> fieldsMapping, MyHashMap<MethodSignature, MethodMappingInternal> methodsMapping, Annotations annotations, TypeChecker<T> typeChecker) {
+    ClassMappingInternal(Class<T> type, boolean mapAllFields, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, MyHashMap<String, FieldMappingInternal> fieldsMapping, MyHashMap<MethodSignature, MethodMappingInternal> methodsMapping, Annotations annotations, TypeChecker<T> typeChecker) {
         this.type = type;
         this.mapAllFields = mapAllFields;
         this.classBuilderCriteriaOpt = classBuilderCriteriaOpt;
@@ -187,8 +187,8 @@ public class ClassMapping<T> implements HasAnnotationsInternal {
         return annotations;
     }
 
-    ClassMapping<T> copy() {
-        return new ClassMapping(type,
+    ClassMappingInternal<T> copy() {
+        return new ClassMappingInternal(type,
                 mapAllFields,
                 Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(null)),
                 fieldsMapping.copy(fieldMapping -> fieldMapping.copy()),
@@ -199,8 +199,8 @@ public class ClassMapping<T> implements HasAnnotationsInternal {
         );
     }
 
-    public ClassMapping<T> copyWithParentMapping(ClassMapping<T> parentMapping) {
-        return new ClassMapping(type,
+    public ClassMappingInternal<T> copyWithParentMapping(ClassMappingInternal<T> parentMapping) {
+        return new ClassMappingInternal(type,
                 mapAllFields | parentMapping.mapAllFields,
                 Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(parentMapping.classBuilderCriteriaOpt.map(cm -> cm.copy()).orElse(null))),
                 this.fieldsMapping.mergeWith(parentMapping.fieldsMapping, fieldMapping -> fieldMapping.copy(), (fieldMapping, fieldParentMapping) -> fieldMapping.copyWithParentMapping(fieldParentMapping)),
@@ -210,8 +210,8 @@ public class ClassMapping<T> implements HasAnnotationsInternal {
         );
     }
 
-    public ClassMapping<Object> createChildMapping(Class<Object> childClass) {
-        return new ClassMapping(childClass,
+    public ClassMappingInternal<Object> createChildMapping(Class<Object> childClass) {
+        return new ClassMappingInternal(childClass,
                 mapAllFields,
                 Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(null)),
                 fieldsMapping.copy(fieldMapping -> fieldMapping.copy()),

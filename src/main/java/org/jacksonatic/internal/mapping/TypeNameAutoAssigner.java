@@ -17,7 +17,6 @@ package org.jacksonatic.internal.mapping;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import org.jacksonatic.internal.ClassMappingConfigurerInternal;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -30,13 +29,13 @@ public class TypeNameAutoAssigner {
 
     private Set<Class<Object>> typesWithPolymorphism = new HashSet<>();
 
-    public void saveTypeWithJsonSubTypes(ClassMappingConfigurerInternal classMappingConfigurer) {
+    public void saveTypeWithJsonSubTypes(ClassMappingByProcessType classMappingConfigurer) {
         if (classMappingConfigurer.getClassMapping().hasAnnotation(JsonSubTypes.class)) {
             typesWithPolymorphism.add(classMappingConfigurer.getClassMapping().getType());
         }
     }
 
-    public void assignTypeNameIfNeccesary(ClassesMapping classesMapping, ClassMappingConfigurerInternal classMappingConfigurer) {
+    public void assignTypeNameIfNeccesary(ClassesMapping classesMapping, ClassMappingByProcessType classMappingConfigurer) {
         if (!classMappingConfigurer.getClassMapping().hasAnnotation(JsonTypeName.class)) {
             typesWithPolymorphism.stream()
                     .filter(typeWithPolymorphism -> typeWithPolymorphism.isAssignableFrom(classMappingConfigurer.getClassMapping().getType()))

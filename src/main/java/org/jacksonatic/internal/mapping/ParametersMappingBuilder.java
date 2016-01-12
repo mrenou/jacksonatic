@@ -27,7 +27,7 @@ import static org.jacksonatic.internal.util.ReflectionUtil.getFieldsWithInherita
 
 public class ParametersMappingBuilder {
 
-    public static List<ParameterMapping> buildParametersMapping(Class<?> classToBuild, List<ParameterCriteria> parameterCriterias) {
+    public static List<ParameterMapping> buildParametersMapping(Class<?> classToBuild, List<ParameterCriteriaInternal> parameterCriterias) {
         MyHashMap<Class<?>, PriorityQueue<String>> fieldNamesByType = new MyHashMap<>();
         Map<String, Class<?>> typeByFieldName = new HashMap<>();
         getFieldsWithInheritance(classToBuild).forEach(field -> {
@@ -42,7 +42,7 @@ public class ParametersMappingBuilder {
         return parameterCriterias.stream().map(parameterCriteria -> new ParameterMapping(loadParameterClass(parameterCriteria, typeByFieldName), loadJsonProperty(parameterCriteria, fieldNamesByType))).collect(toList());
     }
 
-    private static Class<?> loadParameterClass(ParameterCriteria parameterCriteria, Map<String, Class<?>> typeByFieldName) {
+    private static Class<?> loadParameterClass(ParameterCriteriaInternal parameterCriteria, Map<String, Class<?>> typeByFieldName) {
         Class<?> parameterClass = parameterCriteria.getParameterClass();
         if (parameterClass == null) {
             parameterClass = typeByFieldName.get(parameterCriteria.getFieldName());
@@ -53,7 +53,7 @@ public class ParametersMappingBuilder {
         return parameterClass;
     }
 
-    private static String loadJsonProperty(ParameterCriteria parameterCriteria, Map<Class<?>, PriorityQueue<String>> fieldNamesByType) {
+    private static String loadJsonProperty(ParameterCriteriaInternal parameterCriteria, Map<Class<?>, PriorityQueue<String>> fieldNamesByType) {
         String jsonProperty = parameterCriteria.getJsonProperty();
         if (jsonProperty == null) {
             final PriorityQueue<String> fieldNames = fieldNamesByType.get(parameterCriteria.getParameterClass());

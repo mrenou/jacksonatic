@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.BasicBeanDescription;
 import com.fasterxml.jackson.databind.introspect.BasicClassIntrospector;
 import com.fasterxml.jackson.databind.introspect.POJOPropertiesCollector;
-import org.jacksonatic.internal.MappingConfigurerInternal;
+import org.jacksonatic.internal.JacksonaticInternal;
 
 /**
  * Customized class introspector to use our own {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass}
@@ -33,7 +33,7 @@ public class JacksonaticClassIntrospector extends BasicClassIntrospector {
 
     private AnnotatedClassConstructor annotatedClassConstructor;
 
-    public void register(MappingConfigurerInternal mappingConfigurer) {
+    public void register(JacksonaticInternal mappingConfigurer) {
         annotatedClassConstructor = new AnnotatedClassConstructor(mappingConfigurer);
     }
 

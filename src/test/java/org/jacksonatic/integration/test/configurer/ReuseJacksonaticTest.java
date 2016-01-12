@@ -16,15 +16,15 @@
 package org.jacksonatic.integration.test.configurer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jacksonatic.MappingConfigurer;
+import org.jacksonatic.Jacksonatic;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static org.assertj.core.api.StrictAssertions.assertThat;
-import static org.jacksonatic.ClassMappingConfigurer.type;
+import static org.jacksonatic.mapping.ClassMapping.type;
 
-public class ReuseMappingConfigurerTest {
+public class ReuseJacksonaticTest {
 
     static class Pojo {
 
@@ -39,7 +39,7 @@ public class ReuseMappingConfigurerTest {
         }
     }
 
-    private final MappingConfigurer baseMappingConfigurer = MappingConfigurer.configureMapping()
+    private final Jacksonatic baseJacksonatic = Jacksonatic.configureMapping()
             .on(type(Pojo.class)
                     .map("field1", "toto1"));
 
@@ -48,13 +48,13 @@ public class ReuseMappingConfigurerTest {
         Pojo expectedPojo = new Pojo("field1", 42);
 
         ObjectMapper objectMapper1 = new ObjectMapper();
-        baseMappingConfigurer.copy()
+        baseJacksonatic.copy()
                 .on(type(Pojo.class)
                         .map("field2", "toto"))
                 .registerIn(objectMapper1);
 
         ObjectMapper objectMapper2 = new ObjectMapper();
-        baseMappingConfigurer.copy()
+        baseJacksonatic.copy()
                 .on(type(Pojo.class)
                         .map("field2", "titi"))
                 .registerIn(objectMapper2);

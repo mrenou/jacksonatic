@@ -23,9 +23,9 @@ import java.io.IOException;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jacksonatic.ClassMappingConfigurer.type;
+import static org.jacksonatic.mapping.ClassMapping.type;
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
-import static org.jacksonatic.MappingConfigurer.configureMapping;
+import static org.jacksonatic.Jacksonatic.configureMapping;
 import static org.jacksonatic.mapping.FieldMapping.field;
 
 

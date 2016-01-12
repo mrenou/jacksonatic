@@ -22,7 +22,7 @@ import static java.util.stream.Collectors.toMap;
 /**
  * Class mapping map
  */
-public class ClassesMapping extends MyHashMap<Class<Object>, ClassMapping<Object>> {
+public class ClassesMapping extends MyHashMap<Class<Object>, ClassMappingInternal<Object>> {
 
     public ClassesMapping copy() {
         return this.entrySet().stream().collect(toMap(

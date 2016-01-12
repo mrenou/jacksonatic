@@ -19,8 +19,8 @@ import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 import com.fasterxml.jackson.databind.util.ClassUtil;
-import org.jacksonatic.internal.MappingConfigurerInternal;
-import org.jacksonatic.internal.mapping.ClassMapping;
+import org.jacksonatic.internal.JacksonaticInternal;
+import org.jacksonatic.internal.mapping.ClassMappingInternal;
 import org.jacksonatic.internal.mapping.ClassesMapping;
 import org.jacksonatic.internal.util.MyHashMap;
 
@@ -57,7 +57,7 @@ public class AnnotatedClassConstructor {
 
     private MyHashMap<ProcessType, ClassesMapping> mergedClassesMapping = new MyHashMap<>();
 
-    public AnnotatedClassConstructor(MappingConfigurerInternal mappingConfigurer) {
+    public AnnotatedClassConstructor(JacksonaticInternal mappingConfigurer) {
         this.classesMapping = mappingConfigurer.getClassesMapping().copy();
         this.serializationOnlyClassesMapping = mappingConfigurer.getSerializationOnlyClassesMapping().copy();
         this.deserializationOnlyClassesMapping = mappingConfigurer.getDeserializationOnlyClassesMapping().copy();
@@ -88,11 +88,11 @@ public class AnnotatedClassConstructor {
 
         List<Class<?>> superTypes = ClassUtil.findSuperTypes(ac.getAnnotated(), Object.class);
         superTypes.add(Object.class);
-        Optional<ClassMapping<Object>> parentClassMappingOpt = Optional.empty();
+        Optional<ClassMappingInternal<Object>> parentClassMappingOpt = Optional.empty();
 
         for (int i = superTypes.size() - 1; i >= 0; i--) {
             Class<?> superType = superTypes.get(i);
-            Optional<ClassMapping<Object>> mergedClassMapping = Optional.ofNullable(mergedClassesMapping.getTyped(processType).get(superType));
+            Optional<ClassMappingInternal<Object>> mergedClassMapping = Optional.ofNullable(mergedClassesMapping.getTyped(processType).get(superType));
             if (!mergedClassMapping.isPresent()) {
                 mergedClassMapping = mergeClassMappings(parentClassMappingOpt,
                         Optional.ofNullable(classesMapping.get(superType)),
@@ -105,7 +105,7 @@ public class AnnotatedClassConstructor {
 
         }
 
-        Optional<ClassMapping<Object>> finalClassMappingOpt = mergeClassMappings(parentClassMappingOpt,
+        Optional<ClassMappingInternal<Object>> finalClassMappingOpt = mergeClassMappings(parentClassMappingOpt,
                 Optional.ofNullable(classesMapping.get(ac.getAnnotated())),
                 getExtraClassMappingOpt(processType, ac.getAnnotated()))
                 .map(finalClassMapping -> {
@@ -120,18 +120,18 @@ public class AnnotatedClassConstructor {
                 .orElse(ac);
     }
 
-    private Optional<ClassMapping<Object>> mergeClassMappings(Optional<ClassMapping<Object>>... classMappings) {
+    private Optional<ClassMappingInternal<Object>> mergeClassMappings(Optional<ClassMappingInternal<Object>>... classMappings) {
         if (classMappings.length == 0) {
             return Optional.empty();
         }
-        Optional<ClassMapping<Object>> finalClassMapping = classMappings[0];
+        Optional<ClassMappingInternal<Object>> finalClassMapping = classMappings[0];
         for (int i = 1; i < classMappings.length; i++) {
             finalClassMapping = copyWithParentMapping(classMappings[i], finalClassMapping);
         }
         return finalClassMapping;
     }
 
-    private Optional<ClassMapping<Object>> copyWithParentMapping(Optional<ClassMapping<Object>> classMappingOpt, Optional<ClassMapping<Object>> parentClassMappingOpt) {
+    private Optional<ClassMappingInternal<Object>> copyWithParentMapping(Optional<ClassMappingInternal<Object>> classMappingOpt, Optional<ClassMappingInternal<Object>> parentClassMappingOpt) {
         return classMappingOpt
                 .map(classMapping -> parentClassMappingOpt
                         .map(parentClassMapping -> Optional.of(classMapping.copyWithParentMapping(parentClassMapping)))
@@ -141,8 +141,8 @@ public class AnnotatedClassConstructor {
                         .orElse(Optional.empty()));
     }
 
-    private Optional<ClassMapping<Object>> getExtraClassMappingOpt(ProcessType processType, Class<?> clazz) {
-        Optional<ClassMapping<Object>> extraClassMapping;
+    private Optional<ClassMappingInternal<Object>> getExtraClassMappingOpt(ProcessType processType, Class<?> clazz) {
+        Optional<ClassMappingInternal<Object>> extraClassMapping;
         if (processType == ProcessType.SERIALIZATION || processType == ProcessType.NO_SUPER_TYPES) {
             extraClassMapping = Optional.ofNullable(serializationOnlyClassesMapping.get(clazz));
         } else {

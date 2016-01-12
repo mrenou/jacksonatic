@@ -16,32 +16,33 @@
 package org.jacksonatic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jacksonatic.internal.MappingConfigurerInternal;
+import org.jacksonatic.internal.JacksonaticInternal;
+import org.jacksonatic.mapping.ClassMapping;
 
 /**
  * Entry point of the api, allowing to define a jackson class mapping collection in a programmatic way.
  */
-public interface MappingConfigurer {
+public interface Jacksonatic {
 
-    static MappingConfigurer configureMapping() {
-        return new MappingConfigurerInternal();
+    static Jacksonatic configureMapping() {
+        return new JacksonaticInternal();
     }
 
     /**
      * to define a class mapping
      *
-     * @param classMappingConfigurer
+     * @param classMapping
      * @return
      */
-    MappingConfigurer on(ClassMappingConfigurer classMappingConfigurer);
+    Jacksonatic on(ClassMapping classMapping);
 
     /**
      * to define a class mapping with all its fields mapped
      *
-     * @param classMappingConfigurer
+     * @param classMapping
      * @return
      */
-    MappingConfigurer mapAllFieldsOn(ClassMappingConfigurer classMappingConfigurer);
+    Jacksonatic mapAllFieldsOn(ClassMapping classMapping);
 
     /**
      * register mapping configuration in a {@ling com.fasterxml.jackson.databind.ObjectMapper}
@@ -50,6 +51,6 @@ public interface MappingConfigurer {
      */
     void registerIn(ObjectMapper objectMapper);
 
-    MappingConfigurer copy();
+    Jacksonatic copy();
 
 }
