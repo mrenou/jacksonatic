@@ -16,6 +16,8 @@
 package org.jacksonatic.internal.mapping;
 
 import org.jacksonatic.internal.annotations.Annotations;
+import org.jacksonatic.internal.util.Copyable;
+import org.jacksonatic.internal.util.Mergeable;
 import org.jacksonatic.mapping.MethodMapping;
 
 import java.util.Arrays;
@@ -23,7 +25,7 @@ import java.util.Arrays;
 import static org.jacksonatic.internal.mapping.MethodSignature.methodSignature;
 import static org.jacksonatic.internal.mapping.MethodSignature.methodSignatureIgnoringParameters;
 
-public class MethodMappingInternal implements MethodMapping, PropertyMapperInternal {
+public class MethodMappingInternal implements MethodMapping, PropertyMapperInternal, Copyable<MethodMappingInternal>, Mergeable<MethodMappingInternal> {
 
     private MethodSignature methodSignature;
 
@@ -52,11 +54,14 @@ public class MethodMappingInternal implements MethodMapping, PropertyMapperInter
         return annotations;
     }
 
-    MethodMappingInternal copy() {
+    @Override
+    public MethodMappingInternal copy() {
         return new MethodMappingInternal(methodSignature, this.annotations.copy());
     }
 
-    public MethodMappingInternal copyWithParentMapping(MethodMappingInternal methodParentMapping) {
+    @Override
+    public MethodMappingInternal mergeWith(MethodMappingInternal methodParentMapping) {
         return new MethodMappingInternal(methodSignature, this.annotations.size() == 0 ? methodParentMapping.annotations.copy() : annotations.copy());
     }
+
 }

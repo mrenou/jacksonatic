@@ -18,11 +18,10 @@ package org.jacksonatic.internal.util;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
 
-public class MyHashMap<K, V> extends HashMap<K, V> {
+public class CopyableMergeableHashMap<K, V extends Mergeable<V> & Copyable<V>> extends HashMap<K, V> {
 
     public V getTyped(K key) {
         return super.get(key);
@@ -52,16 +51,24 @@ public class MyHashMap<K, V> extends HashMap<K, V> {
         return Optional.ofNullable(get(key));
     }
 
-    public MyHashMap<K, V> copy(Function<V, V> copyFunction) {
-        return  this.entrySet().stream().collect(toMap(e -> e.getKey(), e -> copyFunction.apply(e.getValue()), (v1, V2) -> {
+    public CopyableMergeableHashMap<K, V> copy() {
+        return  this.entrySet().stream().collect(toMap((Entry<K, V> e) -> {
+            K key = e.getKey();
+            return key;
+        }, (Entry<K, V> e) -> {
+            V copy = e.getValue();
+            return copy;
+        }, (V v1, V v2) -> {
             throw new UnsupportedOperationException();
-        }, () -> new MyHashMap<>()));
+        }, () -> new CopyableMergeableHashMap<>()));
     }
 
-    public MyHashMap<K, V> mergeWith(MyHashMap<K, V> map,
-                                        Function<V, V> copyFunction,
-                                        BiFunction<V, V, V> mergeFunction) {
-        return MapUtil.merge(this, map, copyFunction, mergeFunction, () -> new MyHashMap<>());
+    public V mergeKeyWith(K key,V otherValue) {
+        return put(key, Mergeable.merge(get(key), otherValue));
+    }
+
+    public CopyableMergeableHashMap<K, V> mergeWith(CopyableMergeableHashMap<K, V> map) {
+        return MapUtil.merge(this, map);
     }
 
 }

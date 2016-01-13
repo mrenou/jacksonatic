@@ -18,11 +18,13 @@ package org.jacksonatic.internal.mapping;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jacksonatic.internal.annotations.Annotations;
+import org.jacksonatic.internal.util.Copyable;
+import org.jacksonatic.internal.util.Mergeable;
 import org.jacksonatic.mapping.FieldMapping;
 
 import java.util.Optional;
 
-public class FieldMappingInternal implements FieldMapping, PropertyMapperInternal {
+public class FieldMappingInternal implements FieldMapping, PropertyMapperInternal, Copyable<FieldMappingInternal>, Mergeable<FieldMappingInternal> {
 
     private String name;
 
@@ -57,17 +59,19 @@ public class FieldMappingInternal implements FieldMapping, PropertyMapperInterna
         return annotations.containsKey(JsonIgnore.class);
     }
 
+    @Override
     public Annotations getAnnotations() {
         return annotations;
     }
 
-    FieldMappingInternal copy() {
+    @Override
+    public FieldMappingInternal copy() {
         return new FieldMappingInternal(name, this.annotations.copy());
     }
 
-    FieldMappingInternal copyWithParentMapping(FieldMappingInternal parentMapping) {
+    @Override
+    public FieldMappingInternal mergeWith(FieldMappingInternal parentMapping) {
         return new FieldMappingInternal(name, this.annotations.size() == 0 ? parentMapping.annotations.copy() : annotations.copy());
     }
-
 
 }

@@ -134,7 +134,7 @@ public class AnnotatedClassConstructor {
     private Optional<ClassMappingInternal<Object>> copyWithParentMapping(Optional<ClassMappingInternal<Object>> classMappingOpt, Optional<ClassMappingInternal<Object>> parentClassMappingOpt) {
         return classMappingOpt
                 .map(classMapping -> parentClassMappingOpt
-                        .map(parentClassMapping -> Optional.of(classMapping.copyWithParentMapping(parentClassMapping)))
+                        .map(parentClassMapping -> Optional.of(classMapping.mergeWith(parentClassMapping)))
                         .orElse(Optional.of(classMapping)))
                 .orElse(parentClassMappingOpt
                         .map(parentClassMapping -> Optional.of(parentClassMapping))

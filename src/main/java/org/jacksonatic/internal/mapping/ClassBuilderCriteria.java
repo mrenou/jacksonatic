@@ -15,6 +15,9 @@
  */
 package org.jacksonatic.internal.mapping;
 
+import org.jacksonatic.internal.util.Copyable;
+import org.jacksonatic.internal.util.Mergeable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +27,7 @@ import static org.jacksonatic.internal.mapping.ParametersMappingBuilder.buildPar
 /**
  * Criteria to match a constructor or a static factory
  */
-public class ClassBuilderCriteria {
+public class ClassBuilderCriteria implements Copyable<ClassBuilderCriteria>, Mergeable<ClassBuilderCriteria> {
 
     private String methodName;
 
@@ -82,11 +85,15 @@ public class ClassBuilderCriteria {
         return staticFactory;
     }
 
-    ClassBuilderCriteria copy() {
-        return new ClassBuilderCriteria(methodName,
-                parametersMapping,
-                staticFactory,
-                any);
+    // TODO copy list parametersMapping ?
+    @Override
+    public ClassBuilderCriteria copy() {
+        return new ClassBuilderCriteria(methodName, parametersMapping, staticFactory, any);
+    }
+
+    @Override
+    public ClassBuilderCriteria mergeWith(ClassBuilderCriteria other) {
+        return this.copy();
     }
 
     public String mappingAsString() {
@@ -98,4 +105,6 @@ public class ClassBuilderCriteria {
             return "any";
         }
     }
+
+
 }

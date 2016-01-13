@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,15 +19,17 @@ import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
-import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.Jacksonatic;
 import org.jacksonatic.internal.introspection.JacksonaticClassIntrospector;
 import org.jacksonatic.internal.mapping.ClassMappingByProcessType;
 import org.jacksonatic.internal.mapping.ClassMappingInternal;
 import org.jacksonatic.internal.mapping.ClassesMapping;
 import org.jacksonatic.internal.mapping.TypeNameAutoAssigner;
+import org.jacksonatic.internal.util.Copyable;
+import org.jacksonatic.mapping.ClassMapping;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 public class JacksonaticInternal implements Jacksonatic {
 
@@ -41,32 +43,25 @@ public class JacksonaticInternal implements Jacksonatic {
 
     @Override
     public JacksonaticInternal on(ClassMapping classMapping) {
-        ClassMappingByProcessType classMappingConfigurerInternal = (ClassMappingByProcessType) classMapping;
-        addType(classMappingConfigurerInternal);
-        typeNameAutoAssigner.assignTypeNameIfNeccesary(classesMapping, classMappingConfigurerInternal);
-        typeNameAutoAssigner.saveTypeWithJsonSubTypes(classMappingConfigurerInternal);
+        ClassMappingByProcessType classMappingByProcessType = (ClassMappingByProcessType) classMapping;
+        addType(classMappingByProcessType);
+        typeNameAutoAssigner.assignTypeNameIfNeccesary(classesMapping, classMappingByProcessType);
+        typeNameAutoAssigner.saveTypeWithJsonSubTypes(classMappingByProcessType);
         return this;
-    }
-
-    private void addType(ClassMappingByProcessType classMappingConfigurer) {
-        mergeClassMappingInClassesMapping(classMappingConfigurer.getClassMapping(), classesMapping);
-        mergeClassMappingInClassesMapping(classMappingConfigurer.getSerializationOnlyClassMapping(), serializationOnlyClassesMapping);
-        mergeClassMappingInClassesMapping(classMappingConfigurer.getDeserializationOnlyClassMapping(), deserializationOnlyClassesMapping);
-    }
-
-    private void mergeClassMappingInClassesMapping(ClassMappingInternal classMapping, ClassesMapping classesMapping) {
-        classesMapping.put(classMapping.getType(),
-                Optional.ofNullable(classesMapping.get(classMapping.getType()))
-                        .map(parentClassMapping -> classMapping.copyWithParentMapping(parentClassMapping))
-                        .orElse(classMapping));
     }
 
     @Override
     public Jacksonatic mapAllFieldsOn(ClassMapping classMapping) {
         ClassMappingByProcessType classMappingConfigurerInternal = (ClassMappingByProcessType) classMapping;
         addType(classMappingConfigurerInternal);
-        (classMappingConfigurerInternal).getClassMapping().mapAllFields();
+        classMappingConfigurerInternal.getClassMapping().mapAllFields();
         return this;
+    }
+
+    private void addType(ClassMappingByProcessType classMappingByProcessType) {
+        classesMapping.mergeKeyWith(classMappingByProcessType.getClassMapping().getType(), classMappingByProcessType.getClassMapping());
+        serializationOnlyClassesMapping.mergeKeyWith(classMappingByProcessType.getSerializationOnlyClassMapping().getType(), classMappingByProcessType.getSerializationOnlyClassMapping());
+        deserializationOnlyClassesMapping.mergeKeyWith(classMappingByProcessType.getDeserializationOnlyClassMapping().getType(), classMappingByProcessType.getDeserializationOnlyClassMapping());
     }
 
     @Override

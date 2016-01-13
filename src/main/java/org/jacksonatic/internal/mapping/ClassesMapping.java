@@ -15,6 +15,7 @@
  */
 package org.jacksonatic.internal.mapping;
 
+import org.jacksonatic.internal.util.CopyableMergeableHashMap;
 import org.jacksonatic.internal.util.MyHashMap;
 
 import static java.util.stream.Collectors.toMap;
@@ -22,12 +23,14 @@ import static java.util.stream.Collectors.toMap;
 /**
  * Class mapping map
  */
-public class ClassesMapping extends MyHashMap<Class<Object>, ClassMappingInternal<Object>> {
+public class ClassesMapping extends CopyableMergeableHashMap<Class<Object>, ClassMappingInternal<Object>> {
 
     public ClassesMapping copy() {
         return this.entrySet().stream().collect(toMap(
                 e -> e.getKey(),
-                e -> e.getValue().copy(),
+                e -> {
+                    return e.getValue().copy();
+                },
                 (v1, v2) -> {
                     throw new UnsupportedOperationException();
                 },

@@ -26,10 +26,37 @@ import static java.util.stream.Collectors.toMap;
 
 public class MapUtil {
 
+    public static <H extends Map<K, V>, K, V extends Mergeable<V> & Copyable<V>> H merge(H map1, H map2) {
+        return merge(map1, map2, newInstanceSupplier(map1));
+    }
+
+    public static <H extends Map<K, V>, K, V extends Mergeable<V> & Copyable<V>> H merge(H map1, H map2, Supplier<H> mapSupplier) {
+        return merge(map1, map2, (V o) -> o.copy(), (V o1, V o2) -> o1.mergeWith(o2), mapSupplier);
+    }
+
     public static <H extends Map<K, V>, K, V> H merge(H map1, H map2,
-                                                Function<V, V> copyFunction,
-                                                BiFunction<V, V, V> mergeFunction,
-                                                Supplier<H> mapSupplier) {
+                                                      Function<V, V> copyFunction,
+                                                      BiFunction<V, V, V> mergeFunction) {
+        return merge(map1, map2, copyFunction, mergeFunction, newInstanceSupplier(map1));
+    }
+
+    private static <H extends Map<K, V>, K, V> Supplier<H> newInstanceSupplier(H map) {
+        return () -> {
+            try {
+                return ((Class<H>) ((Function<H, Class<?>>) H::getClass).apply(map)).newInstance();
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
+
+        };
+    }
+
+    public static <H extends Map<K, V>, K, V> H merge(H map1, H map2,
+                                                      Function<V, V> copyFunction,
+                                                      BiFunction<V, V, V> mergeFunction,
+                                                      Supplier<H> mapSupplier) {
         Stream<Map.Entry<K, V>> streamFromMap1WithMergedValues = map1.entrySet().stream()
                 .map((entry1) -> {
                     V newValue;

@@ -42,6 +42,6 @@ public class Annotations extends MyHashMap<Class<? extends Annotation>, Annotati
     }
 
     public Annotations mergeWith(Annotations map) {
-        return MapUtil.merge(this, map, annotation -> annotation, (annotation, annotationParent) -> annotation, () -> new Annotations());
+        return MapUtil.merge(this, map, annotation -> annotation, (annotation, annotationParent) -> annotation);
     }
 }

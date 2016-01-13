@@ -19,7 +19,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.jacksonatic.annotation.JacksonaticJsonSubTypesType;
 import org.jacksonatic.internal.annotations.Annotations;
-import org.jacksonatic.internal.util.MyHashMap;
+import org.jacksonatic.internal.util.Copyable;
+import org.jacksonatic.internal.util.CopyableMergeableHashMap;
+import org.jacksonatic.internal.util.Mergeable;
 import org.jacksonatic.internal.util.StringUtil;
 
 import java.util.ArrayList;
@@ -39,7 +41,7 @@ import static org.jacksonatic.mapping.MethodMapping.method;
 /**
  * Define class mapping
  */
-public class ClassMappingInternal<T> implements HasAnnotationsInternal {
+public class ClassMappingInternal<T> implements HasAnnotationsInternal, Copyable<ClassMappingInternal<T>>, Mergeable<ClassMappingInternal<T>> {
 
     private Class<T> type;
 
@@ -47,19 +49,19 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal {
 
     private Optional<ClassBuilderCriteria> classBuilderCriteriaOpt;
 
-    private MyHashMap<String, FieldMappingInternal> fieldsMapping;
+    private CopyableMergeableHashMap<String, FieldMappingInternal> fieldsMapping;
 
-    private MyHashMap<MethodSignature, MethodMappingInternal> methodsMapping;
+    private CopyableMergeableHashMap<MethodSignature, MethodMappingInternal> methodsMapping;
 
     private Annotations annotations;
 
     private TypeChecker<T> typeChecker;
 
     public ClassMappingInternal(Class<T> type) {
-        this(type, false, Optional.empty(), new MyHashMap<>(), new MyHashMap<>(), new Annotations(), new TypeChecker<>(type));
+        this(type, false, Optional.empty(), new CopyableMergeableHashMap<>(), new CopyableMergeableHashMap<>(), new Annotations(), new TypeChecker<>(type));
     }
 
-    ClassMappingInternal(Class<T> type, boolean mapAllFields, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, MyHashMap<String, FieldMappingInternal> fieldsMapping, MyHashMap<MethodSignature, MethodMappingInternal> methodsMapping, Annotations annotations, TypeChecker<T> typeChecker) {
+    ClassMappingInternal(Class<T> type, boolean mapAllFields, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, CopyableMergeableHashMap<String, FieldMappingInternal> fieldsMapping, CopyableMergeableHashMap<MethodSignature, MethodMappingInternal> methodsMapping, Annotations annotations, TypeChecker<T> typeChecker) {
         this.type = type;
         this.mapAllFields = mapAllFields;
         this.classBuilderCriteriaOpt = classBuilderCriteriaOpt;
@@ -187,35 +189,38 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal {
         return annotations;
     }
 
-    ClassMappingInternal<T> copy() {
+    @Override
+    public ClassMappingInternal<T> copy() {
         return new ClassMappingInternal(type,
                 mapAllFields,
-                Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(null)),
-                fieldsMapping.copy(fieldMapping -> fieldMapping.copy()),
-                methodsMapping.copy(fieldMapping -> fieldMapping.copy()),
+                Copyable.copy(classBuilderCriteriaOpt),
+                fieldsMapping.copy(),
+                methodsMapping.copy(),
                 annotations.copy(),
                 typeChecker
 
         );
     }
 
-    public ClassMappingInternal<T> copyWithParentMapping(ClassMappingInternal<T> parentMapping) {
+    @Override
+    public ClassMappingInternal<T> mergeWith(ClassMappingInternal<T> parentMapping) {
         return new ClassMappingInternal(type,
                 mapAllFields | parentMapping.mapAllFields,
-                Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(parentMapping.classBuilderCriteriaOpt.map(cm -> cm.copy()).orElse(null))),
-                this.fieldsMapping.mergeWith(parentMapping.fieldsMapping, fieldMapping -> fieldMapping.copy(), (fieldMapping, fieldParentMapping) -> fieldMapping.copyWithParentMapping(fieldParentMapping)),
-                this.methodsMapping.mergeWith(parentMapping.methodsMapping, methodMapping -> methodMapping.copy(), (methodMapping, methodParentMapping) -> methodMapping.copyWithParentMapping(methodParentMapping)),
-                this.annotations.mergeWith(parentMapping.annotations),
+                Mergeable.mergeOrCopy(classBuilderCriteriaOpt, parentMapping.classBuilderCriteriaOpt),
+                fieldsMapping.mergeWith(parentMapping.fieldsMapping),
+                methodsMapping.mergeWith(parentMapping.methodsMapping),
+                annotations.mergeWith(parentMapping.annotations),
                 typeChecker
         );
     }
 
+    //TODO refactor
     public ClassMappingInternal<Object> createChildMapping(Class<Object> childClass) {
         return new ClassMappingInternal(childClass,
                 mapAllFields,
                 Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(null)),
-                fieldsMapping.copy(fieldMapping -> fieldMapping.copy()),
-                methodsMapping.copy(fieldMapping -> fieldMapping.copy()),
+                fieldsMapping.copy(),
+                methodsMapping.copy(),
                 annotations.copy(),
                 new TypeChecker(childClass)
         );

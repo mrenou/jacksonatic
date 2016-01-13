@@ -17,12 +17,13 @@ package org.jacksonatic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jacksonatic.internal.JacksonaticInternal;
+import org.jacksonatic.internal.util.Copyable;
 import org.jacksonatic.mapping.ClassMapping;
 
 /**
  * Entry point of the api, allowing to define a jackson class mapping collection in a programmatic way.
  */
-public interface Jacksonatic {
+public interface Jacksonatic extends Copyable<Jacksonatic> {
 
     static Jacksonatic configureMapping() {
         return new JacksonaticInternal();
@@ -50,7 +51,5 @@ public interface Jacksonatic {
      * @param objectMapper
      */
     void registerIn(ObjectMapper objectMapper);
-
-    Jacksonatic copy();
 
 }
