@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
 
-public class MyHashMap<K, V> extends HashMap<K, V> {
+public class TypedHashMap<K, V> extends HashMap<K, V> {
 
     public V getTyped(K key) {
         return super.get(key);
@@ -52,16 +52,15 @@ public class MyHashMap<K, V> extends HashMap<K, V> {
         return Optional.ofNullable(get(key));
     }
 
-    public MyHashMap<K, V> copy(Function<V, V> copyFunction) {
-        return  this.entrySet().stream().collect(toMap(e -> e.getKey(), e -> copyFunction.apply(e.getValue()), (v1, V2) -> {
+    public TypedHashMap<K, V> copy(Function<V, V> copyFunction) {
+        return this.entrySet().stream().collect(toMap(e -> e.getKey(), e -> copyFunction.apply(e.getValue()), (v1, V2) -> {
             throw new UnsupportedOperationException();
-        }, () -> new MyHashMap<>()));
+        }, () -> new TypedHashMap<>()));
     }
 
-    public MyHashMap<K, V> mergeWith(MyHashMap<K, V> map,
+    public TypedHashMap<K, V> mergeWith(TypedHashMap<K, V> map,
                                         Function<V, V> copyFunction,
                                         BiFunction<V, V, V> mergeFunction) {
-        return MapUtil.merge(this, map, copyFunction, mergeFunction, () -> new MyHashMap<>());
+        return MapUtil.merge(this, map, copyFunction, mergeFunction, () -> new TypedHashMap<>());
     }
-
 }

@@ -15,7 +15,7 @@
  */
 package org.jacksonatic.internal.mapping;
 
-import org.jacksonatic.internal.util.MyHashMap;
+import org.jacksonatic.internal.util.TypedHashMap;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +28,7 @@ import static org.jacksonatic.internal.util.ReflectionUtil.getFieldsWithInherita
 public class ParametersMappingBuilder {
 
     public static List<ParameterMapping> buildParametersMapping(Class<?> classToBuild, List<ParameterCriteriaInternal> parameterCriterias) {
-        MyHashMap<Class<?>, PriorityQueue<String>> fieldNamesByType = new MyHashMap<>();
+        TypedHashMap<Class<?>, PriorityQueue<String>> fieldNamesByType = new TypedHashMap<>();
         Map<String, Class<?>> typeByFieldName = new HashMap<>();
         getFieldsWithInheritance(classToBuild).forEach(field -> {
             PriorityQueue<String> fieldNames = fieldNamesByType.getTyped(field.getType());

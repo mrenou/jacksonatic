@@ -17,14 +17,14 @@ package org.jacksonatic.internal.annotations;
 
 import org.jacksonatic.annotation.AnnotationBuilder;
 import org.jacksonatic.internal.util.MapUtil;
-import org.jacksonatic.internal.util.MyHashMap;
+import org.jacksonatic.internal.util.TypedHashMap;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toMap;
 
-public class Annotations extends MyHashMap<Class<? extends Annotation>, Annotation> {
+public class Annotations extends TypedHashMap<Class<? extends Annotation>, Annotation> {
 
     public void add(AnnotationBuilder annotationBuilder) {
         Annotation annotation = annotationBuilder.build();

@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.util.ClassUtil;
 import org.jacksonatic.internal.JacksonaticInternal;
 import org.jacksonatic.internal.mapping.ClassMappingInternal;
 import org.jacksonatic.internal.mapping.ClassesMapping;
-import org.jacksonatic.internal.util.MyHashMap;
+import org.jacksonatic.internal.util.TypedHashMap;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +55,7 @@ public class AnnotatedClassConstructor {
 
     private ClassesMapping deserializationOnlyClassesMapping;
 
-    private MyHashMap<ProcessType, ClassesMapping> mergedClassesMapping = new MyHashMap<>();
+    private TypedHashMap<ProcessType, ClassesMapping> mergedClassesMapping = new TypedHashMap<>();
 
     public AnnotatedClassConstructor(JacksonaticInternal mappingConfigurer) {
         this.classesMapping = mappingConfigurer.getClassesMapping().copy();
