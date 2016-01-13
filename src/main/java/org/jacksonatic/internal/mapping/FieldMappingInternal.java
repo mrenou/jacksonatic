@@ -24,7 +24,7 @@ import org.jacksonatic.mapping.FieldMapping;
 
 import java.util.Optional;
 
-public class FieldMappingInternal implements FieldMapping, PropertyMapperInternal, Copyable<FieldMappingInternal>, Mergeable<FieldMappingInternal> {
+public class FieldMappingInternal implements FieldMapping, PropertyMapperInternal<FieldMapping>, Copyable<FieldMappingInternal>, Mergeable<FieldMappingInternal> {
 
     private String name;
 

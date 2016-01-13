@@ -26,7 +26,7 @@ import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 /**
  * Define parameter mapping
  */
-public class ParameterMapping implements HasAnnotations {
+public class ParameterMapping implements HasAnnotations<ParameterMapping> {
 
     private Class<?> parameterClass;
 

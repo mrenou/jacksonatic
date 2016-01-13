@@ -18,16 +18,16 @@ package org.jacksonatic.mapping;
 import static org.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 
-public interface PropertyMapper extends HasAnnotations {
+public interface PropertyMapper<T> extends HasAnnotations<T> {
 
     /**
      * map the field
      *
      * @return
      */
-    default PropertyMapper map() {
+    default T map() {
         add(jsonProperty());
-        return this;
+        return (T) this;
     }
 
     /**
@@ -35,9 +35,9 @@ public interface PropertyMapper extends HasAnnotations {
      *
      * @return
      */
-    default PropertyMapper mapTo(String jsonProperty) {
+    default T mapTo(String jsonProperty) {
         add(jsonProperty(jsonProperty));
-        return this;
+        return (T) this;
     }
 
     /**
@@ -45,9 +45,9 @@ public interface PropertyMapper extends HasAnnotations {
      *
      * @return
      */
-    default PropertyMapper ignore() {
+    default T ignore() {
         add(jsonIgnore());
-        return this;
+        return (T) this;
     }
 
 }

@@ -18,7 +18,7 @@ package org.jacksonatic.mapping;
 import org.jacksonatic.annotation.AnnotationBuilder;
 import org.jacksonatic.internal.annotations.Annotations;
 
-public interface HasAnnotations {
+public interface HasAnnotations<T> {
 
     /**
      * Add an annotation
@@ -26,9 +26,9 @@ public interface HasAnnotations {
      * @param annotationBuilder
      * @return
      */
-    default HasAnnotations add(AnnotationBuilder annotationBuilder) {
+    default T add(AnnotationBuilder annotationBuilder) {
         getAnnotations().add(annotationBuilder);
-        return this;
+        return (T) this;
     }
 
     Annotations getAnnotations();

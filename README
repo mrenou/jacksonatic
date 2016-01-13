@@ -2,3 +2,4 @@ TODO
 - Need to define mapping in ParameterCriteria
 - Find constructor or static during introspection to handle .all() in parent
 - Define junit rule for check constructor called
+- comments

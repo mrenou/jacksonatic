@@ -20,13 +20,13 @@ import org.jacksonatic.mapping.HasAnnotations;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
-public interface HasAnnotationsInternal extends HasAnnotations {
+public interface HasAnnotationsInternal<T> extends HasAnnotations<T> {
 
     default boolean hasAnnotation(Class<? extends Annotation> annotationType) {
         return getAnnotations().containsKey(annotationType);
     }
 
-    default <T extends Annotation> Optional<T> getAnnotationOpt(Class<T> annotationType) {
-        return (Optional<T>) getAnnotations().getOpt(annotationType);
+    default <A extends Annotation> Optional<A> getAnnotationOpt(Class<A> annotationType) {
+        return (Optional<A>) getAnnotations().getOpt(annotationType);
     }
 }

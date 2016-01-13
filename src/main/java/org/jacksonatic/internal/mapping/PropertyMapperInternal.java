@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jacksonatic.mapping.PropertyMapper;
 
-public interface PropertyMapperInternal extends PropertyMapper, HasAnnotationsInternal {
+public interface PropertyMapperInternal<T> extends PropertyMapper<T>, HasAnnotationsInternal<T> {
 
     default boolean isMapped() {
         return getAnnotations().containsKey(JsonProperty.class) && !getAnnotations().containsKey(JsonIgnore.class);

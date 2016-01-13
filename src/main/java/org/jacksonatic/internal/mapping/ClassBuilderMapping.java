@@ -30,7 +30,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Define mapping for constructor or static factory
  */
-public class ClassBuilderMapping implements HasAnnotations {
+public class ClassBuilderMapping implements HasAnnotations<ClassBuilderMapping> {
 
     private Constructor<?> constructor;
 

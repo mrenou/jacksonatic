@@ -25,7 +25,7 @@ import java.util.Arrays;
 import static org.jacksonatic.internal.mapping.MethodSignature.methodSignature;
 import static org.jacksonatic.internal.mapping.MethodSignature.methodSignatureIgnoringParameters;
 
-public class MethodMappingInternal implements MethodMapping, PropertyMapperInternal, Copyable<MethodMappingInternal>, Mergeable<MethodMappingInternal> {
+public class MethodMappingInternal implements MethodMapping, PropertyMapperInternal<MethodMapping>, Copyable<MethodMappingInternal>, Mergeable<MethodMappingInternal> {
 
     private MethodSignature methodSignature;
 

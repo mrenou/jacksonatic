@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -41,14 +42,17 @@ public class TypeNameAutoAssigner {
                     .filter(typeWithPolymorphism -> typeWithPolymorphism.isAssignableFrom(classMappingConfigurer.getClassMapping().getType()))
                     .findFirst()
                     .ifPresent(typeWithPolymorphism -> classesMapping.getOpt(typeWithPolymorphism)
-                                    .ifPresent(classMapping -> classMapping.getAnnotationOpt(JsonSubTypes.class)
-                                                    .ifPresent(jsonSubTypes -> Arrays.asList(jsonSubTypes.value()).stream()
-                                                                    .filter(subtype -> subtype.value().equals(classMappingConfigurer.getClassMapping().getType()))
-                                                                    .findFirst()
-                                                                    .map(subtype -> subtype.name())
-                                                                    .ifPresent(typeName -> classMappingConfigurer.getClassMapping().typeName(typeName))
-                                                    )
-                                    )
+                            .ifPresent(classMapping -> {
+                                        Optional<JsonSubTypes> jsonSubTypesOpt = classMapping.getAnnotationOpt(JsonSubTypes.class);
+                                        jsonSubTypesOpt
+                                                .ifPresent((jsonSubTypes) -> Arrays.asList(jsonSubTypes.value()).stream()
+                                                        .filter(subtype -> subtype.value().equals(classMappingConfigurer.getClassMapping().getType()))
+                                                        .findFirst()
+                                                        .map(subtype -> subtype.name())
+                                                        .ifPresent(typeName -> classMappingConfigurer.getClassMapping().typeName(typeName))
+                                                );
+                                    }
+                            )
                     );
         }
     }
