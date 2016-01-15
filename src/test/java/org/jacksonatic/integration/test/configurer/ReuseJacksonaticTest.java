@@ -41,7 +41,8 @@ public class ReuseJacksonaticTest {
 
     private final Jacksonatic baseJacksonatic = Jacksonatic.configureMapping()
             .on(type(Pojo.class)
-                    .map("field1", "toto1"));
+                    .map("field1", "toto1")
+                    .map("field2", "tutu"));
 
     @Test
     public void copy_mapping_configurer_to_create_tow_new() throws IOException {

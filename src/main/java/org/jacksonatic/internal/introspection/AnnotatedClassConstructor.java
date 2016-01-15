@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,10 +22,12 @@ import com.fasterxml.jackson.databind.util.ClassUtil;
 import org.jacksonatic.internal.JacksonaticInternal;
 import org.jacksonatic.internal.mapping.ClassMappingInternal;
 import org.jacksonatic.internal.mapping.ClassesMapping;
+import org.jacksonatic.internal.util.Mergeable;
 import org.jacksonatic.internal.util.TypedHashMap;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.jacksonatic.internal.annotations.ClassAnnotationDecorator.decorate;
 
@@ -85,69 +87,41 @@ public class AnnotatedClassConstructor {
         if (ac.getAnnotated().getName().startsWith("java.")) {
             return ac;
         }
+        ClassesMapping mergedClassesMapping = this.mergedClassesMapping.getTyped(processType);
+        ClassesMapping childrenClassesMapping = getChildenClassMapping(processType);
 
-        List<Class<?>> superTypes = ClassUtil.findSuperTypes(ac.getAnnotated(), Object.class);
-        superTypes.add(Object.class);
-        Optional<ClassMappingInternal<Object>> parentClassMappingOpt = Optional.empty();
-
-        for (int i = superTypes.size() - 1; i >= 0; i--) {
-            Class<?> superType = superTypes.get(i);
-            Optional<ClassMappingInternal<Object>> mergedClassMapping = Optional.ofNullable(mergedClassesMapping.getTyped(processType).get(superType));
-            if (!mergedClassMapping.isPresent()) {
-                mergedClassMapping = mergeClassMappings(parentClassMappingOpt,
-                        Optional.ofNullable(classesMapping.get(superType)),
-                        getExtraClassMappingOpt(processType, superType));
-                mergedClassMapping.ifPresent(classMapping -> mergedClassesMapping.getTyped(processType).put((Class<Object>) superType, classMapping));
-            }
-            if (mergedClassMapping.isPresent()) {
-                parentClassMappingOpt = mergedClassMapping;
-            }
-
-        }
-
-        Optional<ClassMappingInternal<Object>> finalClassMappingOpt = mergeClassMappings(parentClassMappingOpt,
-                Optional.ofNullable(classesMapping.get(ac.getAnnotated())),
-                getExtraClassMappingOpt(processType, ac.getAnnotated()))
-                .map(finalClassMapping -> {
-                    if (finalClassMapping.getType() != ac.getAnnotated()) {
-                        return finalClassMapping.createChildMapping((Class<Object>) ac.getAnnotated());
-                    }
-                    return finalClassMapping;
-                });
-
-        return finalClassMappingOpt
-                .map(finalClassMapping -> decorate(ac, finalClassMapping))
+        return Optional.ofNullable(mergedClassesMapping.getOpt((Class<Object>) ac.getAnnotated())
+                .orElseGet(() -> mergeAndPutInMergedClassesMapping(mergedClassesMapping, ac.getAnnotated(),
+                        childrenClassesMapping.getOpt((Class<Object>) ac.getAnnotated()),
+                        classesMapping.getOpt((Class<Object>) ac.getAnnotated()),
+                        getClassMappingFromSuperTypes(ac.getAnnotated(), childrenClassesMapping, mergedClassesMapping))))
+                .map(classMapping -> decorate(ac, classMapping))
                 .orElse(ac);
     }
 
-    private Optional<ClassMappingInternal<Object>> mergeClassMappings(Optional<ClassMappingInternal<Object>>... classMappings) {
-        if (classMappings.length == 0) {
-            return Optional.empty();
-        }
-        Optional<ClassMappingInternal<Object>> finalClassMapping = classMappings[0];
-        for (int i = 1; i < classMappings.length; i++) {
-            finalClassMapping = copyWithParentMapping(classMappings[i], finalClassMapping);
-        }
-        return finalClassMapping;
+    private Optional<ClassMappingInternal<Object>> getClassMappingFromSuperTypes(Class<?> type, ClassesMapping childrenClassesMapping, ClassesMapping mergedClassesMapping) {
+        return Stream.concat(Stream.of(Object.class), ClassUtil.findSuperTypes(type, Object.class).stream().sorted(Collections.reverseOrder()))
+                .map(superType -> Optional.ofNullable(
+                        mergedClassesMapping.getOpt((Class<Object>) superType)
+                                .orElseGet(() -> mergeAndPutInMergedClassesMapping(mergedClassesMapping, superType,
+                                        childrenClassesMapping.getOpt((Class<Object>) superType),
+                                        classesMapping.getOpt((Class<Object>) superType))))
+                )
+                .reduce(Optional.empty(), Mergeable::merge);
     }
 
-    private Optional<ClassMappingInternal<Object>> copyWithParentMapping(Optional<ClassMappingInternal<Object>> classMappingOpt, Optional<ClassMappingInternal<Object>> parentClassMappingOpt) {
-        return classMappingOpt
-                .map(classMapping -> parentClassMappingOpt
-                        .map(parentClassMapping -> Optional.of(classMapping.mergeWith(parentClassMapping)))
-                        .orElse(Optional.of(classMapping)))
-                .orElse(parentClassMappingOpt
-                        .map(parentClassMapping -> Optional.of(parentClassMapping))
-                        .orElse(Optional.empty()));
+    private ClassMappingInternal<Object> mergeAndPutInMergedClassesMapping(ClassesMapping mergedClassesMapping, Class<?> superType, Optional<ClassMappingInternal<Object>>... classMappings) {
+        Optional<ClassMappingInternal<Object>> classMappingOpt = Mergeable.merge(classMappings)
+                .map(classMapping -> classMapping.getType() != superType ? new ClassMappingInternal<>((Class<Object>) superType).mergeWith(classMapping) : classMapping);
+        classMappingOpt.ifPresent(classMapping -> mergedClassesMapping.put((Class<Object>) superType, classMapping));
+        return classMappingOpt.orElse(null);
     }
 
-    private Optional<ClassMappingInternal<Object>> getExtraClassMappingOpt(ProcessType processType, Class<?> clazz) {
-        Optional<ClassMappingInternal<Object>> extraClassMapping;
+    private ClassesMapping getChildenClassMapping(ProcessType processType) {
         if (processType == ProcessType.SERIALIZATION || processType == ProcessType.NO_SUPER_TYPES) {
-            extraClassMapping = Optional.ofNullable(serializationOnlyClassesMapping.get(clazz));
+            return serializationOnlyClassesMapping;
         } else {
-            extraClassMapping = Optional.ofNullable(deserializationOnlyClassesMapping.get(clazz));
+            return deserializationOnlyClassesMapping;
         }
-        return extraClassMapping;
     }
 }

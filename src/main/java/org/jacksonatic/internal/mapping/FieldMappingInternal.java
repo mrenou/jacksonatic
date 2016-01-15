@@ -51,10 +51,6 @@ public class FieldMappingInternal implements FieldMapping, PropertyMapperInterna
         return s;
     }
 
-    public boolean isMapped() {
-        return annotations.containsKey(JsonProperty.class) && !annotations.containsKey(JsonIgnore.class);
-    }
-
     public boolean isIgnored() {
         return annotations.containsKey(JsonIgnore.class);
     }

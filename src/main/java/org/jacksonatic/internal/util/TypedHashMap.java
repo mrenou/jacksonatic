@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -53,9 +54,13 @@ public class TypedHashMap<K, V> extends HashMap<K, V> {
     }
 
     public TypedHashMap<K, V> copy(Function<V, V> copyFunction) {
+        return copy (copyFunction, () -> new TypedHashMap<>());
+    }
+
+    public <H extends TypedHashMap<K, V>> H copy(Function<V, V> copyFunction, Supplier<H> hashMapSupplier) {
         return this.entrySet().stream().collect(toMap(e -> e.getKey(), e -> copyFunction.apply(e.getValue()), (v1, V2) -> {
             throw new UnsupportedOperationException();
-        }, () -> new TypedHashMap<>()));
+        }, hashMapSupplier));
     }
 
     public TypedHashMap<K, V> mergeWith(TypedHashMap<K, V> map,

@@ -31,6 +31,7 @@ public class Annotations extends TypedHashMap<Class<? extends Annotation>, Annot
         put(annotation.annotationType(), annotation);
     }
 
+    // TODO use copy from typedhashmap
     public Annotations copy() {
         return entrySet().stream().collect(toMap(Map.Entry::getKey,
                 Map.Entry::getValue,

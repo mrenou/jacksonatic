@@ -59,9 +59,9 @@ public class JacksonaticInternal implements Jacksonatic {
     }
 
     private void addType(ClassMappingByProcessType classMappingByProcessType) {
-        classesMapping.mergeKeyWith(classMappingByProcessType.getClassMapping().getType(), classMappingByProcessType.getClassMapping());
-        serializationOnlyClassesMapping.mergeKeyWith(classMappingByProcessType.getSerializationOnlyClassMapping().getType(), classMappingByProcessType.getSerializationOnlyClassMapping());
-        deserializationOnlyClassesMapping.mergeKeyWith(classMappingByProcessType.getDeserializationOnlyClassMapping().getType(), classMappingByProcessType.getDeserializationOnlyClassMapping());
+        classesMapping.mergeValueWithKey(classMappingByProcessType.getClassMapping(), classMappingByProcessType.getClassMapping().getType());
+        serializationOnlyClassesMapping.mergeValueWithKey(classMappingByProcessType.getSerializationOnlyClassMapping(), classMappingByProcessType.getSerializationOnlyClassMapping().getType());
+        deserializationOnlyClassesMapping.mergeValueWithKey(classMappingByProcessType.getDeserializationOnlyClassMapping(), classMappingByProcessType.getDeserializationOnlyClassMapping().getType());
     }
 
     @Override

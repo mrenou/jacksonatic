@@ -18,17 +18,19 @@ package org.jacksonatic.internal.util;
 public class CopyableMergeableHashMap<K, V extends Mergeable<V> & Copyable<V>> extends TypedHashMap<K, V> {
 
     public CopyableMergeableHashMap<K, V> copy() {
-        return (CopyableMergeableHashMap<K, V>) super.copy(v -> v.copy());
+        return super.copy(v -> v.copy(), () -> new CopyableMergeableHashMap<>());
     }
 
     public V mergeKeyWith(K key, V otherValue) {
         return put(key, Mergeable.merge(get(key), otherValue));
     }
 
+    public V mergeValueWithKey(V otherValue, K key) {
+        return put(key, Mergeable.merge(otherValue, get(key)));
+    }
+
     public CopyableMergeableHashMap<K, V> mergeWith(CopyableMergeableHashMap<K, V> map) {
         return MapUtil.merge(this, map);
     }
-
-
 
 }

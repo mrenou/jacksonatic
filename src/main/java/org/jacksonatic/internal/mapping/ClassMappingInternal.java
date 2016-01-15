@@ -41,7 +41,7 @@ import static org.jacksonatic.mapping.MethodMapping.method;
 /**
  * Define class mapping
  */
-public class ClassMappingInternal<T> implements HasAnnotationsInternal, Copyable<ClassMappingInternal<T>>, Mergeable<ClassMappingInternal<T>> {
+public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMappingInternal<T>>, Copyable<ClassMappingInternal<T>>, Mergeable<ClassMappingInternal<T>> {
 
     private Class<T> type;
 
@@ -206,23 +206,12 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal, Copyable
     public ClassMappingInternal<T> mergeWith(ClassMappingInternal<T> parentMapping) {
         return new ClassMappingInternal(type,
                 mapAllFields | parentMapping.mapAllFields,
+                // TODO really need copy ? do immutable ?
                 Mergeable.mergeOrCopy(classBuilderCriteriaOpt, parentMapping.classBuilderCriteriaOpt),
                 fieldsMapping.mergeWith(parentMapping.fieldsMapping),
                 methodsMapping.mergeWith(parentMapping.methodsMapping),
                 annotations.mergeWith(parentMapping.annotations),
                 typeChecker
-        );
-    }
-
-    //TODO refactor
-    public ClassMappingInternal<Object> createChildMapping(Class<Object> childClass) {
-        return new ClassMappingInternal(childClass,
-                mapAllFields,
-                Optional.ofNullable(classBuilderCriteriaOpt.map(classBuilderCriteria -> classBuilderCriteria.copy()).orElse(null)),
-                fieldsMapping.copy(),
-                methodsMapping.copy(),
-                annotations.copy(),
-                new TypeChecker(childClass)
         );
     }
 
