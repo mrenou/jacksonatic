@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import static org.jacksonatic.internal.mapping.ClassBuilderFinder.findClassBuilderMapping;
 import static org.jacksonatic.internal.mapping.MethodSignature.methodSignature;
 import static org.jacksonatic.internal.mapping.MethodSignature.methodSignatureIgnoringParameters;
+import static org.jacksonatic.internal.util.StreamUtil.getFirstPresent;
 import static org.jacksonatic.internal.util.StreamUtil.stream;
 
 /**
@@ -36,7 +37,7 @@ import static org.jacksonatic.internal.util.StreamUtil.stream;
  */
 public class ClassAnnotationDecorator {
 
-    public static AnnotatedClass decorate(AnnotatedClass annotatedClass, ClassMappingInternal classMapping) {
+    public AnnotatedClass decorate(AnnotatedClass annotatedClass, ClassMappingInternal<Object> classMapping) {
         annotatedClass = addClassAnnotations(annotatedClass, classMapping);
         addFieldAnnotations(annotatedClass, classMapping);
         addMethodAnnotations(annotatedClass, classMapping);
@@ -45,66 +46,76 @@ public class ClassAnnotationDecorator {
         return annotatedClass;
     }
 
-    private static AnnotatedClass addClassAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal classMapping) {
+    private AnnotatedClass addClassAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal<Object> classMapping) {
         AnnotationMap annotationMap = new AnnotationMap();
         stream(annotatedClass.annotations()).forEach(annotation -> annotationMap.add(annotation));
         classMapping.getAnnotations().values().stream().forEach(annotation -> annotationMap.add(annotation));
         return annotatedClass.withAnnotations(annotationMap);
     }
 
-    private static void addFieldAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal classMapping) {
-        stream(annotatedClass.fields())
-                .forEach(annotatedField -> {
-                    FieldMappingInternal fieldMapping = classMapping.getOrCreateFieldMappingInternal(annotatedField.getName());
-                    if (classMapping.allFieldsAreMapped() && !fieldMapping.isMapped() && !fieldMapping.isIgnored()) {
-                        fieldMapping.map();
-                    }
-                    if (!classMapping.allFieldsAreMapped() && !fieldMapping.isMapped() && !fieldMapping.isIgnored()) {
-                        fieldMapping.ignore();
-                    }
-                    fieldMapping.getAnnotations().values().stream()
-                            .forEach(annotation -> annotatedField.addOrOverride(annotation));
-                });
+    private void addFieldAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal<Object> classMapping) {
+        stream(annotatedClass.fields()).forEach(annotatedField -> {
+            FieldMappingInternal fieldMapping = classMapping.getOrCreateFieldMappingInternal(annotatedField.getName());
+            mapByDefaultIfAllFieldsAreMapped(classMapping, fieldMapping);
+            ignoreByDefaultIfAllFieldsAreNotMapped(classMapping, fieldMapping);
+            fieldMapping.getAnnotations().values().stream().forEach(annotation -> annotatedField.addOrOverride(annotation));
+        });
     }
 
-    private static void addMethodAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal classMapping) {
-        stream(annotatedClass.memberMethods())
-                .forEach(annotatedMethod -> {
-                    Optional<MethodMappingInternal> methodMappingOpt = classMapping.getMethodMappingInternal(methodSignature(annotatedMethod.getName(), annotatedMethod.getRawParameterTypes()));
-                    methodMappingOpt = Optional.ofNullable(methodMappingOpt
-                            .orElse(((Optional<MethodMappingInternal>) classMapping.getMethodMappingInternal(methodSignatureIgnoringParameters(annotatedMethod.getName())))
-                                    .orElse(null)));
-                    methodMappingOpt.ifPresent(methodMapping -> methodMapping.getAnnotations().values().stream()
-                            .forEach(annotation -> annotatedMethod.addOrOverride(annotation)));
-
-                });
+    private void mapByDefaultIfAllFieldsAreMapped(ClassMappingInternal<Object> classMapping, FieldMappingInternal fieldMapping) {
+        if (classMapping.allFieldsAreMapped() && !fieldMapping.isMapped() && !fieldMapping.isIgnored()) {
+            fieldMapping.map();
+        }
     }
 
-    private static void addConstructorAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal classMapping) {
-        ((Optional<ClassBuilderCriteria>) classMapping.getClassBuilderCriteriaOpt())
-                .ifPresent(classBuilderCriteria -> ((Optional<ClassBuilderMapping>) findClassBuilderMapping(classMapping, classBuilderCriteria))
+    private void ignoreByDefaultIfAllFieldsAreNotMapped(ClassMappingInternal<Object> classMapping, FieldMappingInternal fieldMapping) {
+        if (!classMapping.allFieldsAreMapped() && !fieldMapping.isMapped() && !fieldMapping.isIgnored()) {
+            fieldMapping.ignore();
+        }
+    }
+
+    private static void addMethodAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal<Object> classMapping) {
+        stream(annotatedClass.memberMethods()).forEach(annotatedMethod -> {
+            getFirstPresent(
+                    () -> classMapping.<MethodMappingInternal>getMethodMappingInternal(methodSignature(annotatedMethod.getName(), annotatedMethod.getRawParameterTypes())),
+                    () -> classMapping.<MethodMappingInternal>getMethodMappingInternal(methodSignatureIgnoringParameters(annotatedMethod.getName()))).ifPresent(methodMapping -> methodMapping.getAnnotations().values().stream()
+                    .forEach(annotation -> annotatedMethod.addOrOverride(annotation)));
+
+        });
+    }
+
+    private void addConstructorAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal<Object> classMapping) {
+        classMapping.getClassBuilderCriteriaOpt()
+                .ifPresent(classBuilderCriteria -> findClassBuilderMapping(classMapping, classBuilderCriteria)
                         .ifPresent(classBuilderMapping -> {
                             if (classBuilderMapping.isStaticFactory()) {
-                                Optional<AnnotatedMethod> first = annotatedClass.getStaticMethods().stream()
-                                        .filter(method -> method.getMember().equals(classBuilderMapping.getStaticFactory()))
-                                        .findFirst();
-                                AnnotatedMethod staticFactoryMember = first
-                                        .get();
-                                setAnnotationsOnMemberWithParams(classBuilderMapping.getAnnotations(), classBuilderMapping.getParametersMapping(), staticFactoryMember);
+                                addStaticFactoryAnnotations(annotatedClass, classBuilderMapping);
                             } else {
-                                AnnotatedConstructor constructorMember = Stream.concat(
-                                        annotatedClass.getConstructors().stream(),
-                                        Optional.ofNullable(annotatedClass.getDefaultConstructor()).map(constructor -> Stream.of(constructor)).orElse(Stream.empty())
-                                )
-                                        .filter(constructor -> constructor.getMember().equals(classBuilderMapping.getConstructor()))
-                                        .findFirst()
-                                        .get();
-                                setAnnotationsOnMemberWithParams(classBuilderMapping.getAnnotations(), classBuilderMapping.getParametersMapping(), constructorMember);
+                                addConstructorAnnotations(annotatedClass, classBuilderMapping);
                             }
                         }));
     }
 
-    private static void setAnnotationsOnMemberWithParams(Map<Class<? extends Annotation>, Annotation> memberAnnotation, List<ParameterMapping> parametersMapping, AnnotatedWithParams constructorMember) {
+    private void addStaticFactoryAnnotations(AnnotatedClass annotatedClass, ClassBuilderMapping classBuilderMapping) {
+        AnnotatedMethod staticFactoryMember = annotatedClass.getStaticMethods().stream()
+                .filter(method -> method.getMember().equals(classBuilderMapping.getStaticFactory()))
+                .findFirst()
+                .get();
+        setAnnotationsOnMemberWithParams(classBuilderMapping.getAnnotations(), classBuilderMapping.getParametersMapping(), staticFactoryMember);
+    }
+
+    private void addConstructorAnnotations(AnnotatedClass annotatedClass, ClassBuilderMapping classBuilderMapping) {
+        AnnotatedConstructor constructorMember = Stream.concat(
+                annotatedClass.getConstructors().stream(),
+                Optional.ofNullable(annotatedClass.getDefaultConstructor()).map(constructor -> Stream.of(constructor)).orElse(Stream.empty())
+        )
+                .filter(constructor -> constructor.getMember().equals(classBuilderMapping.getConstructor()))
+                .findFirst()
+                .get();
+        setAnnotationsOnMemberWithParams(classBuilderMapping.getAnnotations(), classBuilderMapping.getParametersMapping(), constructorMember);
+    }
+
+    private void setAnnotationsOnMemberWithParams(Map<Class<? extends Annotation>, Annotation> memberAnnotation, List<ParameterMapping> parametersMapping, AnnotatedWithParams constructorMember) {
         memberAnnotation.values().stream().forEach(annotation -> constructorMember.addOrOverride(annotation));
         IntStream.range(0, parametersMapping.size())
                 .forEach(index -> parametersMapping.get(index).getAnnotations().values().stream()

@@ -29,13 +29,13 @@ import static org.jacksonatic.internal.mapping.ParameterCriteriaInternal.paramet
 
 public class ClassMappingByProcessType<T> implements ClassMapping<T> {
 
-    private ClassMappingInternal currentClassMapping;
+    private ClassMappingInternal<T> currentClassMapping;
 
-    private ClassMappingInternal classMapping;
+    private ClassMappingInternal<T> classMapping;
 
-    private ClassMappingInternal serializationOnlyClassMapping;
+    private ClassMappingInternal<T> serializationOnlyClassMapping;
 
-    private ClassMappingInternal deserializationOnlyClassMapping;
+    private ClassMappingInternal<T> deserializationOnlyClassMapping;
 
     public ClassMappingByProcessType(Class<T> clazz) {
         classMapping = new ClassMappingInternal(clazz);
@@ -45,140 +45,140 @@ public class ClassMappingByProcessType<T> implements ClassMapping<T> {
     }
 
     @Override
-    public ClassMapping onSerialization() {
+    public ClassMapping<T> onSerialization() {
         currentClassMapping = serializationOnlyClassMapping;
         return this;
     }
 
     @Override
-    public ClassMapping onDeserialization() {
+    public ClassMapping<T> onDeserialization() {
         currentClassMapping = deserializationOnlyClassMapping;
         return this;
     }
 
     @Override
-    public ClassMapping on(FieldMapping fieldMapping) {
+    public ClassMapping<T> on(FieldMapping fieldMapping) {
         currentClassMapping.on((FieldMappingInternal) fieldMapping);
         return this;
     }
 
     @Override
-    public ClassMapping on(MethodMapping methodMapping) {
+    public ClassMapping<T> on(MethodMapping methodMapping) {
         currentClassMapping.on((MethodMappingInternal) methodMapping);
         return this;
     }
 
     @Override
-    public ClassMapping mapAll() {
+    public ClassMapping<T> mapAll() {
         currentClassMapping.mapAllFields();
         return this;
     }
 
     @Override
-    public ClassMapping map(String fieldName) {
+    public ClassMapping<T> map(String fieldName) {
         currentClassMapping.map(fieldName);
         return this;
     }
 
     @Override
-    public ClassMapping map(String fieldName, String jsonProperty) {
+    public ClassMapping<T> map(String fieldName, String jsonProperty) {
         currentClassMapping.map(fieldName, jsonProperty);
         return this;
     }
 
     @Override
-    public ClassMapping ignore(String fieldName) {
+    public ClassMapping<T> ignore(String fieldName) {
         currentClassMapping.ignore(fieldName);
         return this;
     }
 
     @Override
-    public ClassMapping withAConstructorOrStaticFactory() {
+    public ClassMapping<T> withAConstructorOrStaticFactory() {
         currentClassMapping.onConstructor(mapAConstructorOrStaticFactory());
         return this;
     }
 
     @Override
-    public ClassMapping withConstructor(ParameterCriteria... parameterCriterias) {
+    public ClassMapping<T> withConstructor(ParameterCriteria... parameterCriterias) {
         currentClassMapping.onConstructor(mapConstructor(currentClassMapping.getType(), parameterCriteriasToInternal(parameterCriterias)));
         return this;
     }
 
     @Override
-    public ClassMapping onStaticFactory(String methodName, ParameterCriteria... parameterCriterias) {
+    public ClassMapping<T> onStaticFactory(String methodName, ParameterCriteria... parameterCriterias) {
         currentClassMapping.onConstructor(mapStaticFactory(currentClassMapping.getType(), methodName, parameterCriteriasToInternal(parameterCriterias)));
         return this;
     }
 
     @Override
-    public ClassMapping onStaticFactory(ParameterCriteria... parameterCriterias) {
+    public ClassMapping<T> onStaticFactory(ParameterCriteria... parameterCriterias) {
         currentClassMapping.onConstructor(mapStaticFactory(currentClassMapping.getType(), parameterCriteriasToInternal(parameterCriterias)));
         return this;
     }
 
     @Override
-    public ClassMapping fieldForTypeName(String field) {
+    public ClassMapping<T> fieldForTypeName(String field) {
         currentClassMapping.fieldForTypeName(field);
         return this;
     }
 
     @Override
-    public ClassMapping typeName(String name) {
+    public ClassMapping<T> typeName(String name) {
         currentClassMapping.typeName(name);
         return this;
     }
 
     @Override
-    public ClassMapping addNamedSubType(Class<? extends T> subType, String name) {
+    public ClassMapping<T> addNamedSubType(Class<? extends T> subType, String name) {
         currentClassMapping.addNamedSubType(subType, name);
         return this;
     }
 
     @Override
-    public ClassMapping mapGetter(String fieldName) {
+    public ClassMapping<T> mapGetter(String fieldName) {
         currentClassMapping.mapGetter(fieldName);
         return this;
     }
 
     @Override
-    public ClassMapping mapGetter(String fieldName, String jsonProperty) {
+    public ClassMapping<T> mapGetter(String fieldName, String jsonProperty) {
         currentClassMapping.mapGetter(fieldName, jsonProperty);
         return this;
     }
 
     @Override
-    public ClassMapping mapSetter(String fieldName) {
+    public ClassMapping<T> mapSetter(String fieldName) {
         currentClassMapping.mapSetter(fieldName);
         return this;
     }
 
     @Override
-    public ClassMapping mapSetter(String fieldName, String jsonProperty) {
+    public ClassMapping<T> mapSetter(String fieldName, String jsonProperty) {
         currentClassMapping.mapSetter(fieldName, jsonProperty);
         return this;
     }
 
     @Override
-    public ClassMapping mapSetter(String fieldName, Class<?>... parameterTypes) {
+    public ClassMapping<T> mapSetter(String fieldName, Class<?>... parameterTypes) {
         currentClassMapping.mapSetter(fieldName, parameterTypes);
         return this;
     }
 
     @Override
-    public ClassMapping mapSetter(String fieldName, String jsonProperty, Class<?>... parameterTypes) {
+    public ClassMapping<T> mapSetter(String fieldName, String jsonProperty, Class<?>... parameterTypes) {
         currentClassMapping.mapSetter(fieldName, jsonProperty, parameterTypes);
         return this;
     }
 
-    public ClassMappingInternal getClassMapping() {
+    public ClassMappingInternal<T> getClassMapping() {
         return classMapping;
     }
 
-    public ClassMappingInternal getSerializationOnlyClassMapping() {
+    public ClassMappingInternal<T> getSerializationOnlyClassMapping() {
         return serializationOnlyClassMapping;
     }
 
-    public ClassMappingInternal getDeserializationOnlyClassMapping() {
+    public ClassMappingInternal<T> getDeserializationOnlyClassMapping() {
         return deserializationOnlyClassMapping;
     }
 

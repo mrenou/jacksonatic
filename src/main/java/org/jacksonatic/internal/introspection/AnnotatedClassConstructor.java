@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 import com.fasterxml.jackson.databind.util.ClassUtil;
 import org.jacksonatic.internal.JacksonaticInternal;
+import org.jacksonatic.internal.annotations.ClassAnnotationDecorator;
 import org.jacksonatic.internal.mapping.ClassMappingInternal;
 import org.jacksonatic.internal.mapping.ClassesMapping;
 import org.jacksonatic.internal.util.Mergeable;
@@ -29,7 +30,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.jacksonatic.internal.annotations.ClassAnnotationDecorator.decorate;
 
 /**
  * Build {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass} adding annotations defined in class mapping;
@@ -50,6 +50,8 @@ import static org.jacksonatic.internal.annotations.ClassAnnotationDecorator.deco
 public class AnnotatedClassConstructor {
 
     private enum ProcessType {SERIALIZATION, DESERIALIZATION, NO_SUPER_TYPES}
+
+    private ClassAnnotationDecorator classAnnotationDecorator = new ClassAnnotationDecorator();
 
     private ClassesMapping classesMapping;
 
@@ -87,15 +89,15 @@ public class AnnotatedClassConstructor {
         if (ac.getAnnotated().getName().startsWith("java.")) {
             return ac;
         }
+        ClassesMapping childrenClassesMapping = getChildrenClassMapping(processType);
         ClassesMapping mergedClassesMapping = this.mergedClassesMapping.getTyped(processType);
-        ClassesMapping childrenClassesMapping = getChildenClassMapping(processType);
 
         return Optional.ofNullable(mergedClassesMapping.getOpt((Class<Object>) ac.getAnnotated())
                 .orElseGet(() -> mergeAndPutInMergedClassesMapping(mergedClassesMapping, ac.getAnnotated(),
                         childrenClassesMapping.getOpt((Class<Object>) ac.getAnnotated()),
                         classesMapping.getOpt((Class<Object>) ac.getAnnotated()),
                         getClassMappingFromSuperTypes(ac.getAnnotated(), childrenClassesMapping, mergedClassesMapping))))
-                .map(classMapping -> decorate(ac, classMapping))
+                .map(classMapping -> classAnnotationDecorator.decorate(ac, classMapping))
                 .orElse(ac);
     }
 
@@ -117,7 +119,7 @@ public class AnnotatedClassConstructor {
         return classMappingOpt.orElse(null);
     }
 
-    private ClassesMapping getChildenClassMapping(ProcessType processType) {
+    private ClassesMapping getChildrenClassMapping(ProcessType processType) {
         if (processType == ProcessType.SERIALIZATION || processType == ProcessType.NO_SUPER_TYPES) {
             return serializationOnlyClassesMapping;
         } else {

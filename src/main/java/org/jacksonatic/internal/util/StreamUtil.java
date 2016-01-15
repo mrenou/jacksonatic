@@ -15,12 +15,23 @@
  */
 package org.jacksonatic.internal.util;
 
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class StreamUtil {
 
     public static <T> Stream<T> stream(Iterable<T> iterable) {
-        return  StreamSupport.stream(iterable.spliterator(), false);
+        return StreamSupport.stream(iterable.spliterator(), false);
+    }
+
+    public static <T> Optional<T> getFirstPresent(Supplier<Optional<T>>... suppliers) {
+        return Arrays.asList(suppliers).stream()
+                .map((Supplier<Optional<T>> optionalSupplier) -> optionalSupplier.get())
+                .filter(optional -> optional.isPresent())
+                .findFirst()
+                .flatMap(o -> o);
     }
 }
