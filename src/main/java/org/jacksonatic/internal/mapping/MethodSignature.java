@@ -68,7 +68,7 @@ public class MethodSignature {
         if (ignoreParameters) {
             parameterTypesStr = "*";
         } else {
-            parameterTypesStr = parameterTypes.stream().map(type -> type.getSimpleName()).collect(Collectors.joining(","));
+            parameterTypesStr = parameterTypes.stream().map(Class::getSimpleName).collect(Collectors.joining(","));
         }
         return name + "(" + parameterTypesStr + ")";
     }

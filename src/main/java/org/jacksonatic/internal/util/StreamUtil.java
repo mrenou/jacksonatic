@@ -27,6 +27,7 @@ public class StreamUtil {
         return StreamSupport.stream(iterable.spliterator(), false);
     }
 
+    @SafeVarargs
     public static <T> Optional<T> getFirstPresent(Supplier<Optional<T>>... suppliers) {
         return Arrays.asList(suppliers).stream()
                 .map((Supplier<Optional<T>> optionalSupplier) -> optionalSupplier.get())

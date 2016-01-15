@@ -26,6 +26,7 @@ public interface Mergeable<T extends Mergeable<T>> {
         return merge(Optional.ofNullable(o1), Optional.ofNullable(o2)).orElse(null);
     }
 
+    @SafeVarargs
     static <T extends Mergeable<T>> T merge(T... os) {
         return Arrays.asList(os).stream().reduce(null, Mergeable::merge);
     }
@@ -34,6 +35,7 @@ public interface Mergeable<T extends Mergeable<T>> {
         return Optional.ofNullable(opt1.map(o1 -> opt2.map(o2 -> o1.mergeWith(o2)).orElse(o1)).orElse(opt2.orElse(null)));
     }
 
+    @SafeVarargs
     static <T extends Mergeable<T>> Optional<T> merge(Optional<T>... opts) {
         return Arrays.asList(opts).stream().reduce(Optional.empty(), Mergeable::merge);
     }
@@ -42,6 +44,7 @@ public interface Mergeable<T extends Mergeable<T>> {
         return mergeOrCopy(Optional.ofNullable(o1), Optional.ofNullable(o2)).orElse(null);
     }
 
+    @SafeVarargs
     static <T extends Mergeable<T> & Copyable<T>> T mergeOrCopy(T... os) {
         return Arrays.asList(os).stream().reduce(null, Mergeable::mergeOrCopy);
     }
@@ -50,6 +53,7 @@ public interface Mergeable<T extends Mergeable<T>> {
         return Optional.ofNullable(opt1.map(o1 -> opt2.map(o2 -> o1.mergeWith(o2)).orElse(o1.copy())).orElse(opt2.map(o2 -> o2.copy()).orElse(null)));
     }
 
+    @SafeVarargs
     static <T extends Mergeable<T> & Copyable<T>> Optional<T> mergeOrCopy(Optional<T>... opts) {
         return Arrays.asList(opts).stream().reduce(Optional.empty(), Mergeable::mergeOrCopy);
     }

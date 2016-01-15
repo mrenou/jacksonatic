@@ -48,8 +48,8 @@ public class ClassAnnotationDecorator {
 
     private AnnotatedClass addClassAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal<Object> classMapping) {
         AnnotationMap annotationMap = new AnnotationMap();
-        stream(annotatedClass.annotations()).forEach(annotation -> annotationMap.add(annotation));
-        classMapping.getAnnotations().values().stream().forEach(annotation -> annotationMap.add(annotation));
+        stream(annotatedClass.annotations()).forEach(annotationMap::add);
+        classMapping.getAnnotations().values().stream().forEach(annotationMap::add);
         return annotatedClass.withAnnotations(annotationMap);
     }
 
@@ -58,7 +58,7 @@ public class ClassAnnotationDecorator {
             FieldMappingInternal fieldMapping = classMapping.getOrCreateFieldMappingInternal(annotatedField.getName());
             mapByDefaultIfAllFieldsAreMapped(classMapping, fieldMapping);
             ignoreByDefaultIfAllFieldsAreNotMapped(classMapping, fieldMapping);
-            fieldMapping.getAnnotations().values().stream().forEach(annotation -> annotatedField.addOrOverride(annotation));
+            fieldMapping.getAnnotations().values().stream().forEach(annotatedField::addOrOverride);
         });
     }
 
@@ -75,13 +75,10 @@ public class ClassAnnotationDecorator {
     }
 
     private static void addMethodAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal<Object> classMapping) {
-        stream(annotatedClass.memberMethods()).forEach(annotatedMethod -> {
-            getFirstPresent(
-                    () -> classMapping.<MethodMappingInternal>getMethodMappingInternal(methodSignature(annotatedMethod.getName(), annotatedMethod.getRawParameterTypes())),
-                    () -> classMapping.<MethodMappingInternal>getMethodMappingInternal(methodSignatureIgnoringParameters(annotatedMethod.getName()))).ifPresent(methodMapping -> methodMapping.getAnnotations().values().stream()
-                    .forEach(annotation -> annotatedMethod.addOrOverride(annotation)));
-
-        });
+        stream(annotatedClass.memberMethods()).forEach(annotatedMethod -> getFirstPresent(
+                () -> classMapping.<MethodMappingInternal>getMethodMappingInternal(methodSignature(annotatedMethod.getName(), annotatedMethod.getRawParameterTypes())),
+                () -> classMapping.<MethodMappingInternal>getMethodMappingInternal(methodSignatureIgnoringParameters(annotatedMethod.getName()))).ifPresent(methodMapping -> methodMapping.getAnnotations().values().stream()
+                .forEach(annotatedMethod::addOrOverride)));
     }
 
     private void addConstructorAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal<Object> classMapping) {
@@ -107,7 +104,7 @@ public class ClassAnnotationDecorator {
     private void addConstructorAnnotations(AnnotatedClass annotatedClass, ClassBuilderMapping classBuilderMapping) {
         AnnotatedConstructor constructorMember = Stream.concat(
                 annotatedClass.getConstructors().stream(),
-                Optional.ofNullable(annotatedClass.getDefaultConstructor()).map(constructor -> Stream.of(constructor)).orElse(Stream.empty())
+                Optional.ofNullable(annotatedClass.getDefaultConstructor()).map(Stream::of).orElse(Stream.empty())
         )
                 .filter(constructor -> constructor.getMember().equals(classBuilderMapping.getConstructor()))
                 .findFirst()
@@ -116,7 +113,7 @@ public class ClassAnnotationDecorator {
     }
 
     private void setAnnotationsOnMemberWithParams(Map<Class<? extends Annotation>, Annotation> memberAnnotation, List<ParameterMapping> parametersMapping, AnnotatedWithParams constructorMember) {
-        memberAnnotation.values().stream().forEach(annotation -> constructorMember.addOrOverride(annotation));
+        memberAnnotation.values().stream().forEach(constructorMember::addOrOverride);
         IntStream.range(0, parametersMapping.size())
                 .forEach(index -> parametersMapping.get(index).getAnnotations().values().stream()
                         .forEach(annotation -> constructorMember.addOrOverrideParam(index, annotation)));

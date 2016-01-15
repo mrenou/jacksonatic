@@ -22,14 +22,9 @@ import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 import org.jacksonatic.Jacksonatic;
 import org.jacksonatic.internal.introspection.JacksonaticClassIntrospector;
 import org.jacksonatic.internal.mapping.ClassMappingByProcessType;
-import org.jacksonatic.internal.mapping.ClassMappingInternal;
 import org.jacksonatic.internal.mapping.ClassesMapping;
 import org.jacksonatic.internal.mapping.TypeNameAutoAssigner;
-import org.jacksonatic.internal.util.Copyable;
 import org.jacksonatic.mapping.ClassMapping;
-
-import java.util.Optional;
-import java.util.function.BiFunction;
 
 public class JacksonaticInternal implements Jacksonatic {
 
@@ -41,24 +36,26 @@ public class JacksonaticInternal implements Jacksonatic {
 
     private TypeNameAutoAssigner typeNameAutoAssigner = new TypeNameAutoAssigner();
 
+    @SuppressWarnings("unchecked")
     @Override
-    public JacksonaticInternal on(ClassMapping classMapping) {
-        ClassMappingByProcessType classMappingByProcessType = (ClassMappingByProcessType) classMapping;
+    public JacksonaticInternal on(ClassMapping<?> classMapping) {
+        ClassMappingByProcessType<Object> classMappingByProcessType = (ClassMappingByProcessType<Object>) classMapping;
         addType(classMappingByProcessType);
         typeNameAutoAssigner.assignTypeNameIfNeccesary(classesMapping, classMappingByProcessType);
         typeNameAutoAssigner.saveTypeWithJsonSubTypes(classMappingByProcessType);
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Jacksonatic mapAllFieldsOn(ClassMapping classMapping) {
-        ClassMappingByProcessType classMappingConfigurerInternal = (ClassMappingByProcessType) classMapping;
-        addType(classMappingConfigurerInternal);
-        classMappingConfigurerInternal.getClassMapping().mapAllFields();
+    public Jacksonatic mapAllFieldsOn(ClassMapping<?> classMapping) {
+        ClassMappingByProcessType<Object> classMappingByProcessType = (ClassMappingByProcessType<Object>) classMapping;
+        addType(classMappingByProcessType);
+        classMappingByProcessType.getClassMapping().mapAllFields();
         return this;
     }
 
-    private void addType(ClassMappingByProcessType classMappingByProcessType) {
+    private void addType(ClassMappingByProcessType<Object> classMappingByProcessType) {
         classesMapping.mergeValueWithKey(classMappingByProcessType.getClassMapping(), classMappingByProcessType.getClassMapping().getType());
         serializationOnlyClassesMapping.mergeValueWithKey(classMappingByProcessType.getSerializationOnlyClassMapping(), classMappingByProcessType.getSerializationOnlyClassMapping().getType());
         deserializationOnlyClassesMapping.mergeValueWithKey(classMappingByProcessType.getDeserializationOnlyClassMapping(), classMappingByProcessType.getDeserializationOnlyClassMapping().getType());

@@ -78,8 +78,7 @@ public class JacksonaticClassIntrospector extends BasicClassIntrospector {
                     (useAnnotations ? config.getAnnotationIntrospector() : null), r);
         }
         POJOPropertiesCollector propertyCollector = constructPropertyCollector(config, ac, type, forSerialization, mutatorPrefix);
-        POJOPropertiesCollector collect = propertyCollector.collect();
-        return collect;
+        return propertyCollector.collect();
     }
 
     protected POJOPropertiesCollector collectPropertiesWithBuilder(MapperConfig<?> config, JavaType type, MixInResolver r, boolean forSerialization) {

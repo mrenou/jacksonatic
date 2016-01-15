@@ -35,7 +35,7 @@ public interface Jacksonatic extends Copyable<Jacksonatic> {
      * @param classMapping
      * @return
      */
-    Jacksonatic on(ClassMapping classMapping);
+    Jacksonatic on(ClassMapping<?> classMapping);
 
     /**
      * to define a class mapping with all its fields mapped
@@ -43,7 +43,7 @@ public interface Jacksonatic extends Copyable<Jacksonatic> {
      * @param classMapping
      * @return
      */
-    Jacksonatic mapAllFieldsOn(ClassMapping classMapping);
+    Jacksonatic mapAllFieldsOn(ClassMapping<?> classMapping);
 
     /**
      * register mapping configuration in a {@ling com.fasterxml.jackson.databind.ObjectMapper}

@@ -38,7 +38,7 @@ public class Annotations extends TypedHashMap<Class<? extends Annotation>, Annot
                 (v1, v2) -> {
                     throw new UnsupportedOperationException();
                 },
-                () -> new Annotations()
+                Annotations::new
         ));
     }
 

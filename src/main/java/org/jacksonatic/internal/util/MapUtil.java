@@ -31,7 +31,7 @@ public class MapUtil {
     }
 
     public static <H extends Map<K, V>, K, V extends Mergeable<V> & Copyable<V>> H merge(H map1, H map2, Supplier<H> mapSupplier) {
-        return merge(map1, map2, (V o) -> o.copy(), (V o1, V o2) -> o1.mergeWith(o2), mapSupplier);
+        return merge(map1, map2, (V o) -> o.copy(), V::mergeWith, mapSupplier);
     }
 
     public static <H extends Map<K, V>, K, V> H merge(H map1, H map2,
@@ -40,16 +40,14 @@ public class MapUtil {
         return merge(map1, map2, copyFunction, mergeFunction, newInstanceSupplier(map1));
     }
 
+    @SuppressWarnings("unchecked")
     private static <H extends Map<K, V>, K, V> Supplier<H> newInstanceSupplier(H map) {
         return () -> {
             try {
                 return ((Class<H>) ((Function<H, Class<?>>) H::getClass).apply(map)).newInstance();
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e.getMessage(), e);
-            } catch (IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
-
         };
     }
 
@@ -71,6 +69,6 @@ public class MapUtil {
         Stream<Map.Entry<K, V>> streamFromMap2WithoutMergedValues = map2.entrySet().stream()
                 .filter(entry2 -> !map1.containsKey(entry2.getKey()));
 
-        return Stream.concat(streamFromMap1WithMergedValues, streamFromMap2WithoutMergedValues).collect(toMap(e -> e.getKey(), e -> e.getValue(), (v1, v2) -> v1, mapSupplier));
+        return Stream.concat(streamFromMap1WithMergedValues, streamFromMap2WithoutMergedValues).collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1, mapSupplier));
     }
 }

@@ -28,12 +28,12 @@ public class ClassesMapping extends CopyableMergeableHashMap<Class<Object>, Clas
     @Override
     public ClassesMapping copy() {
         return this.entrySet().stream().collect(toMap(
-                e -> e.getKey(),
+                Entry::getKey,
                 e -> e.getValue().copy(),
                 (v1, v2) -> {
                     throw new UnsupportedOperationException();
                 },
-                () -> new ClassesMapping())
+                ClassesMapping::new)
         );
     }
 

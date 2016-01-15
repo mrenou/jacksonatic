@@ -118,7 +118,7 @@ public class ClassBuilderMapping implements HasAnnotations<ClassBuilderMapping> 
         return new ClassBuilderMapping(constructor,
                 staticFactory,
                 annotations.copy(),
-                parametersMapping.stream().map(parameterMapping -> parameterMapping.copy()).collect(toList()));
+                parametersMapping.stream().map(ParameterMapping::copy).collect(toList()));
     }
 
 }

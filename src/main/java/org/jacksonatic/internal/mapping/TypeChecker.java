@@ -15,6 +15,8 @@
  */
 package org.jacksonatic.internal.mapping;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
@@ -34,9 +36,9 @@ public class TypeChecker<T> {
 
     public TypeChecker(Class<T> type) {
         this.type = type;
-        this.existingFieldNames = getFieldsWithInheritance(type).map(field -> field.getName()).collect(toSet());
+        this.existingFieldNames = getFieldsWithInheritance(type).map(Field::getName).collect(toSet());
         this.existingMethodSignatures = getMethodsWithInheritance(type).map(method -> methodSignature(method.getName(), method.getParameterTypes())).collect(toSet());
-        this.existingMethodNames = getMethodsWithInheritance(type).map(method -> method.getName()).collect(toSet());
+        this.existingMethodNames = getMethodsWithInheritance(type).map(Method::getName).collect(toSet());
     }
 
     public void checkFieldExists(String name) {

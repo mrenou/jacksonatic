@@ -79,7 +79,7 @@ public class ClassBuilderFinder {
     }
 
     private static Optional<ClassBuilderMapping> findClassBuilderFrom(ClassMappingInternal<Object> classMapping) {
-        SortedSet<ClassBuilderMapping> classBuilderMappingScored = new TreeSet(
+        SortedSet<ClassBuilderMapping> classBuilderMappingScored = new TreeSet<>(
                 Comparator.<ClassBuilderMapping>comparingInt(o -> o.getParametersMapping().size())
                         .reversed()
                         .thenComparing(o -> o.getConstructor() != null ? "constructor=" + o.getConstructor() : "staticFactory=" + o.getStaticFactory())
@@ -147,7 +147,7 @@ public class ClassBuilderFinder {
     }
 
     private static boolean isMapped(ClassMappingInternal<Object> classMapping, FieldMappingInternal fieldMapping, Optional<MethodMappingInternal> methodMappingOpt) {
-        return classMapping.allFieldsAreMapped() || fieldMapping.isMapped() || methodMappingOpt.map(methodMapping -> methodMapping.isMapped()).orElse(false);
+        return classMapping.allFieldsAreMapped() || fieldMapping.isMapped() || methodMappingOpt.map(PropertyMapperInternal::isMapped).orElse(false);
     }
 
 }

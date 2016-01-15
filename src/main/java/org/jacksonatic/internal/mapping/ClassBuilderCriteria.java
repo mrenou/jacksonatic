@@ -98,9 +98,9 @@ public class ClassBuilderCriteria implements Copyable<ClassBuilderCriteria>, Mer
 
     public String mappingAsString() {
         if (staticFactory) {
-            return "staticFactory='" + methodName + '(' + parametersMapping.stream().map(pm -> pm.getParameterClass()).collect(toList()) + ")";
+            return "staticFactory='" + methodName + '(' + parametersMapping.stream().map(ParameterMapping::getParameterClass).collect(toList()) + ")";
         } else if (!any) {
-            return "constructor='" + + '(' + parametersMapping.stream().map(pm -> pm.getParameterClass()).collect(toList()) + ")";
+            return "constructor='" + + '(' + parametersMapping.stream().map(ParameterMapping::getParameterClass).collect(toList()) + ")";
         } else {
             return "any";
         }

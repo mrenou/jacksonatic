@@ -25,6 +25,7 @@ public interface PropertyMapper<T> extends HasAnnotations<T> {
      *
      * @return
      */
+    @SuppressWarnings("unchecked")
     default T map() {
         add(jsonProperty());
         return (T) this;
@@ -35,6 +36,7 @@ public interface PropertyMapper<T> extends HasAnnotations<T> {
      *
      * @return
      */
+    @SuppressWarnings("unchecked")
     default T mapTo(String jsonProperty) {
         add(jsonProperty(jsonProperty));
         return (T) this;
@@ -45,6 +47,7 @@ public interface PropertyMapper<T> extends HasAnnotations<T> {
      *
      * @return
      */
+    @SuppressWarnings("unchecked")
     default T ignore() {
         add(jsonIgnore());
         return (T) this;

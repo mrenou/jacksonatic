@@ -26,6 +26,7 @@ public interface HasAnnotations<T> {
      * @param annotationBuilder
      * @return
      */
+    @SuppressWarnings("unchecked")
     default T add(AnnotationBuilder annotationBuilder) {
         getAnnotations().add(annotationBuilder);
         return (T) this;

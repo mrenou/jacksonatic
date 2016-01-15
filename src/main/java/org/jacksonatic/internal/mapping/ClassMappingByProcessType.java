@@ -20,10 +20,6 @@ import org.jacksonatic.mapping.FieldMapping;
 import org.jacksonatic.mapping.MethodMapping;
 import org.jacksonatic.mapping.ParameterCriteria;
 
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 import static org.jacksonatic.internal.mapping.ClassBuilderCriteria.*;
 import static org.jacksonatic.internal.mapping.ParameterCriteriaInternal.parameterCriteriasToInternal;
 
@@ -38,9 +34,9 @@ public class ClassMappingByProcessType<T> implements ClassMapping<T> {
     private ClassMappingInternal<T> deserializationOnlyClassMapping;
 
     public ClassMappingByProcessType(Class<T> clazz) {
-        classMapping = new ClassMappingInternal(clazz);
-        serializationOnlyClassMapping = new ClassMappingInternal(clazz);
-        deserializationOnlyClassMapping = new ClassMappingInternal(clazz);
+        classMapping = new ClassMappingInternal<>(clazz);
+        serializationOnlyClassMapping = new ClassMappingInternal<>(clazz);
+        deserializationOnlyClassMapping = new ClassMappingInternal<>(clazz);
         currentClassMapping = classMapping;
     }
 

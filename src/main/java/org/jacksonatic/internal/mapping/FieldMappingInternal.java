@@ -44,11 +44,10 @@ public class FieldMappingInternal implements FieldMapping, PropertyMapperInterna
     }
 
     public String getMappedName() {
-        String s = Optional.ofNullable(annotations.get(JsonProperty.class))
+        return Optional.ofNullable(annotations.get(JsonProperty.class))
                 .map(annotation -> ((JsonProperty) annotation).value())
-                .filter(name -> name != null && !name.isEmpty())
+                .filter(name1 -> name1 != null && !name1.isEmpty())
                 .orElse(name);
-        return s;
     }
 
     public boolean isIgnored() {

@@ -191,7 +191,7 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMapp
 
     @Override
     public ClassMappingInternal<T> copy() {
-        return new ClassMappingInternal(type,
+        return new ClassMappingInternal<>(type,
                 mapAllFields,
                 Copyable.copy(classBuilderCriteriaOpt),
                 fieldsMapping.copy(),
@@ -204,7 +204,7 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMapp
 
     @Override
     public ClassMappingInternal<T> mergeWith(ClassMappingInternal<T> parentMapping) {
-        return new ClassMappingInternal(type,
+        return new ClassMappingInternal<>(type,
                 mapAllFields | parentMapping.mapAllFields,
                 // TODO really need copy ? do immutable ?
                 Mergeable.mergeOrCopy(classBuilderCriteriaOpt, parentMapping.classBuilderCriteriaOpt),

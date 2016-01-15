@@ -26,6 +26,7 @@ public interface HasAnnotationsInternal<T> extends HasAnnotations<T> {
         return getAnnotations().containsKey(annotationType);
     }
 
+    @SuppressWarnings("unchecked")
     default <A extends Annotation> Optional<A> getAnnotationOpt(Class<A> annotationType) {
         return (Optional<A>) getAnnotations().getOpt(annotationType);
     }
