@@ -30,12 +30,12 @@ public class ParameterCriteriaInternal implements org.jacksonatic.mapping.Parame
 
     private String fieldName;
 
-    public static List<ParameterCriteriaInternal> parameterCriteriasToInternal(ParameterCriteria... parameterCriterias) {
-        return parameterCriteriasToInternal(asList(parameterCriterias));
+    public static List<ParameterCriteriaInternal> parameterCriteriaToInternal(ParameterCriteria... parameterCriteriaArray) {
+        return parameterCriteriaToInternal(asList(parameterCriteriaArray));
     }
 
-    public static List<ParameterCriteriaInternal> parameterCriteriasToInternal(List<ParameterCriteria> parameterCriterias) {
-        return parameterCriterias.stream().map(parameterCriteria -> (ParameterCriteriaInternal) parameterCriteria).collect(toList());
+    public static List<ParameterCriteriaInternal> parameterCriteriaToInternal(List<ParameterCriteria> parameterCriteriaList) {
+        return parameterCriteriaList.stream().map(parameterCriteria -> (ParameterCriteriaInternal) parameterCriteria).collect(toList());
     }
 
     public ParameterCriteriaInternal(Class<?> parameterClass, String jsonProperty, String fieldName) {

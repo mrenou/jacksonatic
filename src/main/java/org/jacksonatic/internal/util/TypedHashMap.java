@@ -54,11 +54,11 @@ public class TypedHashMap<K, V> extends HashMap<K, V> {
     }
 
     public TypedHashMap<K, V> copy(Function<V, V> copyFunction) {
-        return copy (copyFunction, () -> new TypedHashMap<>());
+        return copy (copyFunction, TypedHashMap::new);
     }
 
     public <H extends TypedHashMap<K, V>> H copy(Function<V, V> copyFunction, Supplier<H> hashMapSupplier) {
-        return this.entrySet().stream().collect(toMap(e -> e.getKey(), e -> copyFunction.apply(e.getValue()), (v1, V2) -> {
+        return this.entrySet().stream().collect(toMap(Entry::getKey, e -> copyFunction.apply(e.getValue()), (v1, V2) -> {
             throw new UnsupportedOperationException();
         }, hashMapSupplier));
     }
@@ -66,6 +66,6 @@ public class TypedHashMap<K, V> extends HashMap<K, V> {
     public TypedHashMap<K, V> mergeWith(TypedHashMap<K, V> map,
                                         Function<V, V> copyFunction,
                                         BiFunction<V, V, V> mergeFunction) {
-        return MapUtil.merge(this, map, copyFunction, mergeFunction, () -> new TypedHashMap<>());
+        return MapUtil.merge(this, map, copyFunction, mergeFunction, TypedHashMap::new);
     }
 }

@@ -54,8 +54,8 @@ public class ClassBuilderCriteria implements Copyable<ClassBuilderCriteria>, Mer
     }
 
 
-    private ClassBuilderCriteria(Class<?> classToBuild, String methodName, List<ParameterCriteriaInternal> parameterCriterias, boolean staticFactory) {
-        this(methodName, buildParametersMapping(classToBuild, parameterCriterias), staticFactory, false);
+    private ClassBuilderCriteria(Class<?> classToBuild, String methodName, List<ParameterCriteriaInternal> parameterCriteriaList, boolean staticFactory) {
+        this(methodName, buildParametersMapping(classToBuild, parameterCriteriaList), staticFactory, false);
     }
 
     private ClassBuilderCriteria() {

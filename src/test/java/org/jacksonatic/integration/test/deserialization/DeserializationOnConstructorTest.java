@@ -30,9 +30,9 @@ import static org.jacksonatic.mapping.ParameterCriteria.matchType;
 
 public class DeserializationOnConstructorTest {
 
-    public static boolean captureConstructor = false;
+    private static boolean captureConstructor = false;
 
-    public static String firstConstructorCalled = "";
+    private static String firstConstructorCalled = "";
 
     static class Pojo {
 
@@ -58,7 +58,7 @@ public class DeserializationOnConstructorTest {
 
     }
 
-    public static final Pojo POJO = new Pojo("field1", 42);
+    private static final Pojo POJO = new Pojo("field1", 42);
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

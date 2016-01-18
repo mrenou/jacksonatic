@@ -34,7 +34,7 @@ public class FieldMappingInternal implements FieldMapping, PropertyMapperInterna
         this(name, new Annotations());
     }
 
-    public FieldMappingInternal(String name, Annotations annotations) {
+    private FieldMappingInternal(String name, Annotations annotations) {
         this.name = name;
         this.annotations = annotations;
     }

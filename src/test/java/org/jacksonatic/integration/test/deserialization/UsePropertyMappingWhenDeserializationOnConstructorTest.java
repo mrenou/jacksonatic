@@ -28,9 +28,9 @@ import static org.jacksonatic.Jacksonatic.configureMapping;
 
 public class UsePropertyMappingWhenDeserializationOnConstructorTest {
 
-    public static boolean captureConstructor = false;
+    private static boolean captureConstructor = false;
 
-    public static String firstConstructorCalled = "";
+    private static String firstConstructorCalled = "";
 
     static class Pojo {
 

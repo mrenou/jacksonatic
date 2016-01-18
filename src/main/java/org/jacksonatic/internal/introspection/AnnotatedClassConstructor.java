@@ -70,23 +70,23 @@ public class AnnotatedClassConstructor {
         this.mergedClassesMapping.put(ProcessType.NO_SUPER_TYPES, new ClassesMapping());
     }
 
-    public AnnotatedClass constructForSerialization(Class<?> cls, AnnotationIntrospector aintr, ClassIntrospector.MixInResolver mir) {
-        AnnotatedClass annotatedClass = AnnotatedClass.construct(cls, aintr, mir);
-        return processAnnotedClass(ProcessType.SERIALIZATION, annotatedClass);
+    public AnnotatedClass constructForSerialization(Class<?> cls, AnnotationIntrospector annotationIntrospector, ClassIntrospector.MixInResolver mir) {
+        AnnotatedClass annotatedClass = AnnotatedClass.construct(cls, annotationIntrospector, mir);
+        return processAnnotatedClass(ProcessType.SERIALIZATION, annotatedClass);
     }
 
-    public AnnotatedClass constructForDeserialization(Class<?> cls, AnnotationIntrospector aintr, ClassIntrospector.MixInResolver mir) {
-        AnnotatedClass annotatedClass = AnnotatedClass.construct(cls, aintr, mir);
-        return processAnnotedClass(ProcessType.DESERIALIZATION, annotatedClass);
+    public AnnotatedClass constructForDeserialization(Class<?> cls, AnnotationIntrospector annotationIntrospector, ClassIntrospector.MixInResolver mir) {
+        AnnotatedClass annotatedClass = AnnotatedClass.construct(cls, annotationIntrospector, mir);
+        return processAnnotatedClass(ProcessType.DESERIALIZATION, annotatedClass);
     }
 
-    public AnnotatedClass constructWithoutSuperTypes(Class<?> cls, AnnotationIntrospector aintr, ClassIntrospector.MixInResolver mir) {
-        AnnotatedClass annotatedClass = AnnotatedClass.construct(cls, aintr, mir);
-        return processAnnotedClass(ProcessType.NO_SUPER_TYPES, annotatedClass);
+    public AnnotatedClass constructWithoutSuperTypes(Class<?> cls, AnnotationIntrospector annotationIntrospector, ClassIntrospector.MixInResolver mir) {
+        AnnotatedClass annotatedClass = AnnotatedClass.construct(cls, annotationIntrospector, mir);
+        return processAnnotatedClass(ProcessType.NO_SUPER_TYPES, annotatedClass);
     }
 
     @SuppressWarnings("unchecked")
-    private AnnotatedClass processAnnotedClass(ProcessType processType, AnnotatedClass ac) {
+    private AnnotatedClass processAnnotatedClass(ProcessType processType, AnnotatedClass ac) {
         if (ac.getAnnotated().getName().startsWith("java.")) {
             return ac;
         }
@@ -119,7 +119,8 @@ public class AnnotatedClassConstructor {
     }
 
 
-    private ClassMappingInternal<Object> mergeAndPutInMergedClassesMapping(ClassesMapping mergedClassesMapping, Class<Object> superType, Optional<ClassMappingInternal<Object>>... classMappings) {
+    @SafeVarargs
+    private final ClassMappingInternal<Object> mergeAndPutInMergedClassesMapping(ClassesMapping mergedClassesMapping, Class<Object> superType, Optional<ClassMappingInternal<Object>>... classMappings) {
         Optional<ClassMappingInternal<Object>> classMappingOpt = Mergeable.merge(classMappings)
                 .map(classMapping -> classMapping.getType() != superType ? new ClassMappingInternal<>(superType).mergeWith(classMapping) : classMapping);
         classMappingOpt.ifPresent(classMapping -> mergedClassesMapping.put(superType, classMapping));

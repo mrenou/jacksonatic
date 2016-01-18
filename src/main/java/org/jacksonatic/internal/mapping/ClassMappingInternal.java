@@ -61,7 +61,7 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMapp
         this(type, false, Optional.empty(), new CopyableMergeableHashMap<>(), new CopyableMergeableHashMap<>(), new Annotations(), new TypeChecker<>(type));
     }
 
-    ClassMappingInternal(Class<T> type, boolean mapAllFields, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, CopyableMergeableHashMap<String, FieldMappingInternal> fieldsMapping, CopyableMergeableHashMap<MethodSignature, MethodMappingInternal> methodsMapping, Annotations annotations, TypeChecker<T> typeChecker) {
+    private ClassMappingInternal(Class<T> type, boolean mapAllFields, Optional<ClassBuilderCriteria> classBuilderCriteriaOpt, CopyableMergeableHashMap<String, FieldMappingInternal> fieldsMapping, CopyableMergeableHashMap<MethodSignature, MethodMappingInternal> methodsMapping, Annotations annotations, TypeChecker<T> typeChecker) {
         this.type = type;
         this.mapAllFields = mapAllFields;
         this.classBuilderCriteriaOpt = classBuilderCriteriaOpt;

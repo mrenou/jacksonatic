@@ -41,7 +41,7 @@ public class JacksonaticInternal implements Jacksonatic {
     public JacksonaticInternal on(ClassMapping<?> classMapping) {
         ClassMappingByProcessType<Object> classMappingByProcessType = (ClassMappingByProcessType<Object>) classMapping;
         addType(classMappingByProcessType);
-        typeNameAutoAssigner.assignTypeNameIfNeccesary(classesMapping, classMappingByProcessType);
+        typeNameAutoAssigner.assignTypeNameIfNecessary(classesMapping, classMappingByProcessType);
         typeNameAutoAssigner.saveTypeWithJsonSubTypes(classMappingByProcessType);
         return this;
     }

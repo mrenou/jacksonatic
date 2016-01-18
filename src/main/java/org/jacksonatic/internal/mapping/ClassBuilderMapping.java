@@ -40,25 +40,21 @@ public class ClassBuilderMapping implements HasAnnotations<ClassBuilderMapping> 
 
     private List<ParameterMapping> parametersMapping;
 
-    ClassBuilderMapping(Constructor<?> constructor, Method staticFactory, Annotations annotations, List<ParameterMapping> parametersMapping) {
-        this.constructor = constructor;
-        this.staticFactory = staticFactory;
-        this.annotations = annotations;
-        this.parametersMapping = parametersMapping;
-    }
-
     public ClassBuilderMapping(Constructor<?> constructor, List<ParameterMapping> parametersMapping) {
-        this.constructor = constructor;
-        this.annotations = new Annotations();
-        this.parametersMapping = parametersMapping;
+        this(constructor, null, new Annotations(), parametersMapping);
         putJsonCreator();
     }
 
     public ClassBuilderMapping(Method staticFactory, List<ParameterMapping> parametersMapping) {
-        this.staticFactory = staticFactory;
-        this.annotations = new Annotations();
-        this.parametersMapping = parametersMapping;
+        this(null, staticFactory, new Annotations(), parametersMapping);
         putJsonCreator();
+    }
+
+    private ClassBuilderMapping(Constructor<?> constructor, Method staticFactory, Annotations annotations, List<ParameterMapping> parametersMapping) {
+        this.constructor = constructor;
+        this.staticFactory = staticFactory;
+        this.annotations = annotations;
+        this.parametersMapping = parametersMapping;
     }
 
     private void putJsonCreator() {

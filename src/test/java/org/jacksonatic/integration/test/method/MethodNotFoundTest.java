@@ -33,7 +33,7 @@ public class MethodNotFoundTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    public static final Pojo POJO = new Pojo();
+    private static final Pojo POJO = new Pojo();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

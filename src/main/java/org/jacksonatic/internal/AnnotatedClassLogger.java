@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ public class AnnotatedClassLogger {
 
     private static String ln = System.getProperty("line.separator");
 
-    public AnnotatedClassLogger() {
+    private AnnotatedClassLogger() {
         ln = ln == null || ln.isEmpty() ? "\n" : ln;
     }
 
@@ -46,8 +46,8 @@ public class AnnotatedClassLogger {
     }
 
     private static void logClassAnnotations(AnnotatedClass annotatedClass, StringBuilder sb) {
-        sb.append(("Class " + annotatedClass.getAnnotated().getName() + " " + annotationsItToStr(annotatedClass.annotations())));
-        sb.append(ln);
+        sb.append(("Class " + annotatedClass.getAnnotated().getName() + " " + annotationsItToStr(annotatedClass.annotations())))
+                .append(ln);
     }
 
     private static void logFieldAnnotations(AnnotatedClass annotatedClass, StringBuilder sb) {
@@ -66,7 +66,7 @@ public class AnnotatedClassLogger {
 
     private static String annotationsItToStr(Iterable<Annotation> annotations) {
         return stream(annotations)
-                .map(annotation -> annotation.toString()).collect(Collectors.joining(","));
+                .map(Annotation::toString).collect(Collectors.joining(","));
     }
 
 }

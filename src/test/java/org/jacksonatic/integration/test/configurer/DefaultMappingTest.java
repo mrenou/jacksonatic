@@ -27,7 +27,7 @@ import static org.jacksonatic.Jacksonatic.configureMapping;
 
 public class DefaultMappingTest {
 
-    public static String firstConstructorCalled = "";
+    private static String firstConstructorCalled = "";
 
     static class Pojo {
 
@@ -62,7 +62,7 @@ public class DefaultMappingTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static final Pojo POJO = new Pojo("field1", 42);
+    private static final Pojo POJO = new Pojo("field1", 42);
 
     @Test
     public void find_constructor_by_default() throws IOException {

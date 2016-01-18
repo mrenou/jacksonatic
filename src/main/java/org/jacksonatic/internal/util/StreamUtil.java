@@ -30,8 +30,8 @@ public class StreamUtil {
     @SafeVarargs
     public static <T> Optional<T> getFirstPresent(Supplier<Optional<T>>... suppliers) {
         return Arrays.asList(suppliers).stream()
-                .map((Supplier<Optional<T>> optionalSupplier) -> optionalSupplier.get())
-                .filter(optional -> optional.isPresent())
+                .map(Supplier::get)
+                .filter(Optional::isPresent)
                 .findFirst()
                 .flatMap(o -> o);
     }

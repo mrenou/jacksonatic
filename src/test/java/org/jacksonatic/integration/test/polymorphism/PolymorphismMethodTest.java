@@ -29,7 +29,7 @@ import static org.jacksonatic.Jacksonatic.configureMapping;
 
 public class PolymorphismMethodTest {
 
-    public static List<String> methodCalls;
+    private static List<String> methodCalls;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

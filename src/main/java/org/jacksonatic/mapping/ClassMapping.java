@@ -115,21 +115,21 @@ public interface ClassMapping<T> {
      *
      * @return
      */
-    ClassMapping<T> withConstructor(ParameterCriteria... parameterCriterias);
+    ClassMapping<T> withConstructor(ParameterCriteria... parameterCriteriaList);
 
     /**
      * Will try to map the named static factory with these parameters for the object creation
      *
      * @return
      */
-    ClassMapping<T> onStaticFactory(String methodName, ParameterCriteria... parameterCriterias);
+    ClassMapping<T> onStaticFactory(String methodName, ParameterCriteria... parameterCriteriaList);
 
     /**
      * Will try to map a static factory with these parameters for the object creation
      *
      * @return
      */
-    ClassMapping<T> onStaticFactory(ParameterCriteria... parameterCriterias);
+    ClassMapping<T> onStaticFactory(ParameterCriteria... parameterCriteriaList);
 
     /**
      * Define the field use to store the type name

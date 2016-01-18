@@ -35,7 +35,7 @@ public class TypeNameAutoAssigner {
         }
     }
 
-    public void assignTypeNameIfNeccesary(ClassesMapping classesMapping, ClassMappingByProcessType classMappingConfigurer) {
+    public void assignTypeNameIfNecessary(ClassesMapping classesMapping, ClassMappingByProcessType classMappingConfigurer) {
         if (!classMappingConfigurer.getClassMapping().hasAnnotation(JsonTypeName.class)) {
             typesWithPolymorphism.stream()
                     .filter(typeWithPolymorphism -> typeWithPolymorphism.isAssignableFrom(classMappingConfigurer.getClassMapping().getType()))

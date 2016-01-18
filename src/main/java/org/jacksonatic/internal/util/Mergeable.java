@@ -32,7 +32,7 @@ public interface Mergeable<T extends Mergeable<T>> {
     }
 
     static <T extends Mergeable<T>> Optional<T> merge(Optional<T> opt1, Optional<T> opt2) {
-        return Optional.ofNullable(opt1.map(o1 -> opt2.map(o2 -> o1.mergeWith(o2)).orElse(o1)).orElse(opt2.orElse(null)));
+        return Optional.ofNullable(opt1.map(o1 -> opt2.map(o1::mergeWith).orElse(o1)).orElse(opt2.orElse(null)));
     }
 
     @SafeVarargs
@@ -50,7 +50,7 @@ public interface Mergeable<T extends Mergeable<T>> {
     }
 
     static <T extends Mergeable<T> & Copyable<T>> Optional<T> mergeOrCopy(Optional<T> opt1, Optional<T> opt2) {
-        return Optional.ofNullable(opt1.map(o1 -> opt2.map(o2 -> o1.mergeWith(o2)).orElse(o1.copy())).orElse(opt2.map(o2 -> o2.copy()).orElse(null)));
+        return Optional.ofNullable(opt1.map(o1 -> opt2.map(o1::mergeWith).orElse(o1.copy())).orElse(opt2.map(o2 -> o2.copy()).orElse(null)));
     }
 
     @SafeVarargs

@@ -24,7 +24,7 @@ import static org.jacksonatic.internal.mapping.MethodSignature.methodSignature;
 import static org.jacksonatic.internal.util.ReflectionUtil.getFieldsWithInheritance;
 import static org.jacksonatic.internal.util.ReflectionUtil.getMethodsWithInheritance;
 
-public class TypeChecker<T> {
+class TypeChecker<T> {
 
     private final Class<T> type;
 

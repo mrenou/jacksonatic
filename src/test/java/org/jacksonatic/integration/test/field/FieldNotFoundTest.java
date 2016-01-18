@@ -33,11 +33,11 @@ public class FieldNotFoundTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    public static final Pojo POJO = new Pojo();
+    private static final Pojo POJO = new Pojo();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    static class Pojo {
+    private static class Pojo {
 
         private String field1;
 

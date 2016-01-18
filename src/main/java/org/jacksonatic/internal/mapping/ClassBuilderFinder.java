@@ -45,7 +45,7 @@ public class ClassBuilderFinder {
         return classBuilderMappingOpt;
     }
 
-    public static Optional<ClassBuilderMapping> findClassBuilderFrom(ClassMappingInternal<Object> classMapping, ClassBuilderCriteria classBuilderCriteria) {
+    private static Optional<ClassBuilderMapping> findClassBuilderFrom(ClassMappingInternal<Object> classMapping, ClassBuilderCriteria classBuilderCriteria) {
         final Optional<ClassBuilderMapping> classBuilderOptional;
         if (classBuilderCriteria.isStaticFactory()) {
             classBuilderOptional = asList(classMapping.getType().getDeclaredMethods()).stream()

@@ -27,9 +27,9 @@ import static org.jacksonatic.Jacksonatic.configureMapping;
 
 public class PolymorphismWithoutTypeNameTest {
 
-    public static boolean captureConstructor = false;
+    private static boolean captureConstructor = false;
 
-    public static String firstConstructorCalled = "";
+    private static String firstConstructorCalled = "";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

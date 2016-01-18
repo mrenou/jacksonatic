@@ -63,7 +63,7 @@ public class FieldMappingTest {
 
     }
 
-    public static final Pojo POJO = new Pojo("field1", 42);
+    private static final Pojo POJO = new Pojo("field1", 42);
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

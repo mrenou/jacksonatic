@@ -25,9 +25,9 @@ import java.util.PriorityQueue;
 import static java.util.stream.Collectors.toList;
 import static org.jacksonatic.internal.util.ReflectionUtil.getFieldsWithInheritance;
 
-public class ParametersMappingBuilder {
+class ParametersMappingBuilder {
 
-    public static List<ParameterMapping> buildParametersMapping(Class<?> classToBuild, List<ParameterCriteriaInternal> parameterCriterias) {
+    public static List<ParameterMapping> buildParametersMapping(Class<?> classToBuild, List<ParameterCriteriaInternal> parameterCriteriaList) {
         TypedHashMap<Class<?>, PriorityQueue<String>> fieldNamesByType = new TypedHashMap<>();
         Map<String, Class<?>> typeByFieldName = new HashMap<>();
         getFieldsWithInheritance(classToBuild).forEach(field -> {
@@ -39,7 +39,7 @@ public class ParametersMappingBuilder {
             fieldNames.add(field.getName());
             typeByFieldName.put(field.getName(), field.getType());
         });
-        return parameterCriterias.stream().map(parameterCriteria -> new ParameterMapping(loadParameterClass(parameterCriteria, typeByFieldName), loadJsonProperty(parameterCriteria, fieldNamesByType))).collect(toList());
+        return parameterCriteriaList.stream().map(parameterCriteria -> new ParameterMapping(loadParameterClass(parameterCriteria, typeByFieldName), loadJsonProperty(parameterCriteria, fieldNamesByType))).collect(toList());
     }
 
     private static Class<?> loadParameterClass(ParameterCriteriaInternal parameterCriteria, Map<String, Class<?>> typeByFieldName) {

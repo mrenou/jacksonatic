@@ -33,9 +33,9 @@ public class DeserializationOnStaticFactoryest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static boolean captureConstructor = false;
+    private static boolean captureConstructor = false;
 
-    public static String firstConstructorCalled = "";
+    private static String firstConstructorCalled = "";
 
     @Before
     public void before() {
@@ -194,8 +194,7 @@ public class DeserializationOnStaticFactoryest {
 
         public static Pojo4 newPojo(String field1, Integer field2) {
             setConstructorCallIfEmpty("public static Pojo4 newPojo");
-            final Pojo4 pojo = new Pojo4(field1, field2);
-            return pojo;
+            return new Pojo4(field1, field2);
         }
     }
 

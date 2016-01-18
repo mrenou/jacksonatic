@@ -20,7 +20,7 @@ import org.jacksonatic.mapping.HasAnnotations;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
-public interface HasAnnotationsInternal<T> extends HasAnnotations<T> {
+interface HasAnnotationsInternal<T> extends HasAnnotations<T> {
 
     default boolean hasAnnotation(Class<? extends Annotation> annotationType) {
         return getAnnotations().containsKey(annotationType);

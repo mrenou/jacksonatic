@@ -41,7 +41,7 @@ public class ClassAnnotationDecorator {
         annotatedClass = addClassAnnotations(annotatedClass, classMapping);
         addFieldAnnotations(annotatedClass, classMapping);
         addMethodAnnotations(annotatedClass, classMapping);
-        addConstructorAnnotations(annotatedClass, classMapping);
+        addBuilderAnnotations(annotatedClass, classMapping);
         AnnotatedClassLogger.log(annotatedClass);
         return annotatedClass;
     }
@@ -81,7 +81,7 @@ public class ClassAnnotationDecorator {
                 .forEach(annotatedMethod::addOrOverride)));
     }
 
-    private void addConstructorAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal<Object> classMapping) {
+    private void addBuilderAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal<Object> classMapping) {
         classMapping.getClassBuilderCriteriaOpt()
                 .ifPresent(classBuilderCriteria -> findClassBuilderMapping(classMapping, classBuilderCriteria)
                         .ifPresent(classBuilderMapping -> {
