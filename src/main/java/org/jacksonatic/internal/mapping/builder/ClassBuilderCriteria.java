@@ -17,7 +17,6 @@ package org.jacksonatic.internal.mapping.builder;
 
 import org.jacksonatic.internal.mapping.builder.parameter.ParameterCriteriaInternal;
 import org.jacksonatic.internal.mapping.builder.parameter.ParameterMapping;
-import org.jacksonatic.internal.mapping.builder.parameter.ParametersMappingBuilder;
 import org.jacksonatic.internal.util.Copyable;
 import org.jacksonatic.internal.util.Mergeable;
 
@@ -25,11 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.jacksonatic.internal.mapping.builder.parameter.ParametersMappingBuilder.forClass;
 
 /**
  * Criteria to match a constructor or a static factory
- * <p>
- * Immutable
  */
 public class ClassBuilderCriteria implements Copyable<ClassBuilderCriteria>, Mergeable<ClassBuilderCriteria> {
 
@@ -40,8 +38,6 @@ public class ClassBuilderCriteria implements Copyable<ClassBuilderCriteria>, Mer
     private boolean staticFactory = false;
 
     private boolean any = false;
-
-    private ParametersMappingBuilder parametersMappingBuilder = new ParametersMappingBuilder();
 
     public static ClassBuilderCriteria mapConstructor(Class<?> classToBuild, List<ParameterCriteriaInternal> parameterCriteriaList) {
         return new ClassBuilderCriteria(classToBuild, null, parameterCriteriaList, false);
@@ -62,7 +58,7 @@ public class ClassBuilderCriteria implements Copyable<ClassBuilderCriteria>, Mer
 
     private ClassBuilderCriteria(Class<?> classToBuild, String methodName, List<ParameterCriteriaInternal> parameterCriteriaList, boolean staticFactory) {
         this.methodName = methodName;
-        this.parametersMapping = parametersMappingBuilder.build(classToBuild, parameterCriteriaList);
+        this.parametersMapping = forClass(classToBuild).from(parameterCriteriaList).buildParametersMapping();
         this.staticFactory = staticFactory;
         this.any = false;
     }

@@ -23,11 +23,11 @@ import org.jacksonatic.internal.mapping.builder.parameter.ParameterCriteriaInter
 public interface ParameterCriteria {
 
     static ParameterCriteria match(Class<?> parameterClass, String jsonProperty) {
-        return new ParameterCriteriaInternal(parameterClass, jsonProperty, null);
+        return new ParameterCriteriaInternal(parameterClass, null, jsonProperty);
     }
 
     static ParameterCriteria match(String fieldName, String jsonProperty) {
-        return new ParameterCriteriaInternal(null, jsonProperty, fieldName);
+        return new ParameterCriteriaInternal(null, fieldName, jsonProperty);
     }
 
     static ParameterCriteria matchType(Class<?> parameterClass) {
@@ -35,7 +35,7 @@ public interface ParameterCriteria {
     }
 
     static ParameterCriteria matchField(String fieldName) {
-        return new ParameterCriteriaInternal(null, null, fieldName);
+        return new ParameterCriteriaInternal(null, fieldName, null);
     }
 
     ParameterCriteria mappedBy(String jsonProperty);

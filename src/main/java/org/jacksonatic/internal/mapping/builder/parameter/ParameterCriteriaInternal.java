@@ -22,13 +22,16 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Criteria to match a parameter by this type or this associated field name
+ */
 public class ParameterCriteriaInternal implements org.jacksonatic.mapping.ParameterCriteria {
 
     private Class<?> parameterClass;
 
-    private String jsonProperty;
-
     private String fieldName;
+
+    private String jsonProperty;
 
     public static List<ParameterCriteriaInternal> parameterCriteriaToInternal(ParameterCriteria... parameterCriteriaArray) {
         return parameterCriteriaToInternal(asList(parameterCriteriaArray));
@@ -38,22 +41,22 @@ public class ParameterCriteriaInternal implements org.jacksonatic.mapping.Parame
         return parameterCriteriaList.stream().map(parameterCriteria -> (ParameterCriteriaInternal) parameterCriteria).collect(toList());
     }
 
-    public ParameterCriteriaInternal(Class<?> parameterClass, String jsonProperty, String fieldName) {
+    public ParameterCriteriaInternal(Class<?> parameterClass, String fieldName, String jsonProperty) {
         this.parameterClass = parameterClass;
-        this.jsonProperty = jsonProperty;
         this.fieldName = fieldName;
+        this.jsonProperty = jsonProperty;
     }
 
-    public String getJsonProperty() {
-        return jsonProperty;
+    public Class<?> getParameterClass() {
+        return parameterClass;
     }
 
     public String getFieldName() {
         return fieldName;
     }
 
-    public Class<?> getParameterClass() {
-        return parameterClass;
+    public String getJsonProperty() {
+        return jsonProperty;
     }
 
     @Override
