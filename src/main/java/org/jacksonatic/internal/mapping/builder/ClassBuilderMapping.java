@@ -28,7 +28,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 /**
- * Define mapping for constructor or static factory
+ * Define annotations mapping for a constructor or a static factory
  */
 public class ClassBuilderMapping implements HasAnnotations<ClassBuilderMapping>, Copyable<ClassBuilderMapping> {
 

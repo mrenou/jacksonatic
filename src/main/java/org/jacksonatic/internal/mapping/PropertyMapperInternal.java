@@ -19,6 +19,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jacksonatic.mapping.PropertyMapper;
 
+/**
+ * Property mapper interface with method for an internal use
+ */
 public interface PropertyMapperInternal<T> extends PropertyMapper<T>, HasAnnotationsInternal<T> {
 
     default boolean isMapped() {

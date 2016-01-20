@@ -21,8 +21,15 @@ import org.jacksonatic.internal.mapping.ClassMappingInternal;
 import java.util.Optional;
 
 /**
- * Use {@link ClassMappingInternal } and {@link ClassBuilderCriteria } to find
- * constructor or static factory and build a {@ling org.jacksonatic.mapping.ClassBuilderMapping }
+ * Use {@link ClassMappingInternal } and {@link ClassBuilderCriteria } to find constructor or static factory to build
+ * the type
+ *
+ * If criteria is any, try to find a constructor with a parametric signature having same types (or less) than the types
+ * of class fields, ignoring static fields. If no constructor is found with all field types, try to find a static
+ * factory with the same algorithm. The constructor is used if a constructor and a static factory match same field types
+ *
+ * Otherwise, try to find a constructor or a static factory with the same signature described in
+ * {@link ClassBuilderCriteria }.
  */
 public class ClassBuilderFinder {
 

@@ -32,8 +32,9 @@ import static java.util.stream.Collectors.toList;
 import static org.jacksonatic.internal.util.ReflectionUtil.getFieldsWithInheritance;
 
 /**
- * Use {@link ClassMappingInternal } and {@link ClassBuilderCriteria } to find
- * constructor or static factory and build a {@ling org.jacksonatic.mapping.ClassBuilderMapping }
+ * Use {@link ClassMappingInternal } to find any constructor or static factory to build the type
+ *
+ * {@see ClassBuilderFinder}
  */
 public class ClassBuilderFinderFromAny {
 

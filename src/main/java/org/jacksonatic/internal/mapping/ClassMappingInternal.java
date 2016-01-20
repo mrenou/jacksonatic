@@ -43,7 +43,9 @@ import static org.jacksonatic.mapping.FieldMapping.field;
 import static org.jacksonatic.mapping.MethodMapping.method;
 
 /**
- * Define class mapping
+ * Define annotations class mapping
+ *
+ * Can map : all fields, specific field or method, class builder (constructor or static factory)
  */
 public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMappingInternal<T>>, Copyable<ClassMappingInternal<T>>, Mergeable<ClassMappingInternal<T>> {
 

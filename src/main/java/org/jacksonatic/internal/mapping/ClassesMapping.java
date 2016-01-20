@@ -25,6 +25,7 @@ import static java.util.stream.Collectors.toMap;
  */
 public class ClassesMapping extends CopyableMergeableHashMap<Class<Object>, ClassMappingInternal<Object>> implements Copyable<ClassesMapping> {
 
+    // TODO externalise lambda which produces an exception.
     @Override
     public ClassesMapping copy() {
         return this.entrySet().stream().collect(toMap(

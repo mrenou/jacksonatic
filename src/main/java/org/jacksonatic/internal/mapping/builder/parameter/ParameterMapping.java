@@ -22,7 +22,7 @@ import org.jacksonatic.mapping.HasAnnotations;
 import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 
 /**
- * Define parameter mapping
+ * Define parameter annotations mapping
  */
 public class ParameterMapping implements HasAnnotations<ParameterMapping>, Copyable<ParameterMapping> {
 

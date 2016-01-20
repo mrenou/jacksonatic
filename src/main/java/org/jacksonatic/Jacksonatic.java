@@ -30,25 +30,25 @@ public interface Jacksonatic extends Copyable<Jacksonatic> {
     }
 
     /**
-     * to define a class mapping
+     * add a class mapping
      *
-     * @param classMapping
-     * @return
+     * @param classMapping the class mapping to add
+     * @return jacksonatic
      */
     Jacksonatic on(ClassMapping<?> classMapping);
 
     /**
-     * to define a class mapping with all its fields mapped
+     * add a class mapping with all its fields mapped
      *
-     * @param classMapping
-     * @return
+     * @param classMapping the class mapping to add
+     * @return jacksonatic
      */
     Jacksonatic mapAllFieldsOn(ClassMapping<?> classMapping);
 
     /**
-     * register mapping configuration in a {@ling com.fasterxml.jackson.databind.ObjectMapper}
+     * register mapping configuration in a {@link com.fasterxml.jackson.databind.ObjectMapper}
      *
-     * @param objectMapper
+     * @param objectMapper object mapper to use
      */
     void registerIn(ObjectMapper objectMapper);
 

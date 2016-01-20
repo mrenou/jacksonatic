@@ -25,6 +25,9 @@ import org.jacksonatic.mapping.ParameterCriteria;
 import static org.jacksonatic.internal.mapping.builder.ClassBuilderCriteria.*;
 import static org.jacksonatic.internal.mapping.builder.parameter.ParameterCriteriaInternal.parameterCriteriaToInternal;
 
+/**
+ * Class mapping
+ */
 public class ClassMappingByProcessType<T> implements ClassMapping<T> {
 
     private ClassMappingInternal<T> currentClassMapping;

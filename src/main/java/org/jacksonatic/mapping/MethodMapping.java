@@ -28,10 +28,10 @@ import static org.jacksonatic.internal.mapping.method.MethodSignature.methodSign
 public interface MethodMapping extends HasAnnotations<MethodMapping>, PropertyMapper<MethodMapping> {
 
     /**
-     * Start a method mapping for the given field name
-     * @param name
-     * @param parameterTypes
-     * @return
+     * Start a method mapping for the given method name and the parametric signature
+     * @param name the method name
+     * @param parameterTypes the parametric signature
+     * @return the method mapping
      */
     static MethodMapping method(String name, Class<?>... parameterTypes) {
         return new MethodMappingInternal(methodSignature(name, Arrays.asList(parameterTypes)), new Annotations());

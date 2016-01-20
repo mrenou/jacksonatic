@@ -18,13 +18,16 @@ package org.jacksonatic.mapping;
 import org.jacksonatic.annotation.AnnotationBuilder;
 import org.jacksonatic.internal.annotations.Annotations;
 
+/**
+ * Can have annotations
+ */
 public interface HasAnnotations<T> {
 
     /**
      * Add an annotation
      *
-     * @param annotationBuilder
-     * @return
+     * @param annotationBuilder the annotation builder
+     * @return the instance adding annotation
      */
     @SuppressWarnings("unchecked")
     default T add(AnnotationBuilder annotationBuilder) {

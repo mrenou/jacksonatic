@@ -23,6 +23,9 @@ import org.jacksonatic.mapping.MethodMapping;
 
 import java.util.Arrays;
 
+/**
+ * Define annotations mapping for a method
+ */
 public class MethodMappingInternal implements MethodMapping, PropertyMapperInternal<MethodMapping>, Copyable<MethodMappingInternal>, Mergeable<MethodMappingInternal> {
 
     private MethodSignature methodSignature;

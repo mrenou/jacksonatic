@@ -26,6 +26,9 @@ import static org.jacksonatic.internal.mapping.method.MethodSignature.methodSign
 import static org.jacksonatic.internal.util.ReflectionUtil.getFieldsWithInheritance;
 import static org.jacksonatic.internal.util.ReflectionUtil.getMethodsWithInheritance;
 
+/**
+ * Allows checking if a field, a method exists in a given class
+ */
 class TypeChecker<T> {
 
     private final Class<T> type;

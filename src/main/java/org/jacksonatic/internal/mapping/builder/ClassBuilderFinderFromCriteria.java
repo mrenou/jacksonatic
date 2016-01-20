@@ -24,8 +24,9 @@ import java.util.Optional;
 import static java.util.Arrays.asList;
 
 /**
- * Use {@link ClassMappingInternal } and {@link ClassBuilderCriteria } to find
- * constructor or static factory and build a {@ling org.jacksonatic.mapping.ClassBuilderMapping }
+ * Use {@link ClassMappingInternal } and {@link ClassBuilderCriteria } to find any constructor or static factory to build the type
+ *
+ * {@see ClassBuilderFinder}
  */
 public class ClassBuilderFinderFromCriteria {
 

@@ -25,6 +25,9 @@ import org.jacksonatic.mapping.FieldMapping;
 
 import java.util.Optional;
 
+/**
+ * Define annotations mapping for a field
+ */
 public class FieldMappingInternal implements FieldMapping, PropertyMapperInternal<FieldMapping>, Copyable<FieldMappingInternal>, Mergeable<FieldMappingInternal> {
 
     private String name;

@@ -29,8 +29,8 @@ public interface ClassMapping<T> {
     /**
      * Start a class mapping for the given type only for serialization
      *
-     * @param clazz
-     * @return
+     * @param clazz the class to configure on serialization
+     * @return the current class mapping
      */
     static <T> ClassMapping<T> onSerializationOf(Class<T> clazz) {
         return type(clazz).onSerialization();
@@ -39,132 +39,180 @@ public interface ClassMapping<T> {
     /**
      * Start a class mapping for the given type only for deserialization
      *
-     * @param clazz
-     * @return
+     * @param clazz the class to configure on deserialization
+     * @return the current class mapping
      */
     static <T> ClassMapping<T> onDeserialisationOf(Class<T> clazz) {
         return type(clazz).onDeserialization();
     }
 
-
     /**
      * Next class mapping instructions will be only for serialization
      *
-     * @return
+     * @return the current class mapping
      */
     ClassMapping<T> onSerialization();
 
     /**
      * Next class mapping instructions will be only for deserialization
      *
-     * @return
+     * @return the current class mapping
      */
     ClassMapping<T> onDeserialization();
 
     /**
-     * Start a field mapping
+     * add a field mapping
      *
-     * @param fieldMapping
-     * @return
+     * @param fieldMapping the field mapping to add
+     * @return the current class mapping
      */
     ClassMapping<T> on(FieldMapping fieldMapping);
 
+    /**
+     * add a method mapping
+     *
+     * @param methodMapping the method mapping to add
+     * @return the current class mapping
+     */
     ClassMapping<T> on(MethodMapping methodMapping);
 
     /**
-     * Map all fields
+     * Map all fields in the current class mapping
      *
-     * @return
+     * @return the current class mapping
      */
     ClassMapping<T> mapAll();
 
     /**
-     * Map the named field
+     * Map the named field in the current class mapping
      *
-     * @param fieldName
-     * @return
+     * @param fieldName the name of the field
+     * @return the current class mapping
      */
     ClassMapping<T> map(String fieldName);
 
     /**
      * Map the named field with another name
      *
-     * @param fieldName
-     * @param jsonProperty
-     * @return
+     * @param fieldName the name of the field
+     * @param jsonProperty the new name
+     * @return the current class mapping
      */
     ClassMapping<T> map(String fieldName, String jsonProperty);
 
     /**
      * Ignore the named field
      *
-     * @param fieldName
-     * @return
+     * @param fieldName the name of the field
+     * @return try to find a constructor or a static factory with the same signature described in
      */
     ClassMapping<T> ignore(String fieldName);
 
     /**
-     * Will try to map a constructor or a static factory for the object creation
+     * Will try to guess a constructor or a static factory for the object creation
      *
-     * @return
+     * Try to find a constructor with a parametric signature having same types (or less) than the types
+     * of class fields, ignoring static fields. If no constructor is found with all field types, try to find a static
+     * factory with the same algorithm. The constructor is used if a constructor and a static factory match same field types
+     * @return the current class mapping
      */
     ClassMapping<T> withAConstructorOrStaticFactory();
 
     /**
      * Will try to map a constructor with these parameters for the object creation
      *
-     * @return
+     * @return the current class mapping
      */
     ClassMapping<T> withConstructor(ParameterCriteria... parameterCriteriaList);
 
     /**
      * Will try to map the named static factory with these parameters for the object creation
      *
-     * @return
+     * @return the current class mapping
      */
     ClassMapping<T> onStaticFactory(String methodName, ParameterCriteria... parameterCriteriaList);
 
     /**
      * Will try to map a static factory with these parameters for the object creation
      *
-     * @return
+     * @return the current class mapping
      */
     ClassMapping<T> onStaticFactory(ParameterCriteria... parameterCriteriaList);
 
     /**
      * Define the field use to store the type name
      *
-     * @param field
-     * @return
+     * @param fieldName the name of the field
+     * @return the current class mapping
      */
-    ClassMapping<T> fieldForTypeName(String field);
+    ClassMapping<T> fieldForTypeName(String fieldName);
 
     /**
      * Define the type name
      *
-     * @param name
-     * @return
+     * @param name the name of the type
+     * @return the current class mapping
      */
     ClassMapping<T> typeName(String name);
 
     /**
      * Define a subtype with the given type name
      *
-     * @param name
-     * @return
+     * @param name the name of the type
+     * @return the current class mapping
      */
     ClassMapping<T> addNamedSubType(Class<? extends T> subType, String name);
 
-
+    /**
+     * Map the named getter
+     *
+     * @param fieldName the name of the field used by the getter
+     * @return the current class mapping
+     */
     ClassMapping<T> mapGetter(String fieldName);
 
+    /**
+     * Map the named getter with another name
+     *
+     * @param fieldName the name of the field used by the getter
+     * @param jsonProperty the new name
+     * @return the current class mapping
+     */
     ClassMapping<T> mapGetter(String fieldName, String jsonProperty);
 
+    /**
+     * Map the named setter, ignoring the parametric signature
+     *
+     * @param fieldName the name of the field used by the setter
+     * @return the current class mapping
+     */
     ClassMapping<T> mapSetter(String fieldName);
 
+    /**
+     * Map the named setter with another name
+     *
+     * @param fieldName the name of the field used by the setter
+     * @param jsonProperty the new name
+     * @return the current class mapping
+     */
     ClassMapping<T> mapSetter(String fieldName, String jsonProperty);
 
+    /**
+     * Map the named setter with the parametric signature
+     *
+     * @param fieldName the name of the field used by the setter
+     * @param parameterTypes the parametric signature
+     * @return the current class mapping
+     */
     ClassMapping<T> mapSetter(String fieldName, Class<?>... parameterTypes);
 
+    /**
+     * Map the named setter, with the parametric signature, with another name
+     *
+     * @param fieldName the name of the field used by the setter
+     * @param jsonProperty the new name
+     * @param parameterTypes the parametric signature
+     * @return the current class mapping
+     */
     ClassMapping<T> mapSetter(String fieldName, String jsonProperty, Class<?>... parameterTypes);
 }

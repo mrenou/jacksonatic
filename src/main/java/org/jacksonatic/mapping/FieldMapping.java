@@ -25,8 +25,8 @@ public interface FieldMapping extends PropertyMapper<FieldMapping> {
     /**
      * Start a field mapping for the given field name
      *
-     * @param fieldName
-     * @return
+     * @param fieldName the name of the field
+     * @return the field mapping
      */
     static FieldMapping field(String fieldName) {
         return new FieldMappingInternal(fieldName);
