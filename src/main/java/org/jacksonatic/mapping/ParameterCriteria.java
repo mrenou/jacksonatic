@@ -15,7 +15,7 @@
  */
 package org.jacksonatic.mapping;
 
-import org.jacksonatic.internal.mapping.ParameterCriteriaInternal;
+import org.jacksonatic.internal.mapping.builder.parameter.ParameterCriteriaInternal;
 
 /**
  * Criteria to match a parameter by class or field name class

@@ -15,7 +15,7 @@
  */
 package org.jacksonatic.mapping;
 
-import org.jacksonatic.internal.mapping.FieldMappingInternal;
+import org.jacksonatic.internal.mapping.field.FieldMappingInternal;
 
 /**
  * Allowing to define jackson field mapping in a programmatic way.

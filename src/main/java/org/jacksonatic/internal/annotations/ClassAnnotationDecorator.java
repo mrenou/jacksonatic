@@ -17,7 +17,12 @@ package org.jacksonatic.internal.annotations;
 
 import com.fasterxml.jackson.databind.introspect.*;
 import org.jacksonatic.internal.AnnotatedClassLogger;
-import org.jacksonatic.internal.mapping.*;
+import org.jacksonatic.internal.mapping.ClassMappingInternal;
+import org.jacksonatic.internal.mapping.builder.ClassBuilderFinder;
+import org.jacksonatic.internal.mapping.builder.ClassBuilderMapping;
+import org.jacksonatic.internal.mapping.builder.parameter.ParameterMapping;
+import org.jacksonatic.internal.mapping.field.FieldMappingInternal;
+import org.jacksonatic.internal.mapping.method.MethodMappingInternal;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -26,9 +31,8 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.jacksonatic.internal.mapping.ClassBuilderFinder.findClassBuilderMapping;
-import static org.jacksonatic.internal.mapping.MethodSignature.methodSignature;
-import static org.jacksonatic.internal.mapping.MethodSignature.methodSignatureIgnoringParameters;
+import static org.jacksonatic.internal.mapping.method.MethodSignature.methodSignature;
+import static org.jacksonatic.internal.mapping.method.MethodSignature.methodSignatureIgnoringParameters;
 import static org.jacksonatic.internal.util.StreamUtil.getFirstPresent;
 import static org.jacksonatic.internal.util.StreamUtil.stream;
 
@@ -36,6 +40,8 @@ import static org.jacksonatic.internal.util.StreamUtil.stream;
  * Add annotations defined in {@link ClassMappingInternal} to {@link com.fasterxml.jackson.databind.introspect.AnnotatedClass}
  */
 public class ClassAnnotationDecorator {
+
+    private ClassBuilderFinder classBuilderFinder = new ClassBuilderFinder();
 
     public AnnotatedClass decorate(AnnotatedClass annotatedClass, ClassMappingInternal<Object> classMapping) {
         annotatedClass = addClassAnnotations(annotatedClass, classMapping);
@@ -83,7 +89,7 @@ public class ClassAnnotationDecorator {
 
     private void addBuilderAnnotations(AnnotatedClass annotatedClass, ClassMappingInternal<Object> classMapping) {
         classMapping.getClassBuilderCriteriaOpt()
-                .ifPresent(classBuilderCriteria -> findClassBuilderMapping(classMapping, classBuilderCriteria)
+                .ifPresent(classBuilderCriteria -> classBuilderFinder.find(classMapping, classBuilderCriteria)
                         .ifPresent(classBuilderMapping -> {
                             if (classBuilderMapping.isStaticFactory()) {
                                 addStaticFactoryAnnotations(annotatedClass, classBuilderMapping);

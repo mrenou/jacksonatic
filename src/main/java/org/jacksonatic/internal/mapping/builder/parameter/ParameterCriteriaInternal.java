@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.internal.mapping;
+package org.jacksonatic.internal.mapping.builder.parameter;
 
 import org.jacksonatic.mapping.ParameterCriteria;
 

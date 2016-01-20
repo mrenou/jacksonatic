@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,13 +15,15 @@
  */
 package org.jacksonatic.internal.mapping;
 
+import org.jacksonatic.internal.mapping.field.FieldMappingInternal;
+import org.jacksonatic.internal.mapping.method.MethodMappingInternal;
 import org.jacksonatic.mapping.ClassMapping;
 import org.jacksonatic.mapping.FieldMapping;
 import org.jacksonatic.mapping.MethodMapping;
 import org.jacksonatic.mapping.ParameterCriteria;
 
-import static org.jacksonatic.internal.mapping.ClassBuilderCriteria.*;
-import static org.jacksonatic.internal.mapping.ParameterCriteriaInternal.parameterCriteriaToInternal;
+import static org.jacksonatic.internal.mapping.builder.ClassBuilderCriteria.*;
+import static org.jacksonatic.internal.mapping.builder.parameter.ParameterCriteriaInternal.parameterCriteriaToInternal;
 
 public class ClassMappingByProcessType<T> implements ClassMapping<T> {
 

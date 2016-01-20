@@ -15,7 +15,10 @@
  */
 package org.jacksonatic.internal.util;
 
+import java.util.List;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 public interface Copyable<T extends Copyable<T>> {
 
@@ -27,5 +30,9 @@ public interface Copyable<T extends Copyable<T>> {
 
     static <T extends Copyable<T>> Optional<T> copy(Optional<T> opt) {
         return Optional.ofNullable(opt.map(o -> o.copy()).orElse(null));
+    }
+
+    static <T extends Copyable<T>> List<T> copy(List<T> list) {
+        return list.stream().map(o -> o.copy()).collect(toList());
     }
 }

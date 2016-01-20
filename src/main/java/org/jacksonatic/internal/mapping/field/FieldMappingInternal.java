@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.internal.mapping;
+package org.jacksonatic.internal.mapping.field;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jacksonatic.internal.annotations.Annotations;
+import org.jacksonatic.internal.mapping.PropertyMapperInternal;
 import org.jacksonatic.internal.util.Copyable;
 import org.jacksonatic.internal.util.Mergeable;
 import org.jacksonatic.mapping.FieldMapping;
@@ -64,6 +65,7 @@ public class FieldMappingInternal implements FieldMapping, PropertyMapperInterna
         return new FieldMappingInternal(name, this.annotations.copy());
     }
 
+    //TODO MRE merge annotation could be a method in annotations ?
     @Override
     public FieldMappingInternal mergeWith(FieldMappingInternal parentMapping) {
         return new FieldMappingInternal(name, this.annotations.size() == 0 ? parentMapping.annotations.copy() : annotations.copy());

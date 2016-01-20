@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.internal.mapping;
+package org.jacksonatic.internal.mapping.method;
 
 import org.jacksonatic.internal.annotations.Annotations;
+import org.jacksonatic.internal.mapping.PropertyMapperInternal;
 import org.jacksonatic.internal.util.Copyable;
 import org.jacksonatic.internal.util.Mergeable;
 import org.jacksonatic.mapping.MethodMapping;
 
 import java.util.Arrays;
-
-import static org.jacksonatic.internal.mapping.MethodSignature.methodSignature;
-import static org.jacksonatic.internal.mapping.MethodSignature.methodSignatureIgnoringParameters;
 
 public class MethodMappingInternal implements MethodMapping, PropertyMapperInternal<MethodMapping>, Copyable<MethodMappingInternal>, Mergeable<MethodMappingInternal> {
 
@@ -32,7 +30,7 @@ public class MethodMappingInternal implements MethodMapping, PropertyMapperInter
     private Annotations annotations;
 
     public static MethodMappingInternal method(String name, Class<?>... parameterTypes) {
-        return new MethodMappingInternal(methodSignature(name, Arrays.asList(parameterTypes)), new Annotations());
+        return new MethodMappingInternal(MethodSignature.methodSignature(name, Arrays.asList(parameterTypes)), new Annotations());
     }
 
     public MethodMappingInternal(MethodSignature methodSignature, Annotations annotations) {
@@ -41,7 +39,7 @@ public class MethodMappingInternal implements MethodMapping, PropertyMapperInter
     }
 
     public MethodMappingInternal ignoreParameters() {
-        methodSignature = methodSignatureIgnoringParameters(methodSignature.name);
+        methodSignature = MethodSignature.methodSignatureIgnoringParameters(methodSignature.name);
         return this;
     }
 

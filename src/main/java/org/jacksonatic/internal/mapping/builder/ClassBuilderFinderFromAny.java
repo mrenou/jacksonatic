@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.internal.mapping;
+package org.jacksonatic.internal.mapping.builder;
 
+
+import org.jacksonatic.internal.mapping.ClassMappingInternal;
+import org.jacksonatic.internal.mapping.PropertyMapperInternal;
+import org.jacksonatic.internal.mapping.builder.parameter.ParameterMapping;
+import org.jacksonatic.internal.mapping.field.FieldMappingInternal;
+import org.jacksonatic.internal.mapping.method.MethodMappingInternal;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -22,63 +28,16 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.jacksonatic.internal.util.ReflectionUtil.getFieldsWithInheritance;
 
 /**
- * Use {@link ClassMappingInternal } and {@link org.jacksonatic.internal.mapping.ClassBuilderCriteria } to find
+ * Use {@link ClassMappingInternal } and {@link ClassBuilderCriteria } to find
  * constructor or static factory and build a {@ling org.jacksonatic.mapping.ClassBuilderMapping }
  */
-public class ClassBuilderFinder {
+public class ClassBuilderFinderFromAny {
 
-    public static Optional<ClassBuilderMapping> findClassBuilderMapping(ClassMappingInternal<Object> classMapping, ClassBuilderCriteria classBuilderCriteria) {
-        Optional<ClassBuilderMapping> classBuilderMappingOpt;
-        if (classBuilderCriteria.isAny()) {
-            classBuilderMappingOpt = findClassBuilderFrom(classMapping);
-        } else {
-            classBuilderMappingOpt = findClassBuilderFrom(classMapping, classBuilderCriteria);
-        }
-        if (!classBuilderMappingOpt.isPresent() && !classBuilderCriteria.isAny()) {
-            throw new IllegalArgumentException("Cannot find constructor with criteria " + classBuilderCriteria.mappingAsString());
-        }
-        return classBuilderMappingOpt;
-    }
-
-    private static Optional<ClassBuilderMapping> findClassBuilderFrom(ClassMappingInternal<Object> classMapping, ClassBuilderCriteria classBuilderCriteria) {
-        final Optional<ClassBuilderMapping> classBuilderOptional;
-        if (classBuilderCriteria.isStaticFactory()) {
-            classBuilderOptional = asList(classMapping.getType().getDeclaredMethods()).stream()
-                    .filter(method -> Modifier.isStatic(method.getModifiers()) && Modifier.isPublic(method.getModifiers()))
-                    .map(method -> new ClassBuilderMapping(method, classBuilderCriteria.getParametersMapping()))
-                    .filter(classBuilder -> hasToBuild(classBuilder, classBuilderCriteria))
-                    .findFirst();
-        } else {
-            classBuilderOptional = asList(classMapping.getType().getConstructors()).stream()
-                    .map(method -> new ClassBuilderMapping(method, classBuilderCriteria.getParametersMapping()))
-                    .filter(classBuilder -> hasToBuild(classBuilder, classBuilderCriteria))
-                    .findFirst();
-        }
-        return classBuilderOptional;
-
-    }
-
-    private static boolean hasToBuild(ClassBuilderMapping classBuilderMapping, ClassBuilderCriteria classBuilderCriteria) {
-        boolean match = false;
-        if ((classBuilderCriteria.getMethodName() == null || classBuilderCriteria.getMethodName().equals(classBuilderMapping.getName()))
-                && classBuilderMapping.getParameterCount() == classBuilderCriteria.getParametersMapping().size()
-                && classBuilderMapping.isPublic()) {
-            match = true;
-            for (int i = 0; i < classBuilderMapping.getParameterCount(); i++) {
-                if (!classBuilderMapping.getParameterTypes()[i].equals(classBuilderCriteria.getParametersMapping().get(i).getParameterClass())) {
-                    match = false;
-                }
-            }
-        }
-        return match;
-    }
-
-    private static Optional<ClassBuilderMapping> findClassBuilderFrom(ClassMappingInternal<Object> classMapping) {
+    public Optional<ClassBuilderMapping> find(ClassMappingInternal<Object> classMapping) {
         SortedSet<ClassBuilderMapping> classBuilderMappingScored = new TreeSet<>(
                 Comparator.<ClassBuilderMapping>comparingInt(o -> o.getParametersMapping().size())
                         .reversed()
@@ -87,7 +46,7 @@ public class ClassBuilderFinder {
         );
         addConstructorScored(classMapping, classBuilderMappingScored);
 
-        if (classBuilderMappingScored.isEmpty() || (!classBuilderMappingScored.isEmpty() && classBuilderMappingScored.first().getParametersMapping().size() < classMapping.getType().getDeclaredFields().length)) {
+        if (classBuilderMappingScored.isEmpty() || (classBuilderMappingScored.first().getParametersMapping().size() < classMapping.getType().getDeclaredFields().length)) {
             addStaticFactoryScored(classMapping, classBuilderMappingScored);
         }
 
@@ -97,7 +56,7 @@ public class ClassBuilderFinder {
         return Optional.empty();
     }
 
-    private static void addConstructorScored(ClassMappingInternal<Object> classMapping, SortedSet<ClassBuilderMapping> classBuilderMappingScored) {
+    private void addConstructorScored(ClassMappingInternal<Object> classMapping, SortedSet<ClassBuilderMapping> classBuilderMappingScored) {
         for (Constructor<?> constructor : classMapping.getType().getConstructors()) {
             List<Field> declaredFields = getFieldsWithInheritance(classMapping.getType()).collect(toList());
             List<ParameterMapping> parametersMapping = getParametersMapping(classMapping, Arrays.asList(constructor.getParameterTypes()), declaredFields);
@@ -108,7 +67,7 @@ public class ClassBuilderFinder {
         }
     }
 
-    private static void addStaticFactoryScored(ClassMappingInternal<Object> classMapping, SortedSet<ClassBuilderMapping> classBuilderMappingScored) {
+    private void addStaticFactoryScored(ClassMappingInternal<Object> classMapping, SortedSet<ClassBuilderMapping> classBuilderMappingScored) {
         for (Method method : classMapping.getType().getDeclaredMethods()) {
             if (Modifier.isStatic(method.getModifiers())) {
                 List<Field> declaredFields = getFieldsWithInheritance(classMapping.getType()).collect(toList());
@@ -121,7 +80,7 @@ public class ClassBuilderFinder {
         }
     }
 
-    private static List<ParameterMapping> getParametersMapping(ClassMappingInternal<Object> classMapping, List<Class<?>> parameterTypes, List<Field> fields) {
+    private List<ParameterMapping> getParametersMapping(ClassMappingInternal<Object> classMapping, List<Class<?>> parameterTypes, List<Field> fields) {
         int iParameterType = 0;
         int iFields = 0;
         List<ParameterMapping> parametersMapping = new ArrayList<>();
@@ -146,7 +105,7 @@ public class ClassBuilderFinder {
         return parametersMapping;
     }
 
-    private static boolean isMapped(ClassMappingInternal<Object> classMapping, FieldMappingInternal fieldMapping, Optional<MethodMappingInternal> methodMappingOpt) {
+    private boolean isMapped(ClassMappingInternal<Object> classMapping, FieldMappingInternal fieldMapping, Optional<MethodMappingInternal> methodMappingOpt) {
         return classMapping.allFieldsAreMapped() || fieldMapping.isMapped() || methodMappingOpt.map(PropertyMapperInternal::isMapped).orElse(false);
     }
 

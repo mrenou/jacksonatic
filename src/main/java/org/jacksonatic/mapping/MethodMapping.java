@@ -16,11 +16,11 @@
 package org.jacksonatic.mapping;
 
 import org.jacksonatic.internal.annotations.Annotations;
-import org.jacksonatic.internal.mapping.MethodMappingInternal;
+import org.jacksonatic.internal.mapping.method.MethodMappingInternal;
 
 import java.util.Arrays;
 
-import static org.jacksonatic.internal.mapping.MethodSignature.methodSignature;
+import static org.jacksonatic.internal.mapping.method.MethodSignature.methodSignature;
 
 /**
  * Allowing to define jackson method mapping in a programmatic way.

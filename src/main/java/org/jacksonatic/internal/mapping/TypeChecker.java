@@ -15,12 +15,14 @@
  */
 package org.jacksonatic.internal.mapping;
 
+import org.jacksonatic.internal.mapping.method.MethodSignature;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
-import static org.jacksonatic.internal.mapping.MethodSignature.methodSignature;
+import static org.jacksonatic.internal.mapping.method.MethodSignature.methodSignature;
 import static org.jacksonatic.internal.util.ReflectionUtil.getFieldsWithInheritance;
 import static org.jacksonatic.internal.util.ReflectionUtil.getMethodsWithInheritance;
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jacksonatic.internal.mapping;
+package org.jacksonatic.internal.mapping.builder.parameter;
 
 import org.jacksonatic.internal.util.TypedHashMap;
 
@@ -25,9 +25,9 @@ import java.util.PriorityQueue;
 import static java.util.stream.Collectors.toList;
 import static org.jacksonatic.internal.util.ReflectionUtil.getFieldsWithInheritance;
 
-class ParametersMappingBuilder {
+public class ParametersMappingBuilder {
 
-    public static List<ParameterMapping> buildParametersMapping(Class<?> classToBuild, List<ParameterCriteriaInternal> parameterCriteriaList) {
+    public List<ParameterMapping> build(Class<?> classToBuild, List<ParameterCriteriaInternal> parameterCriteriaList) {
         TypedHashMap<Class<?>, PriorityQueue<String>> fieldNamesByType = new TypedHashMap<>();
         Map<String, Class<?>> typeByFieldName = new HashMap<>();
         getFieldsWithInheritance(classToBuild).forEach(field -> {
@@ -39,10 +39,14 @@ class ParametersMappingBuilder {
             fieldNames.add(field.getName());
             typeByFieldName.put(field.getName(), field.getType());
         });
-        return parameterCriteriaList.stream().map(parameterCriteria -> new ParameterMapping(loadParameterClass(parameterCriteria, typeByFieldName), loadJsonProperty(parameterCriteria, fieldNamesByType))).collect(toList());
+        return parameterCriteriaList.stream()
+                .map(parameterCriteria -> new ParameterMapping(
+                        loadParameterClass(parameterCriteria, typeByFieldName),
+                        loadJsonProperty(parameterCriteria, fieldNamesByType)))
+                .collect(toList());
     }
 
-    private static Class<?> loadParameterClass(ParameterCriteriaInternal parameterCriteria, Map<String, Class<?>> typeByFieldName) {
+    private Class<?> loadParameterClass(ParameterCriteriaInternal parameterCriteria, Map<String, Class<?>> typeByFieldName) {
         Class<?> parameterClass = parameterCriteria.getParameterClass();
         if (parameterClass == null) {
             parameterClass = typeByFieldName.get(parameterCriteria.getFieldName());
@@ -53,7 +57,7 @@ class ParametersMappingBuilder {
         return parameterClass;
     }
 
-    private static String loadJsonProperty(ParameterCriteriaInternal parameterCriteria, Map<Class<?>, PriorityQueue<String>> fieldNamesByType) {
+    private String loadJsonProperty(ParameterCriteriaInternal parameterCriteria, Map<Class<?>, PriorityQueue<String>> fieldNamesByType) {
         String jsonProperty = parameterCriteria.getJsonProperty();
         if (jsonProperty == null) {
             final PriorityQueue<String> fieldNames = fieldNamesByType.get(parameterCriteria.getParameterClass());
