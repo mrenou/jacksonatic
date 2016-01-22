@@ -17,6 +17,7 @@ package org.jacksonatic.integration.test.field;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jacksonatic.exception.FieldNotFoundException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -24,8 +25,8 @@ import org.junit.rules.ExpectedException;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jacksonatic.mapping.ClassMapping.type;
 import static org.jacksonatic.Jacksonatic.configureMapping;
+import static org.jacksonatic.mapping.ClassMapping.type;
 import static org.jacksonatic.mapping.FieldMapping.field;
 
 public class FieldNotFoundTest {
@@ -43,7 +44,7 @@ public class FieldNotFoundTest {
 
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = FieldNotFoundException.class)
     public void unknown_field_on_serialization() throws JsonProcessingException {
         configureMapping()
                 .on(type(Pojo.class)
@@ -53,7 +54,7 @@ public class FieldNotFoundTest {
         objectMapper.writeValueAsString(POJO);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = FieldNotFoundException.class)
     public void unknown_field_on_deserialization() throws IOException {
         Pojo expectedPojo = new Pojo();
         configureMapping()

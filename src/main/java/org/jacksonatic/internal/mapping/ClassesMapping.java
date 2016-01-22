@@ -26,13 +26,12 @@ import static org.jacksonatic.internal.util.StreamUtil.throwException;
  */
 public class ClassesMapping extends CopyableMergeableHashMap<Class<Object>, ClassMappingInternal<Object>> implements Copyable<ClassesMapping> {
 
-    // TODO externalise lambda which produces an exception.
     @Override
     public ClassesMapping copy() {
         return this.entrySet().stream().collect(toMap(
                 Entry::getKey,
                 e -> e.getValue().copy(),
-                (v1, v2) -> throwException(ClassMappingInternal.class, new UnsupportedOperationException()),
+                (v1, v2) -> throwException(new UnsupportedOperationException()),
                 ClassesMapping::new)
         );
     }

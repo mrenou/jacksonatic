@@ -15,6 +15,8 @@
  */
 package org.jacksonatic.internal.mapping.builder;
 
+import org.jacksonatic.exception.ClassBuilderNotFoundException;
+import org.jacksonatic.exception.ClassBuilderParameterMappingException;
 import org.jacksonatic.internal.mapping.builder.parameter.ParameterCriteriaInternal;
 import org.jacksonatic.internal.mapping.builder.parameter.ParameterMapping;
 import org.jacksonatic.internal.util.Copyable;
@@ -57,10 +59,14 @@ public class ClassBuilderCriteria implements Copyable<ClassBuilderCriteria>, Mer
 
 
     private ClassBuilderCriteria(Class<?> classToBuild, String methodName, List<ParameterCriteriaInternal> parameterCriteriaList, boolean staticFactory) {
-        this.methodName = methodName;
-        this.parametersMapping = forClass(classToBuild).from(parameterCriteriaList).buildParametersMapping();
-        this.staticFactory = staticFactory;
-        this.any = false;
+        try {
+            this.methodName = methodName;
+            this.parametersMapping = forClass(classToBuild).from(parameterCriteriaList).buildParametersMapping();
+            this.staticFactory = staticFactory;
+            this.any = false;
+        } catch (ClassBuilderParameterMappingException e) {
+            throw new ClassBuilderNotFoundException(e);
+        }
     }
 
     private ClassBuilderCriteria() {

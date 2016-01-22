@@ -20,8 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jacksonatic.mapping.ClassMapping.type;
 import static org.jacksonatic.Jacksonatic.configureMapping;
+import static org.jacksonatic.mapping.ClassMapping.type;
 
 public class ConfigureMultipleClassesTest {
 

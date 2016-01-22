@@ -22,6 +22,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toMap;
+import static org.jacksonatic.internal.util.StreamUtil.throwException;
 
 public class TypedHashMap<K, V> extends HashMap<K, V> {
 
@@ -62,9 +63,10 @@ public class TypedHashMap<K, V> extends HashMap<K, V> {
     }
 
     public <H extends TypedHashMap<K, V>> H copy(Function<V, V> copyFunction, Supplier<H> hashMapSupplier) {
-        return this.entrySet().stream().collect(toMap(Entry::getKey, e -> copyFunction.apply(e.getValue()), (v1, V2) -> {
-            throw new UnsupportedOperationException();
-        }, hashMapSupplier));
+        return this.entrySet().stream().collect(toMap(Entry::getKey,
+                e -> copyFunction.apply(e.getValue()),
+                (v1, V2) -> throwException(new UnsupportedOperationException()),
+                hashMapSupplier));
     }
 
     public TypedHashMap<K, V> mergeWith(TypedHashMap<K, V> map,

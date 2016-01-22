@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,9 @@
  */
 package org.jacksonatic.mapping;
 
+import org.jacksonatic.exception.ClassBuilderNotFoundException;
+import org.jacksonatic.exception.FieldNotFoundException;
+import org.jacksonatic.exception.MethodNotFoundException;
 import org.jacksonatic.internal.mapping.ClassMappingByProcessType;
 
 /**
@@ -65,16 +68,18 @@ public interface ClassMapping<T> {
      *
      * @param fieldMapping the field mapping to add
      * @return the current class mapping
+     * @throws FieldNotFoundException if the field doesn't exist in the current class
      */
-    ClassMapping<T> on(FieldMapping fieldMapping);
+    ClassMapping<T> on(FieldMapping fieldMapping) throws FieldNotFoundException;
 
     /**
      * add a method mapping
      *
      * @param methodMapping the method mapping to add
      * @return the current class mapping
+     * @throws MethodNotFoundException if the method doesn't exist in the current class
      */
-    ClassMapping<T> on(MethodMapping methodMapping);
+    ClassMapping<T> on(MethodMapping methodMapping) throws MethodNotFoundException;
 
     /**
      * Map all fields in the current class mapping
@@ -88,56 +93,122 @@ public interface ClassMapping<T> {
      *
      * @param fieldName the name of the field
      * @return the current class mapping
+     * @throws FieldNotFoundException if the field doesn't exist in the current class
      */
-    ClassMapping<T> map(String fieldName);
+    ClassMapping<T> map(String fieldName) throws FieldNotFoundException;
 
     /**
      * Map the named field with another name
      *
-     * @param fieldName the name of the field
+     * @param fieldName    the name of the field
      * @param jsonProperty the new name
      * @return the current class mapping
+     * @throws FieldNotFoundException if the field doesn't exist in the current class
      */
-    ClassMapping<T> map(String fieldName, String jsonProperty);
+    ClassMapping<T> map(String fieldName, String jsonProperty) throws FieldNotFoundException;
 
     /**
      * Ignore the named field
      *
      * @param fieldName the name of the field
      * @return try to find a constructor or a static factory with the same signature described in
+     * @throws FieldNotFoundException if the field doesn't exist in the current class
      */
-    ClassMapping<T> ignore(String fieldName);
+    ClassMapping<T> ignore(String fieldName) throws FieldNotFoundException;
+
+    /**
+     * Map the named getter
+     *
+     * @param fieldName the name of the field used by the getter
+     * @return the current class mapping
+     * @throws MethodNotFoundException if the method doesn't exist in the current class
+     */
+    ClassMapping<T> mapGetter(String fieldName) throws MethodNotFoundException;
+
+    /**
+     * Map the named getter with another name
+     *
+     * @param fieldName    the name of the field used by the getter
+     * @param jsonProperty the new name
+     * @return the current class mapping
+     * @throws MethodNotFoundException if the method doesn't exist in the current class
+     */
+    ClassMapping<T> mapGetter(String fieldName, String jsonProperty) throws MethodNotFoundException;
+
+    /**
+     * Map the named setter, ignoring the parametric signature
+     *
+     * @param fieldName the name of the field used by the setter
+     * @return the current class mapping
+     * @throws MethodNotFoundException if the method doesn't exist in the current class
+     */
+    ClassMapping<T> mapSetter(String fieldName) throws MethodNotFoundException;
+
+    /**
+     * Map the named setter with another name
+     *
+     * @param fieldName    the name of the field used by the setter
+     * @param jsonProperty the new name
+     * @return the current class mapping
+     * @throws MethodNotFoundException if the method doesn't exist in the current class
+     */
+    ClassMapping<T> mapSetter(String fieldName, String jsonProperty) throws MethodNotFoundException;
+
+    /**
+     * Map the named setter with the parametric signature
+     *
+     * @param fieldName      the name of the field used by the setter
+     * @param parameterTypes the parametric signature
+     * @return the current class mapping
+     */
+    ClassMapping<T> mapSetter(String fieldName, Class<?>... parameterTypes) throws MethodNotFoundException;
+
+    /**
+     * Map the named setter, with the parametric signature, with another name
+     *
+     * @param fieldName      the name of the field used by the setter
+     * @param jsonProperty   the new name
+     * @param parameterTypes the parametric signature
+     * @return the current class mapping
+     * @throws MethodNotFoundException if the method doesn't exist in the current class
+     */
+    ClassMapping<T> mapSetter(String fieldName, String jsonProperty, Class<?>... parameterTypes);
 
     /**
      * Will try to guess a constructor or a static factory for the object creation
-     *
+     * <p>
      * Try to find a constructor with a parametric signature having same types (or less) than the types
      * of class fields, ignoring static fields. If no constructor is found with all field types, try to find a static
      * factory with the same algorithm. The constructor is used if a constructor and a static factory match same field types
+     *
      * @return the current class mapping
+     * @throws ClassBuilderNotFoundException if neither a constructor nor a static factory is found
      */
-    ClassMapping<T> withAConstructorOrStaticFactory();
+    ClassMapping<T> withAConstructorOrStaticFactory() throws ClassBuilderNotFoundException;
 
     /**
      * Will try to map a constructor with these parameters for the object creation
      *
      * @return the current class mapping
+     * @throws ClassBuilderNotFoundException if no constructor is found for the given parameters
      */
-    ClassMapping<T> withConstructor(ParameterCriteria... parameterCriteriaList);
+    ClassMapping<T> withConstructor(ParameterCriteria... parameterCriteriaList) throws ClassBuilderNotFoundException;
 
     /**
      * Will try to map the named static factory with these parameters for the object creation
      *
      * @return the current class mapping
+     * @throws ClassBuilderNotFoundException if no static factory is found for the given name and parameters
      */
-    ClassMapping<T> onStaticFactory(String methodName, ParameterCriteria... parameterCriteriaList);
+    ClassMapping<T> onStaticFactory(String methodName, ParameterCriteria... parameterCriteriaList) throws ClassBuilderNotFoundException;
 
     /**
      * Will try to map a static factory with these parameters for the object creation
      *
      * @return the current class mapping
+     * @throws ClassBuilderNotFoundException if no static factory is found for the given parameters
      */
-    ClassMapping<T> onStaticFactory(ParameterCriteria... parameterCriteriaList);
+    ClassMapping<T> onStaticFactory(ParameterCriteria... parameterCriteriaList) throws ClassBuilderNotFoundException;
 
     /**
      * Define the field use to store the type name
@@ -163,56 +234,4 @@ public interface ClassMapping<T> {
      */
     ClassMapping<T> addNamedSubType(Class<? extends T> subType, String name);
 
-    /**
-     * Map the named getter
-     *
-     * @param fieldName the name of the field used by the getter
-     * @return the current class mapping
-     */
-    ClassMapping<T> mapGetter(String fieldName);
-
-    /**
-     * Map the named getter with another name
-     *
-     * @param fieldName the name of the field used by the getter
-     * @param jsonProperty the new name
-     * @return the current class mapping
-     */
-    ClassMapping<T> mapGetter(String fieldName, String jsonProperty);
-
-    /**
-     * Map the named setter, ignoring the parametric signature
-     *
-     * @param fieldName the name of the field used by the setter
-     * @return the current class mapping
-     */
-    ClassMapping<T> mapSetter(String fieldName);
-
-    /**
-     * Map the named setter with another name
-     *
-     * @param fieldName the name of the field used by the setter
-     * @param jsonProperty the new name
-     * @return the current class mapping
-     */
-    ClassMapping<T> mapSetter(String fieldName, String jsonProperty);
-
-    /**
-     * Map the named setter with the parametric signature
-     *
-     * @param fieldName the name of the field used by the setter
-     * @param parameterTypes the parametric signature
-     * @return the current class mapping
-     */
-    ClassMapping<T> mapSetter(String fieldName, Class<?>... parameterTypes);
-
-    /**
-     * Map the named setter, with the parametric signature, with another name
-     *
-     * @param fieldName the name of the field used by the setter
-     * @param jsonProperty the new name
-     * @param parameterTypes the parametric signature
-     * @return the current class mapping
-     */
-    ClassMapping<T> mapSetter(String fieldName, String jsonProperty, Class<?>... parameterTypes);
 }

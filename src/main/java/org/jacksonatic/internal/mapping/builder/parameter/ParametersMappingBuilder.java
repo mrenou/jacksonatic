@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 import static java.util.stream.Collectors.toList;
+import static org.jacksonatic.exception.ClassBuilderParameterMappingException.parameterJsonPropertyNotFoundException;
+import static org.jacksonatic.exception.ClassBuilderParameterMappingException.parameterTypeNotFoundException;
 import static org.jacksonatic.internal.util.ReflectionUtil.getFieldsWithInheritance;
 
 /**
@@ -32,6 +34,7 @@ import static org.jacksonatic.internal.util.ReflectionUtil.getFieldsWithInherita
  */
 public class ParametersMappingBuilder {
 
+    private final Class<?> classUsed;
     private TypedHashMap<Class<?>, PriorityQueue<String>> fieldNamesByType = new TypedHashMap<>();
     private Map<String, Class<?>> typeByFieldName = new HashMap<>();
     private List<ParameterCriteriaInternal> parameterCriteriaList;
@@ -41,10 +44,11 @@ public class ParametersMappingBuilder {
     }
 
     private ParametersMappingBuilder(Class<?> classUsed) {
-        buildFieldNamesByTypeAndTypeByFieldName(classUsed);
+        this.classUsed = classUsed;
+        buildFieldNamesByTypeAndTypeByFieldName();
     }
 
-    private void buildFieldNamesByTypeAndTypeByFieldName(Class<?> classUsed) {
+    private void buildFieldNamesByTypeAndTypeByFieldName() {
         getFieldsWithInheritance(classUsed).forEach(field -> {
             PriorityQueue<String> fieldNames = fieldNamesByType.getTyped(field.getType());
             if (fieldNames == null) {
@@ -62,7 +66,7 @@ public class ParametersMappingBuilder {
             parameterClass = typeByFieldName.get(parameterCriteria.getFieldName());
         }
         if (parameterClass == null) {
-            throw new RuntimeException("Cannot find class from the parameter criteria " + parameterCriteria);
+            throw parameterTypeNotFoundException(parameterCriteria, classUsed);
         }
         return parameterClass;
     }
@@ -76,7 +80,7 @@ public class ParametersMappingBuilder {
             }
         }
         if (jsonProperty == null) {
-            throw new RuntimeException("Cannot find json property from the parameter criteria " + parameterCriteria);
+            throw parameterJsonPropertyNotFoundException(parameterCriteria, classUsed);
         }
         return jsonProperty;
     }

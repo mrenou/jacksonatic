@@ -17,14 +17,13 @@ package org.jacksonatic.integration.test;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jacksonatic.mapping.ParameterCriteria;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static org.assertj.core.api.StrictAssertions.assertThat;
-import static org.jacksonatic.mapping.ClassMapping.type;
 import static org.jacksonatic.Jacksonatic.configureMapping;
+import static org.jacksonatic.mapping.ClassMapping.type;
 import static org.jacksonatic.mapping.ParameterCriteria.matchType;
 
 public class SerializationDeserializationOnlyTest {

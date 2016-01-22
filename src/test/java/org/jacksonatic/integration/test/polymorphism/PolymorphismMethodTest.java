@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.jacksonatic.mapping.ClassMapping.type;
 import static org.jacksonatic.Jacksonatic.configureMapping;
+import static org.jacksonatic.mapping.ClassMapping.type;
 
 public class PolymorphismMethodTest {
 

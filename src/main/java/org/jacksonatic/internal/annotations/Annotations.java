@@ -20,9 +20,6 @@ import org.jacksonatic.internal.util.MapUtil;
 import org.jacksonatic.internal.util.TypedHashMap;
 
 import java.lang.annotation.Annotation;
-import java.util.Map;
-
-import static java.util.stream.Collectors.toMap;
 
 public class Annotations extends TypedHashMap<Class<? extends Annotation>, Annotation> {
 

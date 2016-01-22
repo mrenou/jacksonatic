@@ -15,6 +15,8 @@
  */
 package org.jacksonatic.internal.mapping;
 
+import org.jacksonatic.exception.FieldNotFoundException;
+import org.jacksonatic.exception.MethodNotFoundException;
 import org.jacksonatic.internal.mapping.method.MethodSignature;
 
 import java.lang.reflect.Field;
@@ -48,13 +50,13 @@ class TypeChecker<T> {
 
     public void checkFieldExists(String name) {
         if (!existingFieldNames.contains(name)) {
-            throw new IllegalStateException(String.format("Field with name '%s' doesn't exist in class mapping %s", name, type.getName()));
+            throw new FieldNotFoundException(name, type);
         }
     }
 
     public void checkMethodExists(MethodSignature methodSignature) {
         if (!existingMethodSignatures.contains(methodSignature) && !existingMethodNames.contains(methodSignature.name)) {
-            throw new IllegalStateException(String.format("Method with signature '%s' doesn't exist in class mapping %s", methodSignature, type.getName()));
+            throw new MethodNotFoundException(methodSignature, type);
         }
     }
 }

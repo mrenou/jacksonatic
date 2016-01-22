@@ -18,6 +18,7 @@ package org.jacksonatic.integration.test.deserialization;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jacksonatic.exception.ClassBuilderNotFoundException;
 import org.jacksonatic.mapping.ParameterCriteria;
 import org.junit.Before;
 import org.junit.Test;
@@ -104,7 +105,7 @@ public class DeserializationOnStaticFactoryest {
         assertThat(firstConstructorCalled).isEqualTo("public static Pojo newPojo(String field1, Integer field2)");
     }
 
-    @Test(expected = JsonMappingException.class)
+    @Test(expected = ClassBuilderNotFoundException.class)
     public void not_deserialize_on_named_static_factory() throws IOException {
         configureMapping()
                 .on(type(Pojo.class)

@@ -16,6 +16,7 @@
 package org.jacksonatic.internal.mapping.builder;
 
 
+import org.jacksonatic.exception.ClassBuilderNotFoundException;
 import org.jacksonatic.internal.mapping.ClassMappingInternal;
 
 import java.util.Optional;
@@ -45,7 +46,7 @@ public class ClassBuilderFinder {
             classBuilderMappingOpt = classBuilderFinderFromCriteria.find(classMapping, classBuilderCriteria);
         }
         if (!classBuilderMappingOpt.isPresent() && !classBuilderCriteria.isAny()) {
-            throw new IllegalArgumentException("Cannot find constructor with criteria " + classBuilderCriteria.mappingAsString());
+            throw new ClassBuilderNotFoundException(classBuilderCriteria, classMapping.getType());
         }
         return classBuilderMappingOpt;
     }
