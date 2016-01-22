@@ -171,6 +171,24 @@ public class ClassMappingByProcessType<T> implements ClassMapping<T> {
         return this;
     }
 
+    @Override
+    public ClassMapping<T> ignoreGetter(String fieldName) {
+        currentClassMapping.ignoreGetter(fieldName);
+        return this;
+    }
+
+    @Override
+    public ClassMapping<T> ignoreSetter(String fieldName) {
+        currentClassMapping.ignoreSetter(fieldName);
+        return this;
+    }
+
+    @Override
+    public ClassMapping<T> ignoreSetter(String fieldName, Class<?>... parameterTypes) {
+        currentClassMapping.ignoreSetter(fieldName, parameterTypes);
+        return this;
+    }
+
     public ClassMappingInternal<T> getClassMapping() {
         return classMapping;
     }

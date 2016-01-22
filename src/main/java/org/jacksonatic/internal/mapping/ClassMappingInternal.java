@@ -27,6 +27,7 @@ import org.jacksonatic.internal.util.Copyable;
 import org.jacksonatic.internal.util.CopyableMergeableHashMap;
 import org.jacksonatic.internal.util.Mergeable;
 import org.jacksonatic.internal.util.StringUtil;
+import org.jacksonatic.mapping.MethodMapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,27 +109,53 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMapp
     }
 
     public void mapGetter(String fieldName) {
-        this.on((MethodMappingInternal) method("get" + firstToUpperCase(fieldName)).map());
+        this.on((MethodMappingInternal) getterFor(fieldName).map());
     }
 
     public void mapGetter(String fieldName, String jsonProperty) {
-        this.on((MethodMappingInternal) method("get" + firstToUpperCase(fieldName)).map().mapTo(jsonProperty));
+        this.on((MethodMappingInternal) getterFor(fieldName).map().mapTo(jsonProperty));
     }
 
     public void mapSetter(String fieldName) {
-        this.on((MethodMappingInternal) method("set" + firstToUpperCase(fieldName)).ignoreParameters().map());
+        this.on((MethodMappingInternal) setterFor(fieldName).ignoreParameters().map());
     }
 
+
     public void mapSetter(String fieldName, String jsonProperty) {
-        this.on((MethodMappingInternal) method("set" + firstToUpperCase(fieldName)).ignoreParameters().mapTo(jsonProperty));
+        this.on((MethodMappingInternal) setterFor(fieldName).ignoreParameters().mapTo(jsonProperty));
     }
 
     public void mapSetter(String fieldName, Class<?>... parameterTypes) {
-        this.on((MethodMappingInternal) method("set" + firstToUpperCase(fieldName), parameterTypes).map());
+        this.on((MethodMappingInternal) setterFor(fieldName, parameterTypes).map());
     }
 
     public void mapSetter(String fieldName, String jsonProperty, Class<?>... parameterTypes) {
-        this.on((MethodMappingInternal) method("set" + firstToUpperCase(fieldName), parameterTypes).mapTo(jsonProperty));
+        this.on((MethodMappingInternal) setterFor(fieldName, parameterTypes).mapTo(jsonProperty));
+    }
+
+    public void ignoreGetter(String fieldName) {
+        this.on((MethodMappingInternal) getterFor(fieldName).ignore());
+    }
+
+
+    public void ignoreSetter(String fieldName) {
+        this.on((MethodMappingInternal) setterFor(fieldName).ignoreParameters().ignore());
+    }
+
+    public void ignoreSetter(String fieldName, Class<?>... parameterTypes) {
+        this.on((MethodMappingInternal) setterFor(fieldName, parameterTypes).ignore());
+    }
+
+    private MethodMapping getterFor(String fieldName) {
+        return method("get" + firstToUpperCase(fieldName));
+    }
+
+    private MethodMapping setterFor(String fieldName) {
+        return method("set" + firstToUpperCase(fieldName));
+    }
+
+    private MethodMapping setterFor(String fieldName, Class<?>... parameterTypes) {
+        return method("set" + firstToUpperCase(fieldName), parameterTypes);
     }
 
     public boolean allFieldsAreMapped() {
@@ -157,10 +184,6 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMapp
 
     public Optional<MethodMappingInternal> getSetterMapping(String fieldName, Class<?> fieldType) {
         return findGetterSetterMapping("set" + StringUtil.firstToUpperCase(fieldName), fieldType);
-    }
-
-    public Optional<MethodMappingInternal> getGetterMapping(String fieldName, Class<?> fieldType) {
-        return findGetterSetterMapping("get" + StringUtil.firstToUpperCase(fieldName), fieldType);
     }
 
     private Optional<MethodMappingInternal> findGetterSetterMapping(String methodName, Class<?> fieldType) {
