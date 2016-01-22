@@ -68,7 +68,6 @@ public class FieldMappingInternal implements FieldMapping, PropertyMapperInterna
         return new FieldMappingInternal(name, this.annotations.copy());
     }
 
-    //TODO MRE merge annotation could be a method in annotations ?
     @Override
     public FieldMappingInternal mergeWith(FieldMappingInternal parentMapping) {
         return new FieldMappingInternal(name, this.annotations.size() == 0 ? parentMapping.annotations.copy() : annotations.copy());

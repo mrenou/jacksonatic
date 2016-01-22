@@ -212,7 +212,6 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMapp
     public ClassMappingInternal<T> mergeWith(ClassMappingInternal<T> parentMapping) {
         return new ClassMappingInternal<>(type,
                 mapAllFields | parentMapping.mapAllFields,
-                // TODO really need copy ? do immutable ?
                 Mergeable.mergeOrCopy(classBuilderCriteriaOpt, parentMapping.classBuilderCriteriaOpt),
                 fieldsMapping.mergeWith(parentMapping.fieldsMapping),
                 methodsMapping.mergeWith(parentMapping.methodsMapping),

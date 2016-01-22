@@ -36,4 +36,8 @@ public class StreamUtil {
                 .flatMap(o -> o);
     }
 
+    public static <T, E extends RuntimeException> T throwException(Class<T> returnType, E runtimeException) {
+        throw runtimeException;
+    }
+
 }

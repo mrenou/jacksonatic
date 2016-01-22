@@ -31,15 +31,8 @@ public class Annotations extends TypedHashMap<Class<? extends Annotation>, Annot
         put(annotation.annotationType(), annotation);
     }
 
-    // TODO use copy from Typed HashMap
     public Annotations copy() {
-        return entrySet().stream().collect(toMap(Map.Entry::getKey,
-                Map.Entry::getValue,
-                (v1, v2) -> {
-                    throw new UnsupportedOperationException();
-                },
-                Annotations::new
-        ));
+        return super.copy(Annotations::new);
     }
 
     public Annotations mergeWith(Annotations map) {
