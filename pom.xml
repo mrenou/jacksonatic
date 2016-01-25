@@ -23,7 +23,7 @@
 
     <groupId>org.jacksonatic</groupId>
     <artifactId>jacksonatic</artifactId>
-    <version>0.2</version>
+    <version>0.3-SNAPSHOT</version>
     <inceptionYear>2015</inceptionYear>
     <name>Jacksonatic</name>
     <description>Use jackson programmatically</description>
