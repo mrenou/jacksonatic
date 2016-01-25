@@ -15,6 +15,7 @@
  */
 package org.jacksonatic.internal.mapping;
 
+import org.jacksonatic.internal.JacksonOperation;
 import org.jacksonatic.internal.mapping.field.FieldMappingInternal;
 import org.jacksonatic.internal.mapping.method.MethodMappingInternal;
 import org.jacksonatic.mapping.ClassMapping;
@@ -22,38 +23,40 @@ import org.jacksonatic.mapping.FieldMapping;
 import org.jacksonatic.mapping.MethodMapping;
 import org.jacksonatic.mapping.ParameterCriteria;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.jacksonatic.internal.JacksonOperation.ANY;
+import static org.jacksonatic.internal.JacksonOperation.DESERIALIZATION;
+import static org.jacksonatic.internal.JacksonOperation.SERIALIZATION;
 import static org.jacksonatic.internal.mapping.builder.ClassBuilderCriteria.*;
 import static org.jacksonatic.internal.mapping.builder.parameter.ParameterCriteriaInternal.parameterCriteriaToInternal;
 
 /**
  * Class mapping
  */
-public class ClassMappingByProcessType<T> implements ClassMapping<T> {
+public class ClassMappingByOperation<T> implements ClassMapping<T> {
 
     private ClassMappingInternal<T> currentClassMapping;
 
-    private ClassMappingInternal<T> classMapping;
+    private Map<JacksonOperation, ClassMappingInternal<T>> classMappingByOperation = new HashMap<>();
 
-    private ClassMappingInternal<T> serializationOnlyClassMapping;
-
-    private ClassMappingInternal<T> deserializationOnlyClassMapping;
-
-    public ClassMappingByProcessType(Class<T> clazz) {
-        classMapping = new ClassMappingInternal<>(clazz);
-        serializationOnlyClassMapping = new ClassMappingInternal<>(clazz);
-        deserializationOnlyClassMapping = new ClassMappingInternal<>(clazz);
-        currentClassMapping = classMapping;
+    public ClassMappingByOperation(Class<T> clazz) {
+        classMappingByOperation.put(ANY,  new ClassMappingInternal<>(clazz));
+        classMappingByOperation.put(SERIALIZATION,  new ClassMappingInternal<>(clazz));
+        classMappingByOperation.put(DESERIALIZATION,  new ClassMappingInternal<>(clazz));
+        currentClassMapping = classMappingByOperation.get(ANY);
     }
 
     @Override
     public ClassMapping<T> onSerialization() {
-        currentClassMapping = serializationOnlyClassMapping;
+        currentClassMapping = classMappingByOperation.get(SERIALIZATION);
         return this;
     }
 
     @Override
     public ClassMapping<T> onDeserialization() {
-        currentClassMapping = deserializationOnlyClassMapping;
+        currentClassMapping = classMappingByOperation.get(DESERIALIZATION);
         return this;
     }
 
@@ -189,16 +192,7 @@ public class ClassMappingByProcessType<T> implements ClassMapping<T> {
         return this;
     }
 
-    public ClassMappingInternal<T> getClassMapping() {
-        return classMapping;
+    public ClassMappingInternal<T> getClassMappingFor(JacksonOperation operation) {
+        return classMappingByOperation.get(operation);
     }
-
-    public ClassMappingInternal<T> getSerializationOnlyClassMapping() {
-        return serializationOnlyClassMapping;
-    }
-
-    public ClassMappingInternal<T> getDeserializationOnlyClassMapping() {
-        return deserializationOnlyClassMapping;
-    }
-
 }

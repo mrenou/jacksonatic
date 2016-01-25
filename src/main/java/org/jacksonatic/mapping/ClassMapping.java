@@ -18,7 +18,7 @@ package org.jacksonatic.mapping;
 import org.jacksonatic.exception.ClassBuilderNotFoundException;
 import org.jacksonatic.exception.FieldNotFoundException;
 import org.jacksonatic.exception.MethodNotFoundException;
-import org.jacksonatic.internal.mapping.ClassMappingByProcessType;
+import org.jacksonatic.internal.mapping.ClassMappingByOperation;
 
 /**
  * Allowing to define jackson class mapping in a programmatic way.
@@ -26,7 +26,7 @@ import org.jacksonatic.internal.mapping.ClassMappingByProcessType;
 public interface ClassMapping<T> {
 
     static <T> ClassMapping<T> type(Class<T> clazz) {
-        return new ClassMappingByProcessType<>(clazz);
+        return new ClassMappingByOperation<>(clazz);
     }
 
     /**

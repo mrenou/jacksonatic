@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,44 +21,55 @@ import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 import org.jacksonatic.Jacksonatic;
 import org.jacksonatic.internal.introspection.JacksonaticClassIntrospector;
-import org.jacksonatic.internal.mapping.ClassMappingByProcessType;
+import org.jacksonatic.internal.mapping.ClassMappingByOperation;
+import org.jacksonatic.internal.mapping.ClassMappingInternal;
 import org.jacksonatic.internal.mapping.ClassesMapping;
 import org.jacksonatic.internal.mapping.TypeNameAutoAssigner;
+import org.jacksonatic.internal.util.CopyableHashMap;
 import org.jacksonatic.mapping.ClassMapping;
+
+import static org.jacksonatic.internal.JacksonOperation.*;
 
 public class JacksonaticInternal implements Jacksonatic {
 
-    private ClassesMapping classesMapping = new ClassesMapping();
-
-    private ClassesMapping serializationOnlyClassesMapping = new ClassesMapping();
-
-    private ClassesMapping deserializationOnlyClassesMapping = new ClassesMapping();
+    private CopyableHashMap<JacksonOperation, ClassesMapping> classesMappingByOperation = new CopyableHashMap<>();
 
     private TypeNameAutoAssigner typeNameAutoAssigner = new TypeNameAutoAssigner();
 
+    public JacksonaticInternal() {
+        classesMappingByOperation.put(ANY, new ClassesMapping());
+        classesMappingByOperation.put(SERIALIZATION, new ClassesMapping());
+        classesMappingByOperation.put(DESERIALIZATION, new ClassesMapping());
+    }
+
     @SuppressWarnings("unchecked")
     @Override
-    public JacksonaticInternal on(ClassMapping<?> classMapping) {
-        ClassMappingByProcessType<Object> classMappingByProcessType = (ClassMappingByProcessType<Object>) classMapping;
-        addType(classMappingByProcessType);
-        typeNameAutoAssigner.assignTypeNameIfNecessary(classesMapping, classMappingByProcessType);
-        typeNameAutoAssigner.saveTypeWithJsonSubTypes(classMappingByProcessType);
+    public JacksonaticInternal on(ClassMapping<?> newClassMapping) {
+        ClassMappingByOperation<Object> newClassMappingByOperation = (ClassMappingByOperation<Object>) newClassMapping;
+        mergeNew(newClassMappingByOperation);
+        typeNameAutoAssigner.assignTypeNameIfNecessary(classesMappingByOperation.get(ANY), newClassMappingByOperation.getClassMappingFor(ANY));
+        typeNameAutoAssigner.saveTypeWithJsonSubTypes(newClassMappingByOperation.getClassMappingFor(ANY));
         return this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Jacksonatic mapAllFieldsOn(ClassMapping<?> classMapping) {
-        ClassMappingByProcessType<Object> classMappingByProcessType = (ClassMappingByProcessType<Object>) classMapping;
-        addType(classMappingByProcessType);
-        classMappingByProcessType.getClassMapping().mapAllFields();
+        ClassMappingByOperation<Object> classMappingByOperation = (ClassMappingByOperation<Object>) classMapping;
+        mergeNew(classMappingByOperation);
+        classMappingByOperation.getClassMappingFor(ANY).mapAllFields();
         return this;
     }
 
-    private void addType(ClassMappingByProcessType<Object> classMappingByProcessType) {
-        classesMapping.mergeValueWithKey(classMappingByProcessType.getClassMapping(), classMappingByProcessType.getClassMapping().getType());
-        serializationOnlyClassesMapping.mergeValueWithKey(classMappingByProcessType.getSerializationOnlyClassMapping(), classMappingByProcessType.getSerializationOnlyClassMapping().getType());
-        deserializationOnlyClassesMapping.mergeValueWithKey(classMappingByProcessType.getDeserializationOnlyClassMapping(), classMappingByProcessType.getDeserializationOnlyClassMapping().getType());
+    private void mergeNew(ClassMappingByOperation<Object> newClassMappingByOperation) {
+        mergeValueWithKeyFor(newClassMappingByOperation, ANY);
+        mergeValueWithKeyFor(newClassMappingByOperation, SERIALIZATION);
+        mergeValueWithKeyFor(newClassMappingByOperation, DESERIALIZATION);
+    }
+
+    private void mergeValueWithKeyFor(ClassMappingByOperation<Object> newClassMappingByOperation, JacksonOperation operation) {
+        ClassMappingInternal<Object> newClassMapping = newClassMappingByOperation.getClassMappingFor(operation);
+        classesMappingByOperation.get(operation).mergeValueWithKey(newClassMapping, newClassMapping.getType());
     }
 
     @Override
@@ -90,21 +101,11 @@ public class JacksonaticInternal implements Jacksonatic {
     @Override
     public Jacksonatic copy() {
         JacksonaticInternal mappingConfigurerCopy = (JacksonaticInternal) Jacksonatic.configureMapping();
-        mappingConfigurerCopy.classesMapping = classesMapping.copy();
-        mappingConfigurerCopy.serializationOnlyClassesMapping = serializationOnlyClassesMapping.copy();
-        mappingConfigurerCopy.deserializationOnlyClassesMapping = deserializationOnlyClassesMapping.copy();
+        mappingConfigurerCopy.classesMappingByOperation = classesMappingByOperation.copy();
         return mappingConfigurerCopy;
     }
 
-    public ClassesMapping getClassesMapping() {
-        return classesMapping;
-    }
-
-    public ClassesMapping getSerializationOnlyClassesMapping() {
-        return serializationOnlyClassesMapping;
-    }
-
-    public ClassesMapping getDeserializationOnlyClassesMapping() {
-        return deserializationOnlyClassesMapping;
+    public CopyableHashMap<JacksonOperation, ClassesMapping> getClassesMappingByOperation() {
+        return classesMappingByOperation;
     }
 }
