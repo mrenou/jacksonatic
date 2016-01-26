@@ -23,7 +23,7 @@ import org.jacksonatic.internal.mapping.ClassMappingByOperation;
 /**
  * Allowing to define jackson class mapping in a programmatic way.
  */
-public interface ClassMapping<T> {
+public interface ClassMapping<T> extends HasAnnotations<ClassMapping<T>> {
 
     static <T> ClassMapping<T> type(Class<T> clazz) {
         return new ClassMappingByOperation<>(clazz);

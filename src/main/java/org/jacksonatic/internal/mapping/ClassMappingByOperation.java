@@ -16,6 +16,7 @@
 package org.jacksonatic.internal.mapping;
 
 import org.jacksonatic.internal.JacksonOperation;
+import org.jacksonatic.internal.annotations.Annotations;
 import org.jacksonatic.internal.mapping.field.FieldMappingInternal;
 import org.jacksonatic.internal.mapping.method.MethodMappingInternal;
 import org.jacksonatic.mapping.ClassMapping;
@@ -190,6 +191,11 @@ public class ClassMappingByOperation<T> implements ClassMapping<T> {
     public ClassMapping<T> ignoreSetter(String fieldName, Class<?>... parameterTypes) {
         currentClassMapping.ignoreSetter(fieldName, parameterTypes);
         return this;
+    }
+
+    @Override
+    public Annotations getAnnotations() {
+        return currentClassMapping.getAnnotations();
     }
 
     public ClassMappingInternal<T> getClassMappingFor(JacksonOperation operation) {
