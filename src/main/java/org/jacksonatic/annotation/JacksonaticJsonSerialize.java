@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.util.Converter;
 
 import java.lang.annotation.Annotation;
 
-public class JacksonaticJsonSerialize implements JsonSerialize {
+public class JacksonaticJsonSerialize implements JsonSerialize, JacksonaticAnnotation {
 
     private Class<? extends JsonSerializer<?>> using = JsonSerializer.None.class;
 
@@ -108,6 +108,23 @@ public class JacksonaticJsonSerialize implements JsonSerialize {
 
     public static Builder jsonSerialize() {
         return new Builder();
+    }
+
+    @Override
+    public String toString() {
+        return "@JsonSerialize{" +
+                "using=" + using +
+                ", contentUsing=" + contentUsing +
+                ", keyUsing=" + keyUsing +
+                ", nullsUsing=" + nullsUsing +
+                ", as=" + as +
+                ", keyAs=" + keyAs +
+                ", contentAs=" + contentAs +
+                ", typing=" + typing +
+                ", converter=" + converter +
+                ", contentConverter=" + contentConverter +
+                ", include=" + include +
+                '}';
     }
 
     public static class Builder implements AnnotationBuilder {

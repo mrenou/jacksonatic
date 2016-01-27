@@ -15,11 +15,12 @@
  */
 package org.jacksonatic.annotation;
 
+import com.fasterxml.jackson.annotation.JacksonAnnotation;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 import java.lang.annotation.Annotation;
 
-public class JacksonaticJsonCreator implements JsonCreator {
+public class JacksonaticJsonCreator implements JsonCreator, JacksonaticAnnotation {
 
     private Mode mode = Mode.DEFAULT;
 
@@ -42,6 +43,13 @@ public class JacksonaticJsonCreator implements JsonCreator {
 
     public static Builder jsonCreator(Mode mode) {
         return new Builder().mode(mode);
+    }
+
+    @Override
+    public String toString() {
+        return "@JsonCreator{" +
+                "mode=" + mode +
+                '}';
     }
 
     public static class Builder implements AnnotationBuilder {

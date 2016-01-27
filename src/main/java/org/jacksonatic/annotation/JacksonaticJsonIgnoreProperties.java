@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 
-public class JacksonaticJsonIgnoreProperties implements JsonIgnoreProperties {
+public class JacksonaticJsonIgnoreProperties implements JsonIgnoreProperties, JacksonaticAnnotation {
 
     private String[] value;
 
@@ -47,7 +47,7 @@ public class JacksonaticJsonIgnoreProperties implements JsonIgnoreProperties {
 
     @Override
     public String toString() {
-        return "JacksonaticJsonIgnoreProperties{" +
+        return "@JsonIgnoreProperties{" +
                 "value=" + Arrays.toString(value) +
                 ", ignoreUnknown=" + ignoreUnknown +
                 '}';

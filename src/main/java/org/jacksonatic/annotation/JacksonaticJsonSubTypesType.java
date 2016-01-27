@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 
 import java.lang.annotation.Annotation;
 
-public class JacksonaticJsonSubTypesType implements JsonSubTypes.Type {
+public class JacksonaticJsonSubTypesType implements JsonSubTypes.Type, JacksonaticAnnotation {
 
     private String name = "";
 
@@ -49,6 +49,14 @@ public class JacksonaticJsonSubTypesType implements JsonSubTypes.Type {
 
     public static Builder type(String name, Class<?> value) {
         return new Builder().name(name).value(value);
+    }
+
+    @Override
+    public String toString() {
+        return "@JsonSubTypesType{" +
+                "name='" + name + '\'' +
+                ", value=" + value +
+                '}';
     }
 
     public static class Builder implements AnnotationBuilder {

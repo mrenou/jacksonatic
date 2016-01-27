@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.util.Converter;
 
 import java.lang.annotation.Annotation;
 
-public class JacksonaticJsonDeserialize implements JsonDeserialize {
+public class JacksonaticJsonDeserialize implements JsonDeserialize, JacksonaticAnnotation {
 
     private Class<? extends JsonDeserializer<?>> using = JsonDeserializer.None.class;
 
@@ -94,6 +94,21 @@ public class JacksonaticJsonDeserialize implements JsonDeserialize {
 
     public static Builder jsonDeserialize() {
         return new Builder();
+    }
+
+    @Override
+    public String toString() {
+        return "@JsonDeserialize{" +
+                "using=" + using +
+                ", contentUsing=" + contentUsing +
+                ", keyUsing=" + keyUsing +
+                ", builder=" + builder +
+                ", converter=" + converter +
+                ", contentConverter=" + contentConverter +
+                ", as=" + as +
+                ", keyAs=" + keyAs +
+                ", contentAs=" + contentAs +
+                '}';
     }
 
     public static class Builder implements AnnotationBuilder {

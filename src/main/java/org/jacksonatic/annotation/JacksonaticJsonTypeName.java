@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.lang.annotation.Annotation;
 
-public class JacksonaticJsonTypeName implements JsonTypeName {
+public class JacksonaticJsonTypeName implements JsonTypeName, JacksonaticAnnotation {
 
     private String value = "";
 
@@ -42,6 +42,13 @@ public class JacksonaticJsonTypeName implements JsonTypeName {
 
     public static Builder jsonTypeName(String value) {
         return new Builder().value(value);
+    }
+
+    @Override
+    public String toString() {
+        return "@JsonTypeName{" +
+                "value='" + value + '\'' +
+                '}';
     }
 
     public static class Builder implements AnnotationBuilder {

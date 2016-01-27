@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.lang.annotation.Annotation;
 
-public class JacksonaticJsonIgnore implements JsonIgnore {
+public class JacksonaticJsonIgnore implements JsonIgnore, JacksonaticAnnotation {
 
     private boolean value = true;
 
@@ -34,7 +34,7 @@ public class JacksonaticJsonIgnore implements JsonIgnore {
 
     @Override
     public String toString() {
-        return "JacksonaticJsonIgnore{" +
+        return "@JsonIgnore{" +
                 "value=" + value +
                 '}';
     }

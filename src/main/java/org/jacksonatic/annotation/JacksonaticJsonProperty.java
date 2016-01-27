@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.lang.annotation.Annotation;
 
-public class JacksonaticJsonProperty implements JsonProperty {
+public class JacksonaticJsonProperty implements JsonProperty, JacksonaticAnnotation {
 
     private String value = USE_DEFAULT_NAME;
 
@@ -59,7 +59,7 @@ public class JacksonaticJsonProperty implements JsonProperty {
 
     @Override
     public String toString() {
-        return "JacksonaticJsonProperty{" +
+        return "@JsonProperty{" +
                 "value='" + value + '\'' +
                 ", required=" + required +
                 ", index=" + index +

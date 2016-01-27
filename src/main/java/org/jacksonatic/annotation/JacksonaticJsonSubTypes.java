@@ -18,8 +18,9 @@ package org.jacksonatic.annotation;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 
-public class JacksonaticJsonSubTypes implements JsonSubTypes {
+public class JacksonaticJsonSubTypes implements JsonSubTypes, JacksonaticAnnotation {
 
     private Type[] value;
 
@@ -39,6 +40,13 @@ public class JacksonaticJsonSubTypes implements JsonSubTypes {
 
     public static Builder jsonSubTypes(Type[] value) {
         return new Builder().value(value);
+    }
+
+    @Override
+    public String toString() {
+        return "@JsonSubTypes{" +
+                "value=" + Arrays.toString(value) +
+                '}';
     }
 
     public static class Builder implements AnnotationBuilder {

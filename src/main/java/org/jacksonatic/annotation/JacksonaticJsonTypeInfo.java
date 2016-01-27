@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.lang.annotation.Annotation;
 
-public class JacksonaticJsonTypeInfo implements JsonTypeInfo {
+public class JacksonaticJsonTypeInfo implements JsonTypeInfo, JacksonaticAnnotation {
 
     private Id use;
 
@@ -67,6 +67,17 @@ public class JacksonaticJsonTypeInfo implements JsonTypeInfo {
 
     public static Builder jsonTypeInfo() {
         return new Builder();
+    }
+
+    @Override
+    public String toString() {
+        return "@JsonTypeInfo{" +
+                "use=" + use +
+                ", include=" + include +
+                ", property='" + property + '\'' +
+                ", defaultImpl=" + defaultImpl +
+                ", visible=" + visible +
+                '}';
     }
 
     public static class Builder implements AnnotationBuilder {
