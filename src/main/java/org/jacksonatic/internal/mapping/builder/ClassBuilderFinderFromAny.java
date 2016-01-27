@@ -91,9 +91,10 @@ public class ClassBuilderFinderFromAny {
             Class<?> parameterType = parameterTypes.get(iParameterType);
             FieldMappingInternal fieldMapping = classMapping.getOrCreateFieldMappingInternal(field.getName());
             Optional<MethodMappingInternal> setterMapping = classMapping.getSetterMapping(field.getName(), field.getType());
-            if (!Modifier.isStatic(field.getModifiers()) && isMapped(classMapping, fieldMapping, setterMapping)) {
+            Optional<String> mappedNameOpt = getMappedNameOpt(classMapping, fieldMapping, setterMapping);
+            if (!Modifier.isStatic(field.getModifiers()) && mappedNameOpt.isPresent()) {
                 if (parameterType.equals(field.getType())) {
-                    parametersMapping.add(new ParameterMapping(field.getType(), fieldMapping.getMappedName()));
+                    parametersMapping.add(new ParameterMapping(field.getType(), mappedNameOpt.get()));
                     iFields++;
                     iParameterType++;
                 } else {
@@ -106,8 +107,14 @@ public class ClassBuilderFinderFromAny {
         return parametersMapping;
     }
 
-    private boolean isMapped(ClassMappingInternal<Object> classMapping, FieldMappingInternal fieldMapping, Optional<MethodMappingInternal> methodMappingOpt) {
-        return classMapping.allFieldsAreMapped() || fieldMapping.isMapped() || methodMappingOpt.map(PropertyMapperInternal::isMapped).orElse(false);
+    private Optional<String> getMappedNameOpt(ClassMappingInternal<Object> classMapping, FieldMappingInternal fieldMapping, Optional<MethodMappingInternal> methodMappingOpt) {
+        if (methodMappingOpt.map(PropertyMapperInternal::isMapped).orElse(false)) {
+            return Optional.of(methodMappingOpt.get().getMappedName());
+        }
+        if (classMapping.allFieldsAreMapped() || fieldMapping.isMapped()) {
+            return Optional.of(fieldMapping.getMappedName());
+        }
+        return Optional.empty();
     }
 
 }

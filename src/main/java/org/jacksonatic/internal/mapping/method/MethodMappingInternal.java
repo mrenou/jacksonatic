@@ -15,6 +15,7 @@
  */
 package org.jacksonatic.internal.mapping.method;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jacksonatic.internal.annotations.Annotations;
 import org.jacksonatic.internal.mapping.PropertyMapperInternal;
 import org.jacksonatic.internal.util.Copyable;
@@ -22,6 +23,7 @@ import org.jacksonatic.internal.util.Mergeable;
 import org.jacksonatic.mapping.MethodMapping;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Define annotations mapping for a method
@@ -44,6 +46,13 @@ public class MethodMappingInternal implements MethodMapping, PropertyMapperInter
     public MethodMappingInternal ignoreParameters() {
         methodSignature = MethodSignature.methodSignatureIgnoringParameters(methodSignature.name);
         return this;
+    }
+
+    public String getMappedName() {
+        return Optional.ofNullable(annotations.get(JsonProperty.class))
+                .map(annotation -> ((JsonProperty) annotation).value())
+                .filter(name1 -> name1 != null && !name1.isEmpty())
+                .orElse(methodSignature.name);
     }
 
     public MethodSignature getMethodSignature() {

@@ -16,7 +16,6 @@
 package org.jacksonatic.integration.test.deserialization;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jacksonatic.exception.ClassBuilderNotFoundException;
 import org.jacksonatic.mapping.ParameterCriteria;

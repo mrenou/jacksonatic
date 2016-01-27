@@ -183,37 +183,4 @@ public class PolymorphismMethodTest {
                 .registerIn(objectMapper);
     }
 
-    static class Pouet  {
-
-        @JsonProperty(value = "", required=false, index=-1, defaultValue="")
-        private String id;
-
-        @JsonCreator
-        public Pouet(@JsonProperty(value = "id") String id) {
-            this.id = id;
-        }
-
-        @JsonProperty(value = "_id", required=false, index=-1, defaultValue="")
-        public String getId() {
-            methodCalls.add("public String getField21()");
-            return id;
-        }
-
-        @JsonProperty(value = "_id", required=false, index=-1, defaultValue="")
-        public void setId(String id) {
-            methodCalls.add("public void setField21(String field21)");
-            this.id = id;
-        }
-    }
-
-    @Test
-    public void test() throws IOException {
-        configureMappingPolymorphism();
-
-        String json = objectMapper.writeValueAsString(new Pouet("id"));
-
-        assertThat(json).isEqualTo("{\"type\":\"CHILD2\",\"field1\":\"field1\",\"field22\":\"field22\"}");
-    }
-
-
 }

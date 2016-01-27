@@ -15,7 +15,6 @@
  */
 package org.jacksonatic.annotation;
 
-import com.fasterxml.jackson.annotation.JacksonAnnotation;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 import java.lang.annotation.Annotation;

@@ -27,9 +27,7 @@ import org.jacksonatic.mapping.ParameterCriteria;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.jacksonatic.internal.JacksonOperation.ANY;
-import static org.jacksonatic.internal.JacksonOperation.DESERIALIZATION;
-import static org.jacksonatic.internal.JacksonOperation.SERIALIZATION;
+import static org.jacksonatic.internal.JacksonOperation.*;
 import static org.jacksonatic.internal.mapping.builder.ClassBuilderCriteria.*;
 import static org.jacksonatic.internal.mapping.builder.parameter.ParameterCriteriaInternal.parameterCriteriaToInternal;
 

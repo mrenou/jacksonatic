@@ -171,6 +171,7 @@ public class UsePropertyMappingWhenDeserializationOnConstructorTest {
         Pojo expectedPojo = new Pojo("field1", 42);
         configureMapping()
                 .on(type(Pojo.class)
+                        .mapAll()
                         .map("field1", "toto")
                         .mapSetter("field2", "tutu")
                         .withAConstructorOrStaticFactory())

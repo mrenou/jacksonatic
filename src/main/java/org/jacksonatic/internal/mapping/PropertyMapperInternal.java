@@ -19,6 +19,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jacksonatic.mapping.PropertyMapper;
 
+import java.util.Optional;
+
 /**
  * Property mapper interface with method for an internal use
  */
