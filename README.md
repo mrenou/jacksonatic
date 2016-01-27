@@ -31,7 +31,7 @@ You can add Jacksonatic as a maven dependency of your project. **Jacksonatic req
 
 ```xml
 <dependency>
-  <groupId>org.jacksonatic</groupId>
+  <groupId>com.github.mrenou.jacksonatic</groupId>
   <artifactId>jacksonatic</artifactId>
   <version>0.3</version>
 </dependency>
@@ -42,12 +42,12 @@ You can add Jacksonatic as a maven dependency of your project. **Jacksonatic req
 ### Add @JsonProperty on a field and @JsonIgnore on a method
 
 ```java
-import static org.jacksonatic.Jacksonatic.configureMapping;
-import static org.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
-import static org.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
-import static org.jacksonatic.mapping.ClassMapping.type;
-import static org.jacksonatic.mapping.FieldMapping.field;
-import static org.jacksonatic.mapping.MethodMapping.method;
+import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
+import static com.github.mrenou.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
+import static com.github.mrenou.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
+import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
+import static com.github.mrenou.jacksonatic.mapping.FieldMapping.field;
+import static com.github.mrenou.jacksonatic.mapping.MethodMapping.method;
 
 configureMapping()
     .on(type(Pojo.class)
@@ -59,9 +59,9 @@ configureMapping()
 ### Add JsonIgnoreProperties to ignore unknown properties on a class
 
 ```java
-import static org.jacksonatic.Jacksonatic.configureMapping;
-import static org.jacksonatic.annotation.JacksonaticJsonIgnoreProperties.jsonIgnoreProperties;
-import static org.jacksonatic.mapping.ClassMapping.type;
+import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
+import static com.github.mrenou.jacksonatic.annotation.JacksonaticJsonIgnoreProperties.jsonIgnoreProperties;
+import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
 
 configureMapping()
     .on(type(Pojo.class)).add(jsonIgnoreProperties().ignoreUnknown())
@@ -71,8 +71,8 @@ configureMapping()
 ### Map a field
 
 ```java
-import static org.jacksonatic.Jacksonatic.configureMapping;
-import static org.jacksonatic.mapping.ClassMapping.type;
+import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
+import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
 
 configureMapping()
     .on(type(Pojo.class)
@@ -85,8 +85,8 @@ Shortcut to add @JsonProperty on field named "field1".
 ### Map several types
 
 ```java
-import static org.jacksonatic.Jacksonatic.configureMapping;
-import static org.jacksonatic.mapping.ClassMapping.type;
+import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
+import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
 
 configureMapping()
     .on(type(Pojo1.class)
@@ -100,8 +100,8 @@ Shortcut to add @JsonProperty on all fields for types "Pojo1" and "Pojo2".
 
 ### Use inheritance to map several types
 ```java
-import static org.jacksonatic.Jacksonatic.configureMapping;
-import static org.jacksonatic.mapping.ClassMapping.type;
+import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
+import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
 
 configureMapping()
     .on(type(Object.class)
@@ -114,8 +114,8 @@ As all types inherit Object type, so add @JsonProperty on all fields of all type
 ### Map all field expect one
 
 ```java
-import static org.jacksonatic.Jacksonatic.configureMapping;
-import static org.jacksonatic.mapping.ClassMapping.type;
+import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
+import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
 
 configureMapping()
     .on(type(Pojo.class)
@@ -129,8 +129,8 @@ Shortcut to add @JsonProperty on all fields and @JsonIgnore on field named "fiel
 ### Map a getter and a setter
 
 ```java
-import static org.jacksonatic.Jacksonatic.configureMapping;
-import static org.jacksonatic.mapping.ClassMapping.type;
+import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
+import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
 
 configureMapping()
     .on(type(Pojo.class)
@@ -144,8 +144,8 @@ Shortcut to add @JsonProperty on methods "getField1" and "setField1".
 ### Map a constructor
 
 ```java
-import static org.jacksonatic.Jacksonatic.configureMapping;
-import static org.jacksonatic.mapping.ClassMapping.type;
+import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
+import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
 
 configureMapping()
     .on(type(Pojo.class)
@@ -158,9 +158,9 @@ Shortcut to add @JsonCreator on tje constructor with parametric signature (Strin
 ### Map a static factory
 
 ```java
-import static org.jacksonatic.Jacksonatic.configureMapping;
-import static org.jacksonatic.mapping.ClassMapping.type;
-import static org.jacksonatic.mapping.ParameterCriteria.matchType;
+import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
+import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
+import static com.github.mrenou.jacksonatic.mapping.ParameterCriteria.matchType;
 
 configureMapping()
     .on(type(Pojo.class)
@@ -173,8 +173,8 @@ Shortcut to add @JsonCreator on the static method named "build" with parametric 
 
 ### Map constructor or static factory automatically
 ```java
-import static org.jacksonatic.Jacksonatic.configureMapping;
-import static org.jacksonatic.mapping.ClassMapping.type;
+import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
+import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
 
 configureMapping()
     .on(type(Pojo.class)
@@ -188,8 +188,8 @@ algorithm. The constructor is used if a constructor and a static factory match s
 
 ### Map polymorphism
 ```java
-import static org.jacksonatic.Jacksonatic.configureMapping;
-import static org.jacksonatic.mapping.ClassMapping.type;
+import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
+import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
 
 configureMapping()
     .on(type(PojoParent.class)
