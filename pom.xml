@@ -28,6 +28,7 @@
     <name>Jacksonatic</name>
     <description>Use jackson programmatically</description>
     <url>https://github.com/mrenou/jacksonatic</url>
+    <packaging>jar</packaging>
 
     <licenses>
         <license>
