@@ -29,12 +29,6 @@
     <description>Use jackson programmatically</description>
     <url>https://github.com/mrenou/jacksonatic</url>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-
     <licenses>
         <license>
             <name>Apache 2</name>
@@ -43,6 +37,18 @@
             <comments>A business-friendly OSS license</comments>
         </license>
     </licenses>
+
+    <scm>
+        <url>https://github.com/mrenou/jacksonatic</url>
+        <connection>scm:git:git://github.com/mrenou/jacksonatic.git</connection>
+        <developerConnection>scm:git:git@github.com:mrenou/jacksonatic.git</developerConnection>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
     <dependencies>
         <dependency>
