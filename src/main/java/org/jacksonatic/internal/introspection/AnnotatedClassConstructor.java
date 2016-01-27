@@ -28,6 +28,7 @@ import org.jacksonatic.internal.util.Mergeable;
 import org.jacksonatic.internal.util.TypedHashMap;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -100,7 +101,9 @@ public class AnnotatedClassConstructor {
 
     @SuppressWarnings("unchecked")
     private Optional<ClassMappingInternal<Object>> getClassMappingFromSuperTypes(Class<?> type, ClassesMapping serOrDeserClassesMapping, ClassesMapping mergedClassesMapping) {
-        return Stream.concat(Stream.of(Object.class), ClassUtil.findSuperTypes(type, Object.class).stream().sorted(Collections.reverseOrder()))
+        List<Class<?>> superTypes = ClassUtil.findSuperTypes(type, Object.class);
+        Collections.reverse(superTypes);
+        return Stream.concat(Stream.of(Object.class), superTypes.stream())
                 .map(superType -> (Class<Object>) superType)
                 .map(superType -> Optional.ofNullable(
                                 mergedClassesMapping.getOpt(superType)

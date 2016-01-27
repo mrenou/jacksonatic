@@ -15,6 +15,8 @@
  */
 package org.jacksonatic.integration.test.polymorphism;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +40,14 @@ public class PolymorphismMethodTest {
         methodCalls = new ArrayList<>();
     }
 
-    static class PojoParent {
+
+    static class PojoGrandParent {
+
+        private String origin;
+
+    }
+
+    static class PojoParent extends PojoGrandParent {
 
         private String field1;
 
@@ -173,5 +182,38 @@ public class PolymorphismMethodTest {
                 )
                 .registerIn(objectMapper);
     }
+
+    static class Pouet  {
+
+        @JsonProperty(value = "", required=false, index=-1, defaultValue="")
+        private String id;
+
+        @JsonCreator
+        public Pouet(@JsonProperty(value = "id") String id) {
+            this.id = id;
+        }
+
+        @JsonProperty(value = "_id", required=false, index=-1, defaultValue="")
+        public String getId() {
+            methodCalls.add("public String getField21()");
+            return id;
+        }
+
+        @JsonProperty(value = "_id", required=false, index=-1, defaultValue="")
+        public void setId(String id) {
+            methodCalls.add("public void setField21(String field21)");
+            this.id = id;
+        }
+    }
+
+    @Test
+    public void test() throws IOException {
+        configureMappingPolymorphism();
+
+        String json = objectMapper.writeValueAsString(new Pouet("id"));
+
+        assertThat(json).isEqualTo("{\"type\":\"CHILD2\",\"field1\":\"field1\",\"field22\":\"field22\"}");
+    }
+
 
 }
