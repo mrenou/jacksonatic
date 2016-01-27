@@ -30,6 +30,12 @@
     <url>https://github.com/mrenou/jacksonatic</url>
     <packaging>jar</packaging>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
+
     <licenses>
         <license>
             <name>Apache 2</name>

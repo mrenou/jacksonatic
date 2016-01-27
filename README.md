@@ -39,7 +39,7 @@ You can add Jacksonatic as a maven dependency of your project. **Jacksonatic req
 
 ## Examples
 
-### Add @JsonProperty on a field and @jsonIgnore on a method
+### Add @JsonProperty on a field and @JsonIgnore on a method
 
 ```java
 import static org.jacksonatic.Jacksonatic.configureMapping;
