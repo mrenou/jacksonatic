@@ -94,6 +94,7 @@ configureMapping()
     .on(type(Pojo2.class)
         .mapAll())
     .registerIn(objectMapper);
+```
 
 Shortcut to add @JsonProperty on all fields for types "Pojo1" and "Pojo2".
 
