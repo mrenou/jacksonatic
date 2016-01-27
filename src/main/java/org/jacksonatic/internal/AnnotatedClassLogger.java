@@ -50,7 +50,10 @@ public class AnnotatedClassLogger {
             logConstructorAnnotations(annotatedClass, sb);
             logStaticFactoryAnnotations(annotatedClass, sb);
             logMethodAnnotations(annotatedClass, sb);
-            LOGGER.debug("Annotations added for : {}", sb.toString());
+            String toLog = sb.toString();
+            if (!toLog.isEmpty()) {
+                LOGGER.debug("Annotations added for : {}", toLog);
+            }
         }
     }
 
@@ -71,7 +74,7 @@ public class AnnotatedClassLogger {
                 .filter(annotatedConstructor -> hasAnnotationOrParameterAnnotation(annotatedConstructor))
                 .forEach(annotatedConstructor -> {
                     List<Class<?>> parameterTypes = IntStream.range(0, annotatedConstructor.getParameterCount()).mapToObj(index -> annotatedConstructor.getRawParameterType(index)).collect(Collectors.toList());
-                    sb.append("> Constructor[" + methodSignature(annotatedConstructor.getName(), parameterTypes) + "] : " + annotationsItToStr(annotatedConstructor.annotations()))
+                    sb.append("> Constructor[" + methodSignature(annotatedClass.getAnnotated().getSimpleName(), parameterTypes) + "] : " + annotationsItToStr(annotatedConstructor.annotations()))
                             .append(ln);
                     logParameters(sb, annotatedConstructor);
                 });
