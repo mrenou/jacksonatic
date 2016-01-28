@@ -27,7 +27,7 @@ import static java.util.Arrays.asList;
  * Use {@link com.github.mrenou.jacksonatic.internal.mapping.ClassMappingInternal } and {@link ClassBuilderCriteria } to
  * find any constructor or static factory to build the type
  *
- * {@see com.github.mrenou.jacksonatic.internal.mapping.builder.ClassBuilderFinder}
+ * {@link com.github.mrenou.jacksonatic.internal.mapping.builder.ClassBuilderFinder}
  */
 public class ClassBuilderFinderFromCriteria {
 

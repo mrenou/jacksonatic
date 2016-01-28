@@ -37,6 +37,7 @@ public interface PropertyMapper<T> extends HasAnnotations<T> {
     /**
      * map the property with the given name
      *
+     * @param jsonProperty the new name
      * @return the instance mapper
      */
     @SuppressWarnings("unchecked")

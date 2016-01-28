@@ -35,7 +35,7 @@ import static java.util.stream.Collectors.toList;
  * Use {@link com.github.mrenou.jacksonatic.internal.mapping.ClassMappingInternal } to find any constructor or static
  * factory to build the type
  *
- * {@see com.github.mrenou.jacksonatic.internal.mapping.builder.ClassBuilderFinder}
+ * {@link com.github.mrenou.jacksonatic.internal.mapping.builder.ClassBuilderFinder}
  */
 public class ClassBuilderFinderFromAny {
 

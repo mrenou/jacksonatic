@@ -33,6 +33,7 @@ public interface ClassMapping<T> extends HasAnnotations<ClassMapping<T>> {
      * Start a class mapping for the given type only for serialization
      *
      * @param clazz the class to configure on serialization
+     * @param <T> the type mapped
      * @return the current class mapping
      */
     static <T> ClassMapping<T> onSerializationOf(Class<T> clazz) {
@@ -43,6 +44,7 @@ public interface ClassMapping<T> extends HasAnnotations<ClassMapping<T>> {
      * Start a class mapping for the given type only for deserialization
      *
      * @param clazz the class to configure on deserialization
+     * @param <T> the type mapped
      * @return the current class mapping
      */
     static <T> ClassMapping<T> onDeserialisationOf(Class<T> clazz) {
@@ -217,6 +219,7 @@ public interface ClassMapping<T> extends HasAnnotations<ClassMapping<T>> {
     /**
      * Will try to map a constructor with these parameters for the object creation
      *
+     * @param parameterCriteriaList parameter criteria list
      * @return the current class mapping
      * @throws ClassBuilderNotFoundException if no constructor is found for the given parameters
      */
@@ -225,6 +228,8 @@ public interface ClassMapping<T> extends HasAnnotations<ClassMapping<T>> {
     /**
      * Will try to map the named static factory with these parameters for the object creation
      *
+     * @param methodName name of the static factory method
+     * @param parameterCriteriaList parameter criteria list
      * @return the current class mapping
      * @throws ClassBuilderNotFoundException if no static factory is found for the given name and parameters
      */
@@ -233,6 +238,7 @@ public interface ClassMapping<T> extends HasAnnotations<ClassMapping<T>> {
     /**
      * Will try to map a static factory with these parameters for the object creation
      *
+     * @param  parameterCriteriaList parameter criteria list
      * @return the current class mapping
      * @throws ClassBuilderNotFoundException if no static factory is found for the given parameters
      */
@@ -257,6 +263,7 @@ public interface ClassMapping<T> extends HasAnnotations<ClassMapping<T>> {
     /**
      * Define a subtype with the given type name
      *
+     * @param subType sub type
      * @param name the name of the type
      * @return the current class mapping
      */
