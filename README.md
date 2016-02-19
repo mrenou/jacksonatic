@@ -31,9 +31,9 @@ You can add Jacksonatic as a maven dependency of your project. **Jacksonatic req
 
 ```xml
 <dependency>
-  <groupId>com.github.mrenou.jacksonatic</groupId>
-  <artifactId>jacksonatic</artifactId>
-  <version>0.3</version>
+    <groupId>com.github.mrenou</groupId>
+    <artifactId>jacksonatic</artifactId>
+    <version>0.3</version>
 </dependency>
 ```
 
