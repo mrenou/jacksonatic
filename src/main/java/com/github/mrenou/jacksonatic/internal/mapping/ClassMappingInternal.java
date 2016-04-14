@@ -100,12 +100,18 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMapp
 
     public void on(FieldMappingInternal fieldMapping) {
         typeChecker.checkFieldExists(fieldMapping.getName());
-        fieldsMapping.put(fieldMapping.getName(), fieldMapping);
+        FieldMappingInternal fieldMappingToStore = fieldsMapping.getOpt(fieldMapping.getName())
+                .map(existingFieldMapping -> fieldMapping.mergeWith(existingFieldMapping))
+                .orElse(fieldMapping);
+        fieldsMapping.put(fieldMapping.getName(), fieldMappingToStore);
     }
 
     public void on(MethodMappingInternal methodMapping) {
         typeChecker.checkMethodExists(methodMapping.getMethodSignature());
-        methodsMapping.put(methodMapping.getMethodSignature(), methodMapping);
+        MethodMappingInternal methodMappingToStore = methodsMapping.getOpt(methodMapping.getMethodSignature())
+                .map(existingMethodMapping -> methodMapping.mergeWith(existingMethodMapping))
+                .orElse(methodMapping);
+        methodsMapping.put(methodMapping.getMethodSignature(), methodMappingToStore);
     }
 
     public void mapGetter(String fieldName) {
@@ -238,7 +244,7 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMapp
                 Mergeable.mergeOrCopy(classBuilderCriteriaOpt, parentMapping.classBuilderCriteriaOpt),
                 fieldsMapping.mergeWith(parentMapping.fieldsMapping),
                 methodsMapping.mergeWith(parentMapping.methodsMapping),
-                annotations.mergeWith(parentMapping.annotations),
+                annotations.mergeWithParent(parentMapping.annotations),
                 typeChecker
         );
     }

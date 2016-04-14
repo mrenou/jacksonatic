@@ -15,6 +15,8 @@
  */
 package com.github.mrenou.jacksonatic.mapping;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import static com.github.mrenou.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
 import static com.github.mrenou.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
 

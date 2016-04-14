@@ -75,7 +75,7 @@ public class JacksonaticJsonProperty implements JsonProperty, JacksonaticAnnotat
         return new Builder().value(value);
     }
 
-    static class Builder implements AnnotationBuilder {
+    public static class Builder implements AnnotationBuilder {
 
         private JacksonaticJsonProperty jsonProperty = new JacksonaticJsonProperty();
 

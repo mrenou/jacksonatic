@@ -71,7 +71,7 @@ public class MethodMappingInternal implements MethodMapping, PropertyMapperInter
 
     @Override
     public MethodMappingInternal mergeWith(MethodMappingInternal methodParentMapping) {
-        return new MethodMappingInternal(methodSignature, this.annotations.size() == 0 ? methodParentMapping.annotations.copy() : annotations.copy());
+        return new MethodMappingInternal(methodSignature, this.annotations.mergeWithParent(methodParentMapping.annotations));
     }
 
 }

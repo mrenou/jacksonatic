@@ -15,6 +15,8 @@
  */
 package com.github.mrenou.jacksonatic.internal.annotations;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.mrenou.jacksonatic.annotation.AnnotationBuilder;
 import com.github.mrenou.jacksonatic.internal.util.MapUtil;
 import com.github.mrenou.jacksonatic.internal.util.TypedHashMap;
@@ -28,11 +30,28 @@ public class Annotations extends TypedHashMap<Class<? extends Annotation>, Annot
         put(annotation.annotationType(), annotation);
     }
 
+    public void remove(Class<? extends Annotation> annotationClass) {
+        super.remove(annotationClass);
+    }
+
     public Annotations copy() {
         return super.copy(Annotations::new);
     }
 
     public Annotations mergeWith(Annotations map) {
         return MapUtil.merge(this, map, annotation -> annotation, (annotation, annotationParent) -> annotation);
+    }
+
+    public Annotations mergeWithParent(Annotations parentAnnotations) {
+        boolean ignoredButMappedByParent = parentAnnotations.containsKey(JsonProperty.class) && containsKey(JsonIgnore.class);
+        boolean mappedButIgnoredByParent = parentAnnotations.containsKey(JsonIgnore.class) && containsKey(JsonProperty.class);
+        Annotations annotations = MapUtil.merge(this, parentAnnotations, annotation -> annotation, (annotation, annotationParent) -> annotation);
+        if (ignoredButMappedByParent) {
+            annotations.remove(JsonProperty.class);
+        }
+        if (mappedButIgnoredByParent) {
+            annotations.remove(JsonIgnore.class);
+        }
+        return annotations;
     }
 }

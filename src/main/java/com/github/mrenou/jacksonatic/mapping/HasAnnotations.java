@@ -15,8 +15,14 @@
  */
 package com.github.mrenou.jacksonatic.mapping;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.mrenou.jacksonatic.annotation.AnnotationBuilder;
+import com.github.mrenou.jacksonatic.annotation.JacksonaticJsonIgnore;
+import com.github.mrenou.jacksonatic.annotation.JacksonaticJsonProperty;
 import com.github.mrenou.jacksonatic.internal.annotations.Annotations;
+
+import java.lang.annotation.Annotation;
 
 /**
  * Can have annotations
@@ -31,7 +37,18 @@ public interface HasAnnotations<T> {
      */
     @SuppressWarnings("unchecked")
     default T add(AnnotationBuilder annotationBuilder) {
+        if (annotationBuilder.getClass().equals(JacksonaticJsonProperty.Builder.class)) {
+            remove(JsonIgnore.class);
+        }
+        if (annotationBuilder.getClass().equals(JacksonaticJsonIgnore.Builder.class)) {
+            remove(JsonProperty.class);
+        }
         getAnnotations().add(annotationBuilder);
+        return (T) this;
+    }
+
+    default T remove(Class<? extends Annotation> annotationClass) {
+        getAnnotations().remove(annotationClass);
         return (T) this;
     }
 

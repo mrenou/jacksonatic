@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Morgan Renou (mrenou@gmail.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,13 +17,16 @@ package com.github.mrenou.jacksonatic.integration.test.field;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.mrenou.jacksonatic.integration.test.CustomStringSerializer;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
+import static com.github.mrenou.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
 import static com.github.mrenou.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
+import static com.github.mrenou.jacksonatic.annotation.JacksonaticJsonSerialize.jsonSerialize;
 import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
 import static com.github.mrenou.jacksonatic.mapping.FieldMapping.field;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -101,7 +104,6 @@ public class FieldMappingTest {
         String json = objectMapper.writeValueAsString(POJO);
 
         assertThat(json).isEqualTo("{\"field1\":\"field1\"}");
-
     }
 
     @Test
@@ -168,6 +170,35 @@ public class FieldMappingTest {
         Pojo pojo = objectMapper.readValue("{\"toto\":\"field1\",\"field2\":42}", Pojo.class);
 
         assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
+    }
+
+    @Test
+    public void map_after_ignore() throws JsonProcessingException {
+        configureMapping()
+                .on(type(Pojo.class)
+                        .on(field("field1")
+                                .add(jsonProperty())
+                                .add(jsonIgnore())
+                                .add(jsonProperty())))
+                .registerIn(objectMapper);
+
+        String json = objectMapper.writeValueAsString(POJO);
+
+        assertThat(json).isEqualTo("{\"field1\":\"field1\"}");
+    }
+
+    @Test
+    public void map_with_map_alias_and_on_field_annotation_adder() throws IOException {
+        configureMapping()
+                .on(type(Pojo.class)
+                        .map("field1", "toto")
+                        .on(field("field1").add(jsonSerialize().using(CustomStringSerializer.class)))
+                )
+                .registerIn(objectMapper);
+
+        String json = objectMapper.writeValueAsString(POJO);
+
+        assertThat(json).isEqualTo("{\"toto\":\"field1_customized\"}");
     }
 
     static class PojoParent {
@@ -248,6 +279,4 @@ public class FieldMappingTest {
 
         assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
     }
-
-
 }

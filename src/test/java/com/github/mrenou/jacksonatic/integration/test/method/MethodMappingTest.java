@@ -16,6 +16,7 @@
 package com.github.mrenou.jacksonatic.integration.test.method;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.mrenou.jacksonatic.integration.test.CustomStringSerializer;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
 import static com.github.mrenou.jacksonatic.annotation.JacksonaticJsonIgnore.jsonIgnore;
 import static com.github.mrenou.jacksonatic.annotation.JacksonaticJsonProperty.jsonProperty;
+import static com.github.mrenou.jacksonatic.annotation.JacksonaticJsonSerialize.jsonSerialize;
 import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
 import static com.github.mrenou.jacksonatic.mapping.FieldMapping.field;
 import static com.github.mrenou.jacksonatic.mapping.MethodMapping.method;
@@ -110,5 +112,19 @@ public class MethodMappingTest {
         assertThat(json).isEqualTo("{\"field1\":\"field1\",\"field2\":42}");
     }
 
+    @Test
+    public void map_with_map_alias_and_on_method_annotation_adder() throws IOException {
+        Pojo pojo = new Pojo("field1", 42);
 
+        configureMapping()
+                .on(type(Pojo.class)
+                        .mapGetter("field1", "toto")
+                        .on(method("getField1").add(jsonSerialize().using(CustomStringSerializer.class)))
+                )
+                .registerIn(objectMapper);
+
+        String json = objectMapper.writeValueAsString(pojo);
+
+        assertThat(json).isEqualTo("{\"toto\":\"field1_customized\"}");
+    }
 }

@@ -52,7 +52,7 @@ public class JacksonaticJsonIgnore implements JsonIgnore, JacksonaticAnnotation 
         return new Builder().value(value);
     }
 
-    static class Builder implements AnnotationBuilder {
+    public static class Builder implements AnnotationBuilder {
 
         private JacksonaticJsonIgnore jsonIgnore = new JacksonaticJsonIgnore();
 

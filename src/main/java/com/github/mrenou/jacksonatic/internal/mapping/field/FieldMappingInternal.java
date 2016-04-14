@@ -70,7 +70,7 @@ public class FieldMappingInternal implements FieldMapping, PropertyMapperInterna
 
     @Override
     public FieldMappingInternal mergeWith(FieldMappingInternal parentMapping) {
-        return new FieldMappingInternal(name, this.annotations.size() == 0 ? parentMapping.annotations.copy() : annotations.copy());
+        return new FieldMappingInternal(name, this.annotations.mergeWithParent(parentMapping.annotations));
     }
 
 }
