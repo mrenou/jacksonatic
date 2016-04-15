@@ -32,7 +32,11 @@ public interface Jacksonatic extends Copyable<Jacksonatic> {
     }
 
     static Jacksonatic configureMapping(JacksonaticOptions.Builder jacksonaticOptionsBuilder) {
-        return new JacksonaticInternal(jacksonaticOptionsBuilder.build());
+        return configureMapping(jacksonaticOptionsBuilder.build());
+    }
+
+    static Jacksonatic configureMapping(JacksonaticOptions jacksonaticOptions) {
+        return new JacksonaticInternal(jacksonaticOptions);
     }
 
     /**

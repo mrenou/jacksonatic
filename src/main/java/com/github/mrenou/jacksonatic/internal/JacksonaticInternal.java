@@ -111,7 +111,7 @@ public class JacksonaticInternal implements Jacksonatic {
 
     @Override
     public Jacksonatic copy() {
-        JacksonaticInternal mappingConfigurerCopy = (JacksonaticInternal) Jacksonatic.configureMapping();
+        JacksonaticInternal mappingConfigurerCopy = (JacksonaticInternal) Jacksonatic.configureMapping(options);
         mappingConfigurerCopy.classesMappingByOperation = classesMappingByOperation.copy();
         return mappingConfigurerCopy;
     }
