@@ -20,13 +20,19 @@ import com.github.mrenou.jacksonatic.internal.JacksonaticInternal;
 import com.github.mrenou.jacksonatic.internal.util.Copyable;
 import com.github.mrenou.jacksonatic.mapping.ClassMapping;
 
+import static com.github.mrenou.jacksonatic.JacksonaticOptions.options;
+
 /**
  * Entry point of the api, allowing to define a jackson class mapping collection in a programmatic way.
  */
 public interface Jacksonatic extends Copyable<Jacksonatic> {
 
     static Jacksonatic configureMapping() {
-        return new JacksonaticInternal();
+        return new JacksonaticInternal(options().build());
+    }
+
+    static Jacksonatic configureMapping(JacksonaticOptions.Builder jacksonaticOptionsBuilder) {
+        return new JacksonaticInternal(jacksonaticOptionsBuilder.build());
     }
 
     /**

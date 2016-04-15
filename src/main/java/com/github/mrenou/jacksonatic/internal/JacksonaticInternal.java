@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 import com.github.mrenou.jacksonatic.Jacksonatic;
+import com.github.mrenou.jacksonatic.JacksonaticOptions;
 import com.github.mrenou.jacksonatic.internal.introspection.JacksonaticClassIntrospector;
 import com.github.mrenou.jacksonatic.internal.mapping.ClassMappingByOperation;
 import com.github.mrenou.jacksonatic.internal.mapping.ClassMappingInternal;
@@ -36,7 +37,10 @@ public class JacksonaticInternal implements Jacksonatic {
 
     private TypeNameAutoAssigner typeNameAutoAssigner = new TypeNameAutoAssigner();
 
-    public JacksonaticInternal() {
+    private JacksonaticOptions options;
+
+    public JacksonaticInternal(JacksonaticOptions options) {
+        this.options = options;
         classesMappingByOperation.put(ANY, new ClassesMapping());
         classesMappingByOperation.put(SERIALIZATION, new ClassesMapping());
         classesMappingByOperation.put(DESERIALIZATION, new ClassesMapping());
@@ -74,8 +78,15 @@ public class JacksonaticInternal implements Jacksonatic {
 
     @Override
     public void registerIn(ObjectMapper objectMapper) {
+        checkTypes();
         registerForSerializationIn(objectMapper);
         registerForDeserializationIn(objectMapper);
+    }
+
+    private void checkTypes() {
+        if (options.typeChecking()) {
+            classesMappingByOperation.forEach((operation, classesMapping) -> classesMapping.forEach((type, classMapping) -> classMapping.checkTypes()));
+        }
     }
 
     private void registerForSerializationIn(ObjectMapper objectMapper) {

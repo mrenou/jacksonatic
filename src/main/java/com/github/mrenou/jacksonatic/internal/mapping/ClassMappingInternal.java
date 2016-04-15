@@ -99,7 +99,6 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMapp
     }
 
     public void on(FieldMappingInternal fieldMapping) {
-        typeChecker.checkFieldExists(fieldMapping.getName());
         FieldMappingInternal fieldMappingToStore = fieldsMapping.getOpt(fieldMapping.getName())
                 .map(existingFieldMapping -> fieldMapping.mergeWith(existingFieldMapping))
                 .orElse(fieldMapping);
@@ -107,7 +106,6 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMapp
     }
 
     public void on(MethodMappingInternal methodMapping) {
-        typeChecker.checkMethodExists(methodMapping.getMethodSignature());
         MethodMappingInternal methodMappingToStore = methodsMapping.getOpt(methodMapping.getMethodSignature())
                 .map(existingMethodMapping -> methodMapping.mergeWith(existingMethodMapping))
                 .orElse(methodMapping);
@@ -204,7 +202,6 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMapp
         FieldMappingInternal fieldMapping = fieldsMapping.get(name);
         if (fieldMapping == null) {
             fieldMapping = (FieldMappingInternal) field(name);
-            typeChecker.checkFieldExists(name);
             fieldsMapping.put(name, fieldMapping);
         }
         return fieldMapping;
@@ -217,6 +214,11 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMapp
 
     public Optional<ClassBuilderCriteria> getClassBuilderCriteriaOpt() {
         return classBuilderCriteriaOpt;
+    }
+
+    public void checkTypes() {
+        fieldsMapping.forEach((name, fieldMapping) -> typeChecker.checkFieldExists(name));
+        methodsMapping.forEach((methodSignature, methodMapping) -> typeChecker.checkMethodExists(methodSignature));
     }
 
     @Override

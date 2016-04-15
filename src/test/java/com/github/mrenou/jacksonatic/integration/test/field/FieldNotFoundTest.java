@@ -17,6 +17,7 @@ package com.github.mrenou.jacksonatic.integration.test.field;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.mrenou.jacksonatic.JacksonaticOptions;
 import com.github.mrenou.jacksonatic.exception.FieldNotFoundException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +26,7 @@ import org.junit.rules.ExpectedException;
 import java.io.IOException;
 
 import static com.github.mrenou.jacksonatic.Jacksonatic.configureMapping;
+import static com.github.mrenou.jacksonatic.JacksonaticOptions.options;
 import static com.github.mrenou.jacksonatic.mapping.ClassMapping.type;
 import static com.github.mrenou.jacksonatic.mapping.FieldMapping.field;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,26 +47,19 @@ public class FieldNotFoundTest {
     }
 
     @Test(expected = FieldNotFoundException.class)
-    public void unknown_field_on_serialization() throws JsonProcessingException {
+    public void unknown_field() throws JsonProcessingException {
         configureMapping()
                 .on(type(Pojo.class)
                         .on(field("unknown")))
                 .registerIn(objectMapper);
-
-        objectMapper.writeValueAsString(POJO);
     }
 
-    @Test(expected = FieldNotFoundException.class)
-    public void unknown_field_on_deserialization() throws IOException {
-        Pojo expectedPojo = new Pojo();
-        configureMapping()
+    @Test
+    public void unknown_field_when_type_checking_is_off() throws JsonProcessingException {
+        configureMapping(options().disableTypeChecking())
                 .on(type(Pojo.class)
                         .on(field("unknown")))
                 .registerIn(objectMapper);
-
-        Pojo pojo = objectMapper.readValue("{\"field1\":\"field1\"}", Pojo.class);
-
-        assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
     }
 
 }
