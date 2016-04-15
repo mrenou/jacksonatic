@@ -92,7 +92,8 @@ public class ClassBuilderFinderFromAny {
             Class<?> parameterType = parameterTypes.get(iParameterType);
             FieldMappingInternal fieldMapping = classMapping.getOrCreateFieldMappingInternal(field.getName());
             Optional<MethodMappingInternal> setterMapping = classMapping.getSetterMapping(field.getName(), field.getType());
-            Optional<String> mappedNameOpt = getMappedNameOpt(classMapping, fieldMapping, setterMapping);
+            Optional<MethodMappingInternal> getterMapping = classMapping.getGetterMapping(field.getName());
+            Optional<String> mappedNameOpt = getMappedNameOpt(classMapping, fieldMapping, setterMapping, getterMapping);
             if (!Modifier.isStatic(field.getModifiers()) && mappedNameOpt.isPresent()) {
                 if (parameterType.equals(field.getType())) {
                     parametersMapping.add(new ParameterMapping(field.getType(), mappedNameOpt.get()));
@@ -108,9 +109,12 @@ public class ClassBuilderFinderFromAny {
         return parametersMapping;
     }
 
-    private Optional<String> getMappedNameOpt(ClassMappingInternal<Object> classMapping, FieldMappingInternal fieldMapping, Optional<MethodMappingInternal> methodMappingOpt) {
-        if (methodMappingOpt.map(PropertyMapperInternal::isMapped).orElse(false)) {
-            return Optional.of(methodMappingOpt.get().getMappedName());
+    private Optional<String> getMappedNameOpt(ClassMappingInternal<Object> classMapping, FieldMappingInternal fieldMapping, Optional<MethodMappingInternal> setterMapping, Optional<MethodMappingInternal> getterMapping) {
+        if (setterMapping.map(PropertyMapperInternal::isMapped).orElse(false)) {
+            return Optional.of(setterMapping.get().getMappedName());
+        }
+        if (getterMapping.map(PropertyMapperInternal::isMapped).orElse(false)) {
+            return Optional.of(getterMapping.get().getMappedName());
         }
         if (classMapping.allFieldsAreMapped() || fieldMapping.isMapped()) {
             return Optional.of(fieldMapping.getMappedName());

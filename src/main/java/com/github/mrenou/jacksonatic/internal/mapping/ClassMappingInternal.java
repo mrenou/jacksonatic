@@ -187,13 +187,17 @@ public class ClassMappingInternal<T> implements HasAnnotationsInternal<ClassMapp
     }
 
     public Optional<MethodMappingInternal> getSetterMapping(String fieldName, Class<?> fieldType) {
-        return findGetterSetterMapping("set" + StringUtil.firstToUpperCase(fieldName), fieldType);
+        return findGetterSetterMapping(methodSignature("set" + StringUtil.firstToUpperCase(fieldName), fieldType));
     }
 
-    private Optional<MethodMappingInternal> findGetterSetterMapping(String methodName, Class<?> fieldType) {
-        Optional<MethodMappingInternal> methodMapping = getMethodMappingInternal(methodSignature(methodName, fieldType));
+    public Optional<MethodMappingInternal> getGetterMapping(String fieldName) {
+        return findGetterSetterMapping(methodSignature("get" + StringUtil.firstToUpperCase(fieldName)));
+    }
+
+    private Optional<MethodMappingInternal> findGetterSetterMapping(MethodSignature methodSignature) {
+        Optional<MethodMappingInternal> methodMapping = getMethodMappingInternal(methodSignature);
         if (!methodMapping.isPresent()) {
-            methodMapping = getMethodMappingInternal(methodSignatureIgnoringParameters(methodName));
+            methodMapping = getMethodMappingInternal(methodSignatureIgnoringParameters(methodSignature.name));
         }
         return methodMapping;
     }

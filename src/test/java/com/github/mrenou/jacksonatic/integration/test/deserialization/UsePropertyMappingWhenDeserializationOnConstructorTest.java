@@ -53,6 +53,10 @@ public class UsePropertyMappingWhenDeserializationOnConstructorTest {
             this.field2 = field2;
         }
 
+        public Integer getField2() {
+            return field2;
+        }
+
         public void setField2(Integer field2) {
             this.field2 = field2;
         }
@@ -191,6 +195,24 @@ public class UsePropertyMappingWhenDeserializationOnConstructorTest {
                 .on(type(Pojo.class)
                         .map("field1", "toto")
                         .mapSetter("field2", "tutu", Integer.class)
+                        .withAConstructorOrStaticFactory())
+                .registerIn(objectMapper);
+
+        captureConstructor();
+        Pojo pojo = objectMapper.readValue("{\"toto\":\"field1\",\"tutu\":42}", Pojo.class);
+
+        assertThat(pojo).isEqualToIgnoringGivenFields(expectedPojo);
+        assertThat(firstConstructorCalled).isEqualTo("public Pojo(String field1, Integer field2)");
+    }
+
+    @Test
+    public void map_field_and_getter_with_another_name_to_deserialize_by_constructor() throws IOException {
+        Pojo expectedPojo = new Pojo("field1", 42);
+        configureMapping()
+                .on(type(Pojo.class)
+                        .mapAll()
+                        .map("field1", "toto")
+                        .mapGetter("field2", "tutu")
                         .withAConstructorOrStaticFactory())
                 .registerIn(objectMapper);
 
