@@ -25,6 +25,10 @@ Moreover you have somme extra-feature to facilitate your mapping :
 * Use the inheritance to propagate the mapping
 * Facilitate the polymorphism mapping
 
+## Build status
+
+- [![Build Status](https://api.travis-ci.org/mrenou/jacksonatic.svg?branch=master)](https://travis-ci.org/mrenou/jacksonatic)
+
 ## Setup (Maven)
 
 You can add Jacksonatic as a maven dependency of your project. **Jacksonatic requires java 8**.
